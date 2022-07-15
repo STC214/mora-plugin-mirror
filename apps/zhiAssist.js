@@ -1,5 +1,5 @@
 import { segment } from "oicq";
-import fetch from "node-fetch";
+import lodash from "lodash";
 import fs from 'fs';
 
 //项目路径
@@ -23,5 +23,100 @@ export async function listMeme(e){
 	}
 	let face = faceArr.join('\r\n');
 	e.reply('全部表情：\r\n' + face);
+	return true;
+}
+
+// 添加表情功能覆盖(有权限)
+export async function addMeme(e) {
+	if (!e.message) {
+	  return false;
+	}
+  
+	let name = lodash.truncate(e.sender.card, { length: 8 });
+  
+	let Msg = [];
+	let head;
+	for (let val of e.message) {
+	  if (val.type == "text" && /^[#|\s|\r]*添加(.*)/g.test(val.text)) {
+		val.isAdd = true;
+		val.text = val.text.replace(/#|＃|图片|表情|添加|删除|列表/g, "");
+		head = val;
+	  } else {
+		if (val.type == "at") {
+		  if (val.qq == BotConfig.account.qq) {
+			continue;
+		  }
+		  delete val.text;
+		}
+		Msg.push(val);
+	  }
+	}
+	Msg.unshift(head);
+  
+	if (!Msg[0] || Msg[0].type != "text" || !Msg[0].isAdd || (Msg.length == 1 && !Msg[0].text)) {
+	  return;
+	}
+
+  // 添加权限
+  if (e.groupConfig.imgAddLimit == 2) {
+    if (!e.isMaster) {
+      e.reply(`只有主人才能添加`);
+      return true;
+    }
+  }
+  if (e.groupConfig.imgAddLimit == 1 && !e.isMaster) {
+    if(!Bot.gml.has(group_id)){
+      return true;
+    }
+    if (!Bot.gml.get(group_id).get(e.user_id)) {
+      return true;
+    }
+    if (!e.member.is_admin) {
+      e.reply(`只有管理员才能添加`);
+      return true;
+    }
+  }
+  
+	// 关键词后携带图片的，直接添加图片
+	if (Msg.length == 2 && Msg[1].type == "image" && Msg[0].text) {
+	  let msgList = textArr.get(Msg[0].text.trim()) || [];
+	  msgList.push([Msg[1]]);
+  
+	  textArr.set(Msg[0].text.trim(), msgList);
+	  let name = lodash.truncate(e.sender.card, { length: 8 });
+	  e.reply([segment.at(e.user_id, name), "\n添加成功：", Msg[0].text.trim()]);
+	  Bot.logger.mark(`[${e.sender.nickname}(${e.user_id})] 添加成功:${Msg[0].text.trim()}`);
+  
+	  let obj = {};
+	  for (let [k, v] of textArr) {
+		obj[k] = v;
+	  }
+  
+	  fs.writeFileSync(JSON_PATH, JSON.stringify(obj, "", "\t"));
+	  return true;
+	}
+  
+	var re = new RegExp("{at:" + BotConfig.account.qq + "}", "g");
+  
+	// 上下文添加
+	context[e.user_id] = {
+	  text: e
+		.toString()
+		.replace(re, "")
+		.replace(/#|＃|图片|表情|添加|删除|列表/g, "")
+		.trim(),
+	  msg: Msg,
+	};
+  
+	Bot.logger.mark(`[${e.group_name}] 添加:${context[e.user_id].text}`);
+	e.reply([segment.at(e.user_id, name), ` 请发送内容`]);
+  
+	contextTimer[e.user_id] = setTimeout(() => {
+	  if (context[e.user_id]) {
+		delete context[e.user_id];
+		e.reply([segment.at(e.user_id, name), ` 添加已取消`]);
+	  }
+	}, 120000);
+  
 	return true;
 }
