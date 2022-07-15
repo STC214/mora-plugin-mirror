@@ -5,6 +5,19 @@ import fs from 'fs';
 //项目路径
 const _path = process.cwd();
 
+if (!fs.existsSync(`${_path}/data/randomApply/`)) {
+	fs.mkdirSync(`${_path}/data/randomApply/`);
+}
+
+// 跟原来的一样, 覆盖代码进行权限控制
+const JSON_PATH = `${_path}/data/randomApply/randomApply.json`;
+const BAKE_JSON_PATH = `${_path}/data/randomApply/randomApply_bake.json`;
+let context = {}; // 随机回复上下文
+let textArr = {};
+let bakeTextArr = {};
+let contextTimer = {};
+getTextData();
+
 export async function listMeme(e){
 	if (!e.message) {
 		return;
@@ -119,4 +132,25 @@ export async function addMeme(e) {
 	}, 120000);
   
 	return true;
+}
+
+// 获取随机回复列表
+function getTextData() {
+  textArr = new Map();
+  bakeTextArr = new Map();
+
+  if (!fs.existsSync(JSON_PATH)) {
+    fs.writeFileSync(JSON_PATH, JSON.stringify({}, "", "\t"));
+    return;
+  }
+
+  if (!fs.existsSync(BAKE_JSON_PATH)) {
+    fs.writeFileSync(BAKE_JSON_PATH, JSON.stringify({}, "", "\t"));
+    return;
+  }
+
+  let textJson = JSON.parse(fs.readFileSync(JSON_PATH, "utf8"));
+  let bakeTextJson = JSON.parse(fs.readFileSync(BAKE_JSON_PATH, "utf8"));
+  textArr = new Map(Object.entries(textJson));
+  bakeTextArr = new Map(Object.entries(bakeTextJson));
 }
