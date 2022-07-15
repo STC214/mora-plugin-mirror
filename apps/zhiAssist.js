@@ -5,14 +5,6 @@ import fs from 'fs';
 //项目路径
 const _path = process.cwd();
 
-export const rule = {
-  listMeme: {
-    reg: "^#*表情列表*$",
-    priority: 5004,
-    describe: "【表情列表，表情列表1】添加表情列表",
-  },
-}
-
 export async function listMeme(e){
 	if (!e.message) {
 		return;
