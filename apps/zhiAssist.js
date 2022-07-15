@@ -134,6 +134,53 @@ export async function addMeme(e) {
 	return true;
 }
 
+// 将上下文设置为随机回复
+export async function addMemeContext(e) {
+  if (!context[e.user_id] || !e.message) {
+    return;
+  }
+  let name = lodash.truncate(e.sender.card, { length: 8 });
+
+  // 添加消息处理
+  for (let i in e.message) {
+    if (e.message[i].type == "at") {
+      if (e.message[i].qq == BotConfig.account.qq) {
+        e.reply([segment.at(e.user_id, name), " 不要@我啦，再给你一次机会哦"]);
+        return true;
+      }
+      e.message[i].text = e.message[i].text.replace(/^@/, "");
+    }
+  }
+
+  let msgList = textArr.get(context[e.user_id].text.trim()) || [];
+  let isExist = false
+  msgList.forEach(function(item) {
+    if (JSON.stringify(item) === JSON.stringify(e.message)) {
+      isExist = true
+    }
+  })
+  if (!isExist) {
+    msgList.push(e.message);
+  }
+
+  textArr.set(context[e.user_id].text.trim(), msgList);
+  e.reply([segment.at(e.user_id, name), "\n添加成功：", ...context[e.user_id].msg]);
+  Bot.logger.mark(`[${e.sender.nickname}(${e.user_id})] 添加成功:${context[e.user_id].text}`);
+
+  clearTimeout(contextTimer[e.user_id]);
+  delete context[e.user_id];
+  delete contextTimer[e.user_id];
+
+  let obj = {};
+  for (let [k, v] of textArr) {
+    obj[k] = v;
+  }
+
+  fs.writeFileSync(JSON_PATH, JSON.stringify(obj, "", "\t"));
+
+  return true;
+}
+
 // 获取随机回复列表
 function getTextData() {
   textArr = new Map();
