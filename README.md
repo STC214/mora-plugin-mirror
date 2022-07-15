@@ -2,10 +2,11 @@
 Mora-Plugin是一个Yunzai-Bot的插件，但里面大概都是写不实用的功能（挖坑
 
 ## 功能
-##### 白纸插件辅助
+#### 白纸插件辅助
 - 全部表情的词条列表
-- 待添加
-
+#### 其他功能
+- 定时问候
+- 待开发
 ## 安装
 ```
 // 使用gitee
@@ -14,7 +15,7 @@ git clone https://gitee.com/Rrrrrrray/mora-plugin.git ./plugins/mora-plugin/
 // 使用github
 git clone https://github.com/Rrrrrrray/mora-plugin.git ./plugins/mora-plugin/
 ```
-如果是手工下载的zip压缩包，请将解压后的miao-plugin文件夹（请删除压缩自带的-master后缀）放置在Yunzai目录下的plugins文件夹内。
+如果是手工下载的zip压缩包，请将解压后的mora-plugin文件夹（请删除压缩自带的-master后缀）放置在Yunzai目录下的plugins文件夹内。
 
 ## 免责声明
 1. 功能仅限内部交流与小范围使用，请勿将Yunzai-Bot及Mora-Plugin用于任何以盈利为目的的场景
