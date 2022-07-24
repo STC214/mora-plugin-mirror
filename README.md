@@ -1,9 +1,11 @@
 # Mora-Plugin
-Mora-Plugin是一个Yunzai-Bot的插件
+Mora-Plugin是一个Yunzai-Bot的插件  
 ~~但里面大概都是写不实用的功能（想到啥写啥~~
 
 ## 功能
 #### 白纸插件辅助
+> 大部分代码来自[白纸插件](https://gitee.com/headmastertan/zhi-plugin)
+> 原插件如果有相关功能的话，本插件会进行删除
 - [x] 全部表情的词条列表
 - [x] 添加表情增加权限控制
 #### 其他功能

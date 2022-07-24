@@ -5,6 +5,12 @@ import fs from 'fs';
 //项目路径
 const _path = process.cwd();
 
+/** 
+ * 大部分代码来自 HeadmasterTan 的 白纸插件
+ * 白纸插件：https://gitee.com/headmastertan/zhi-plugin
+ * 原插件如果有相关功能的话，本插件会进行删除
+ */
+
 if (!fs.existsSync(`${_path}/data/randomApply/`)) {
 	fs.mkdirSync(`${_path}/data/randomApply/`);
 }
