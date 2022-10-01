@@ -26,7 +26,7 @@ export async function getWeibo (e) {
   /** 判断接口是否请求成功 */
   if (!userRes) {
     logger.error('[微博] 接口请求失败')
-    return await this.reply('微博接口请求失败')
+    return await e.reply('微博接口请求失败')
   }
 
   /** 接口结果，json字符串转对象 */
@@ -40,7 +40,7 @@ export async function getWeibo (e) {
   let weiboRes = await fetch(url).catch((err) => logger.error(err));
   if (!weiboRes) {
     logger.error('[微博] 接口请求失败')
-    return await this.reply('微博接口请求失败')
+    return await e.reply('微博接口请求失败')
   }
 
   /** 获取第一条微博 */
