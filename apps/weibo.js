@@ -1,5 +1,8 @@
 import fetch from 'node-fetch';
 import fs from 'fs';
+import { segment } from "oicq";
+import common from "../components/common.js";
+import { botConfig } from "../components/common.js";
 
 /**
  * #微博
@@ -47,6 +50,6 @@ export async function getWeibo (e) {
   logger.info(`[接口结果] 微博：${weibotxt}`)
 
   /** 最后回复消息 */
-  await this.reply(`微博：${weibotxt}`)
+  await e.reply(`微博：${weibotxt}`)
 }
 
