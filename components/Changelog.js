@@ -70,5 +70,6 @@ try {
 }
 
 const yunzaiVersion = packageJson.version;
+const isV3 = yunzaiVersion[0] === '3';
 
-export { moraVersion, yunzaiVersion, changelogs };
+export { moraVersion, yunzaiVersion, isV3, changelogs };

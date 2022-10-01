@@ -11,6 +11,7 @@ const _path = process.cwd();
  * 原插件如果有相关功能的话，本插件会进行删除
  */
 
+/** 
 if (!fs.existsSync(`${_path}/data/randomApply/`)) {
 	fs.mkdirSync(`${_path}/data/randomApply/`);
 }
@@ -207,3 +208,4 @@ function getTextData() {
   textArr = new Map(Object.entries(textJson));
   bakeTextArr = new Map(Object.entries(bakeTextJson));
 }
+*/

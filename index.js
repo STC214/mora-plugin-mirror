@@ -1,38 +1,23 @@
-import { listMeme, addMeme, addMemeContext } from './apps/zhiAssist.js';
-import { moraVersion } from './components/Changelog.js';
-import { updateMoraPlugin} from './apps/update.js';
-export {
-	listMeme,
-  addMeme,
-  addMemeContext,
-  updateMoraPlugin,
-};
+// 适配V3 Yunzai，将index.js移至app/index.js
 
-// 指令规则
-let rule = {
-	listMeme: {
-    reg: "^#*表情列表*$",
-    priority: 4000,
-    describe: "【表情列表】添加表情列表",
-  },
-  addMeme: {
-    reg: "^#*添加(.*)",
-    priority: 4001,
-    describe: "【添加哈哈】添加内容",
-  },
-  addMemeContext: {
-    reg: "noCheck",
-    priority: 4002,
-    describe: "添加随机回复上下文",
-  },
-  updateMoraPlugin: {
-    reg: "^#*(摩拉更新|更新摩拉插件)$",
-    priority: 5,
-    describe: "更新摩拉插件",
-  },
-	
-};
+// ======================================================================
+// 适配参考zhi-plugin，miao-plugin，兼容V2以及V3云崽，谢谢喵喵插件和白纸插件的贡献 ^_^
+// ======================================================================
 
-console.log(`摩拉插件${moraVersion}初始化~`);
+import Data from './components/Data.js';
+import { isV3, moraVersion } from './components/Changelog.js';
 
-export { rule };
+export * from './apps/index.js'
+
+let index = { mora: {} }
+if (isV3) {
+  index = await Data.importModule('/plugins/mora-plugin/adapter', 'index.js')
+}
+
+export const mora = index.mora || {}
+
+if (Bot?.logger?.info) {
+  Bot.logger.info(`摩拉插件${moraVersion}初始化~`)
+} else {
+  console.log(`摩拉插件${moraVersion}初始化~`)
+}
