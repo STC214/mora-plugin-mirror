@@ -1,12 +1,14 @@
 // import { listMeme, addMeme, addMemeContext } from './zhiAssist.js';
-import { getWeibo } from './weibo.js';
+import { getWeibo,updateWeiboList } from './weibo.js';
 import { updateMoraPlugin} from './update.js';
 export {
+  updateMoraPlugin,
 	// listMeme,
   // addMeme,
   // addMemeContext,
   getWeibo,
-  updateMoraPlugin,
+  updateWeiboList,
+  
 };
 
 // 指令规则
@@ -30,6 +32,11 @@ let rule = {
     reg: "^#*微博*",
     priority: 4003,
     describe: "微博订阅推送",
+  },
+  updateWeiboList: {
+    reg: "^#*(订阅|增加|新增|移除|去除|取消)微博\\s*.*$",
+    priority: 5,
+    describe: "添加或删除微博推送UID",
   },
   /** 更新 */
   updateMoraPlugin: {
