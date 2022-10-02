@@ -88,7 +88,7 @@ export async function updateWeiboList(e) {
   // }
 
 
-  let msgList = e.msg.split("微博推送");
+  let msgList = e.msg.split("微博");
   const addComms = ["订阅", "添加", "新增", "增加", "#订阅", "#添加", "#新增", "#增加"];
   const delComms = ["删除", "移除", "去除", "取消", "#删除", "#移除", "#去除", "#取消"];
 
