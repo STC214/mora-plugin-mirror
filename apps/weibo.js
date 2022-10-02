@@ -8,12 +8,16 @@ import moracfg from '../model/config/config.js'
 
 const _path = process.cwd();
 const plugin = "mora-plugin"
-const weiboPath=`${_path}/plugins/${plugin}/data/weibo/`;
+const dataPath=`${_path}/plugins/${plugin}/data/`;
 
 let WeiboPush = {}; // 推送对象列表
 
-if (!fs.existsSync(`${_path}/plugins/${plugin}/data/weibo/`)) {
-  fs.mkdirSync(`${_path}/plugins/${plugin}/data/weibo/`);
+if (!fs.existsSync(dataPath)) {
+  fs.mkdirSync(dataPath);
+}
+
+if (!fs.existsSync(`${dataPath}/weibo/`)) {
+  fs.mkdirSync(`${dataPath}/weibo/`);
 }
 
 /** 接口地址 */
