@@ -6,8 +6,9 @@ import { botConfig } from "../components/common.js";
 import YAML from 'yaml';
 import moracfg from '../model/config/config.js'
 
+const _path = process.cwd();
 const plugin = "mora-plugin"
-const weiboPath=`./plugins/${plugin}/data/weibo/`
+const weiboPath=`${_path}/plugins/${plugin}/data/weibo/`
 
 let WeiboPush = {}; // 推送对象列表
 
