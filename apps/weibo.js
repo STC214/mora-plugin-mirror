@@ -82,10 +82,10 @@ export async function updateWeiboList(e) {
   }
 
   let temp = WeiboPush[pushID];
-  if (!temp) {
-    e.reply("你还妹在这里开启过微博动态推送呢");
-    return true;
-  }
+  // if (!temp) {
+  //   e.reply("你还妹在这里开启过微博动态推送呢");
+  //   return true;
+  // }
 
 
   let msgList = e.msg.split("微博推送");
@@ -101,6 +101,7 @@ export async function updateWeiboList(e) {
     return true;
   }
 
+  /** 
   let uids = temp.biliUserList.map((item) => item.uid);
   let names = temp.biliUserList.map((item) => item.name);
 
@@ -127,6 +128,7 @@ export async function updateWeiboList(e) {
 
     return true;
   }
+  */
 
   if (isNaN(Number(uid))) {
     e.reply(`${uid} <- 你介可不是UID吧？\n示例：${operComm}B站推送 5896401674`);
@@ -135,10 +137,10 @@ export async function updateWeiboList(e) {
 
   // 添加只能是 uid 的方式添加
   if (addComms.indexOf(operComm) > -1) {
-    if (uids.indexOf(uid) > -1) {
-      e.reply("别闹，介UID已经加过了");
-      return true;
-    }
+    // if (uids.indexOf(uid) > -1) {
+    //   e.reply("别闹，介UID已经加过了");
+    //   return true;
+    // }
 
     // let url = `${BiliUserInfoApiUrl}?mid=${uid}&token=&platform=web&jsonp=jsonp`; // 用户信息接口废弃了
     let url = `${weiboUserApiUrl}??type=uid&value=${uid}`;
