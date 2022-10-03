@@ -222,9 +222,11 @@ export async function getWeibo (e) {
     pics = pics.map((item) => {
       return segment.image(`https://wx1.sinaimg.cn/orj360/${item}.jpg`);
     });
-      
+    
+    // 处理内容去掉标签
+    let txt = await replaceTXT(mblog.text);
     // 标题 时间 内容 图片 链接
-    msg.push(title,mblog.text, ...pics, `https://m.weibo.cn/detail/${mblog.mid}`);
+    msg.push(title,txt, ...pics, `https://m.weibo.cn/detail/${mblog.mid}`);
   }
   // await sendWeibo(pushID, );
   msg = await common.replyMake(msg, e.isGroup, '微博推送~');
@@ -242,7 +244,7 @@ export async function getWeibo (e) {
 }
 
 /** 获取最新非置顶微博 */
-async function getLatestWeibo(url){
+async function getLatestWeibo(url) {
   /** 调用接口获取数据 */
   let userRes = await fetch(url).catch((err) => logger.error(err));
 
@@ -267,6 +269,27 @@ async function getLatestWeibo(url){
   return mblog;
 }
 
+/** 处理正文内容标签 */
+async function replaceTXT(txt) {
+  if(!txt){
+    return true;
+  }
+  let chaohua = txt.indexOf('阴阳师手游</span></a>');
+  if(chaohua > -1){
+    txt = txt.split('阴阳师手游</span></a> ')[1];
+  }
+  let full = txt.indexOf('全文</a>');
+  if(full > -1){
+    full = txt.lastIndexOf('<a href');
+    txt = txt.substring(0,full);
+  }
+  let txt1 = txt.split('<br />');
+  if(txt1[0] === ''){
+    txt1.shift();
+  }
+  txt = txt1.join('\n')
+  return txt;
+}
 
 /** 发送微博内容 */
 /**async function sendWeibo(pushID, info, weiboUser, list){
