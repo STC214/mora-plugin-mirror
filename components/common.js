@@ -93,7 +93,7 @@ async function relpyPrivate(user_id, msg, isStranger = false) {
  */
 async function replyMake(messages, isGroup, title) {
   let nickname = Bot.nickname;
-
+  
   // 组装消息
   let msgList = [];
   messages.forEach((msg) => {

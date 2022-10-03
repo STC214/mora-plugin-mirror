@@ -10,6 +10,10 @@ const _path = process.cwd();
 const plugin = "mora-plugin"
 const dataPath=`${_path}/plugins/${plugin}/data/`;
 
+const DynamicPicCountLimit = 2; // 推送动态时，限制发送多少张图片
+const DynamicContentLenLimit = 50; // 推送文字和图文动态时，限制字数是多少
+const DynamicContentLineLimit = 3; // 推送文字和图文动态时，限制多少行文本
+
 let WeiboPush = {}; // 推送对象列表
 
 if (!fs.existsSync(dataPath)) {
@@ -76,7 +80,11 @@ export async function updateWeiboList(e) {
     return true;
   }
 
-  let subsMap = await moracfg.getWeiboMap(pushID);
+  let subsList = await moracfg.getWeiboList(pushID);
+  let uidList = [];
+  for(let subs in subsList) {
+    uidList.push(subsList[subs].weiboId);
+  }
   // let temp = WeiboPush[pushID];
   // if (!temp) {
   //   e.reply("你还妹在这里开启过微博动态推送呢");
@@ -127,13 +135,13 @@ export async function updateWeiboList(e) {
   */
 
   if (isNaN(Number(uid))) {
-    e.reply(`${uid} <- 你介可不是UID吧？\n示例：${operComm}B站推送 5896401674`);
+    e.reply(`${uid} <- 你介可不是UID吧？\n示例：${operComm}微博推送 5896401674`);
     return true;
   }
 
   // 添加只能是 uid 的方式添加
   if (addComms.indexOf(operComm) > -1) {
-    if (!subsMap && subsMap.has(Number(uid))) {
+    if (uidList.indexOf(Number(uid)) > -1) {
       e.reply("别闹，介UID已经加过了");
       return true;
     }
@@ -142,7 +150,7 @@ export async function updateWeiboList(e) {
     let res = await fetch(url, { method: "get" }).catch((err) => logger.error(err));;
 
     if (!res.ok) {
-      e.reply("哦噢，出了点问题，可能是本大爷网络不好也可能是B站出了问题呢，等会再试试吧~");
+      e.reply("哦噢，出了点问题，可能是本大爷网络不好也可能是微博出了问题呢，等会再试试吧~");
       return true;
     }
 
@@ -185,24 +193,48 @@ export async function getWeibo (e) {
 
   /** 获取微博用户页面 */
   // 推送对象记录
-  let pushID = e.group_id || e.user_id;
+  let pushID = e.isGroup ? e.group_id : e.user_id;
   if (!pushID) {
     return true;
   }
 
-  let subsMap = await moracfg.getWeiboMap(pushID);
-  let url, weibotxt = '';
-  subsMap.forEach(async (v,k) => {
-    url = `${weiboUserApiUrl}?type=uid&value=${k}&containerid=${v}`;
-    weibotxt = await getLatestWeibo(url);
+  let subsList = await moracfg.getWeiboList(pushID);
+  if(!subsList){
+    return true;
+  }
+  let title = '';
+  let msg = [];
+  //   /** 最后回复消息 */
+  //   // await e.reply(`${item.weiboName} 微博：${weibotxt}`);
+  for(let subs in subsList){
+    let url = `${weiboUserApiUrl}?type=uid&value=${subsList[subs].weiboId}&containerid=${subsList[subs].containerid}`;
+    let mblog = await getLatestWeibo(url);
 
-    /** 输入日志 */
-    logger.info(`[接口结果] 微博：${weibotxt}`);
-    /** 最后回复消息 */
-    await e.reply(`微博：${weibotxt}`)
-  });
+    // 格式化日期 Mon Oct 03 17:28:01 +0800 2022
+    let date = new Date(mblog.created_at);
+    let minute = date.getMinutes() > 10 ? date.getMinutes() : `0${date.getMinutes()}`
+    date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${minute}`
+
+    title = `【${subsList[subs].weiboName}】微博推送：\n${date}`;
+    // 标题 时间 内容 图片 链接
+    msg.push(title,`${mblog.text}\n`, `https://m.weibo.cn/detail/${mblog.mid}`);
+  }
+  // await sendWeibo(pushID, );
+  msg = await common.replyMake(msg, e.isGroup, '微博推送~');
+  /** 输入日志 */
+  
+  // logger.info(`[接口结果] 微博：${msg}`);
+  if (e.isGroup) {
+    Bot.pickGroup(pushID).sendMsg(msg).catch((err) => {
+      logger.error(err)
+    });
+  } else {
+    common.relpyPrivate(pushID, msg);
+  }
+  return true;
 }
 
+/** 获取最新非置顶微博 */
 async function getLatestWeibo(url){
   /** 调用接口获取数据 */
   let userRes = await fetch(url).catch((err) => logger.error(err));
@@ -216,15 +248,201 @@ async function getLatestWeibo(url){
   /** 接口结果，json字符串转对象 */
   userRes = await userRes.json();
   let cards = userRes.data.cards;
-  let weibotxt = '';
+  let mblog;
   /** 获取不是置顶的第一条微博 */
   for(let c in cards){
-    let mblog = cards[c].mblog;
+    mblog = cards[c].mblog;
     let isTop = mblog.mblogtype;
     if (isTop === 0) {
-      weibotxt = mblog.text;
       break;
     }
   }
-  return weibotxt;
+  return mblog;
 }
+
+
+/** 发送微博内容 */
+/**async function sendWeibo(pushID, info, weiboUser, list){
+  Bot.logger.mark(`微博推送[${pushID}]`);
+
+  for (let val of list) {
+    let msg = buildSendDynamic(weiboUser, val, info);
+    if (msg === "can't push transmit") {
+      // 这不好在前边判断，只能放到这里了
+      continue;
+    }
+    if (!msg) {
+      Bot.logger.mark(`微博动态推送[${pushID}] - [${weiboUser.weiboName}]，推送失败，动态信息解析失败`);
+      continue;
+    }
+
+    // let sendType = getSendType(info);
+    // if (sendType === "merge") {
+    msg = await common.replyMake(msg, info.isGroup, msg[0]);
+    // }
+
+    if (info.isGroup) {
+      Bot.pickGroup(pushID)
+        .sendMsg(msg)
+        .catch((err) => { // 推送失败，可能仅仅是某个群推送失败
+          // dynamicPushFailed.set(pushID, val.id_str);
+          // pushAgain(pushID, msg);
+        });
+    } else {
+      common.relpyPrivate(pushID, msg);
+    }
+    // await common.sleep(BotHaveARest); // 休息一下，别一口气发一堆
+  }
+  return true;
+}*/
+
+
+/** 构建动态消息 */
+/**function buildSendDynamic(weiboUser, dynamic, info) {
+  let desc, msg, pics;
+  let title = `微博【${weiboUser.weiboName}】动态推送：\n`;
+
+  // 以下对象结构参考米游社接口，接口在顶部定义了
+  switch (dynamic.type) {
+    case "DYNAMIC_TYPE_AV":
+      desc = dynamic?.modules?.module_dynamic?.major?.archive;
+      if (!desc) return;
+
+      title = `微博【${weiboUser.weiboName}】视频动态推送：\n`;
+      // 视频动态仅由标题、封面、链接组成
+      msg = [title, desc.title, segment.image(desc.cover), resetLinkUrl(desc.jump_url)];
+
+      return msg;
+    case "DYNAMIC_TYPE_WORD":
+      desc = dynamic?.modules?.module_dynamic?.desc;
+      if (!desc) return;
+
+      title = `微博【${weiboUser.weiboName}】动态推送：\n`;
+      if (getSendType(info) != "default") {
+        msg = [title, `${desc.text}\n`, `${BiliDrawDynamicLinkUrl}${dynamic.id_str}`];
+      } else {
+        msg = [title, `${dynamicContentLimit(desc.text)}\n`, `${BiliDrawDynamicLinkUrl}${dynamic.id_str}`];
+      }
+
+      return msg;
+    case "DYNAMIC_TYPE_DRAW":
+      desc = dynamic?.modules?.module_dynamic?.desc;
+      pics = dynamic?.modules?.module_dynamic?.major?.draw?.items;
+      if (!desc && !pics) return;
+
+      pics = pics.map((item) => {
+        return segment.image(item.src);
+      });
+
+      title = `微博【${weiboUser.weiboName}】图文动态推送：\n`;
+      
+      if (getSendType(info) != "default") {
+        msg = [title, `${desc.text}\n`, ...pics, `${BiliDrawDynamicLinkUrl}${dynamic.id_str}`];
+      } else {
+        if (pics.length > DynamicPicCountLimit) pics.length = DynamicPicCountLimit; // 最多发DynamicPicCountLimit张图，不然要霸屏了
+        // 图文动态由内容（经过删减避免过长）、图片、链接组成
+        msg = [title, `${dynamicContentLimit(desc.text)}\n`, ...pics, `${BiliDrawDynamicLinkUrl}${dynamic.id_str}`];
+      }
+
+      return msg;
+    case "DYNAMIC_TYPE_ARTICLE":
+      desc = dynamic?.modules?.module_dynamic?.major?.article;
+      if (!desc) return;
+
+      pics = [];
+      if (desc.covers && desc.covers.length) {
+        pics = desc.covers.map((item) => {
+          return segment.image(item);
+        });
+      }
+
+      title = `微博【${weiboUser.weiboName}】文章动态推送：\n`;
+      // 专栏/文章动态由标题、图片、链接组成
+      msg = [title, desc.title, ...pics, resetLinkUrl(desc.jump_url)];
+
+      return msg;
+    case "DYNAMIC_TYPE_FORWARD": // 转发的动态
+      let pushTransmit = info.pushTransmit;
+      if (!pushTransmit) return "can't push transmit";
+
+      desc = dynamic?.modules?.module_dynamic?.desc;
+      if (!desc) return;
+      if (!dynamic.orig) return;
+
+      let orig = buildSendDynamic(weiboUser, dynamic.orig, info);
+      if (orig && orig.length) {
+        // 掐头去尾
+        orig.shift();
+        orig.pop();
+      } else {
+        return false;
+      }
+
+      title = `微博【${weiboUser.weiboName}】转发动态推送：\n`;
+      
+      if (getSendType(info) != "default") {
+        msg = [
+          title,
+          `${desc.text}\n---以下为转发内容---\n`,
+          ...orig,
+          `${BiliDrawDynamicLinkUrl}${dynamic.id_str}`,
+        ];
+      } else {
+        msg = [
+          title,
+          `${dynamicContentLimit(desc.text, 1, 15)}\n---以下为转发内容---\n`,
+          ...orig,
+          `${BiliDrawDynamicLinkUrl}${dynamic.id_str}`,
+        ];
+      }
+
+      return msg;
+    case "DYNAMIC_TYPE_LIVE_RCMD":
+      desc = dynamic?.modules?.module_dynamic?.major?.live_rcmd?.content;
+      if (!desc) return;
+
+      desc = JSON.parse(desc);
+      desc = desc?.live_play_info;
+      if (!desc) return;
+
+      title = `微博【${weiboUser.weiboName}】直播动态推送：\n`;
+      // 直播动态由标题、封面、链接组成
+      msg = [title, `${desc.title}\n`, segment.image(desc.cover), resetLinkUrl(desc.link)];
+
+      return msg;
+    default:
+      Bot.logger.mark(`未处理的微博推送【${weiboUser.weiboName}】：${dynamic.type}`);
+      return false;
+  }
+}*/
+
+// 限制动态字数/行数，避免过长影响观感（霸屏）
+/**function dynamicContentLimit(content, lineLimit, lenLimit) {
+  content = content.split("\n");
+
+  lenLimit = lenLimit || DynamicContentLenLimit;
+  lineLimit = lineLimit || DynamicContentLineLimit;
+
+  if (content.length > lineLimit) content.length = lineLimit;
+
+  let contentLen = 0; // 内容总长度
+  let outLen = false; // 溢出 flag
+  for (let i = 0; i < content.length; i++) {
+    let len = lenLimit - contentLen; // 这一段内容允许的最大长度
+
+    if (outLen) {
+      // 溢出了，后面的直接删掉
+      content.splice(i--, 1);
+      continue;
+    }
+    if (content[i].length > len) {
+      content[i] = content[i].substr(0, len);
+      content[i] = `${content[i]}...`;
+      contentLen = lenLimit;
+      outLen = true;
+    }
+    contentLen += content[i].length;
+  }
+
+  return content.join("\n");
+}*/

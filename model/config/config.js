@@ -65,17 +65,13 @@ class moracfg {
 	}
 
 	/** 读取用户订阅列表 */
-	getWeiboMap(userId) {
+	getWeiboList(userId) {
 		let file = `./plugins/${plugin}/data/weibo/${userId}.yaml`;
 		try {
 			let cfglist = fs.readFileSync(file, 'utf-8');
 			cfglist = YAML.parse(cfglist);
 			cfglist = cfglist.weiboPushList;
-			let weiboMap = new Map();
-			for(let w in cfglist){
-				weiboMap.set(cfglist[w].weiboId, cfglist[w].containerid);
-			}
-			return weiboMap;
+			return cfglist;
 		} catch (error) {
 			return {};
 		}
