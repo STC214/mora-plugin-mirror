@@ -171,7 +171,7 @@ export async function updateWeiboList(e) {
       containerid: containerid
     })
     savedata["weiboPushList"] = savelist;
-    await moracfg.saveWeiboList(e.user_id, savedata);
+    await moracfg.saveWeiboList(pushID, savedata);
     e.reply(`${preMsg}添加成功~\n${userdata.screen_name}：${uid}`);
   }
 
