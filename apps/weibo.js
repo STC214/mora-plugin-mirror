@@ -71,7 +71,7 @@ export async function updateWeiboList(e) {
   }
 
   // 推送对象记录
-  let pushID = e.group_id || e.user_id;
+  let pushID = e.isGroup ? e.group_id : e.user_id;
   if (!pushID) {
     return true;
   }
@@ -161,7 +161,7 @@ export async function updateWeiboList(e) {
     let savedata = {};
     let savelist = [];
     savedata = {
-      qq: e.user_id,
+      qq: pushID,
       isGroup: e.isGroup || false,
       isPush: true
     }
