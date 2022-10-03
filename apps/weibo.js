@@ -133,7 +133,7 @@ export async function updateWeiboList(e) {
 
   // 添加只能是 uid 的方式添加
   if (addComms.indexOf(operComm) > -1) {
-    if (subsMap.has(Number(uid))) {
+    if (!subsMap && subsMap.has(Number(uid))) {
       e.reply("别闹，介UID已经加过了");
       return true;
     }
@@ -195,7 +195,7 @@ export async function getWeibo (e) {
   subsMap.forEach(async (v,k) => {
     url = `${weiboUserApiUrl}?type=uid&value=${k}&containerid=${v}`;
     weibotxt = await getLatestWeibo(url);
-    
+
     /** 输入日志 */
     logger.info(`[接口结果] 微博：${weibotxt}`);
     /** 最后回复消息 */
