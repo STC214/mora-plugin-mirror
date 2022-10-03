@@ -71,17 +71,13 @@ export async function updateWeiboList(e) {
   }
 
   // 推送对象记录
-  let pushID = "";
-  if (e.isGroup) {
-    pushID = e.group_id;
-  } else {
-    pushID = e.user_id;
-  }
+  let pushID = e.group_id || e.user_id;
   if (!pushID) {
     return true;
   }
 
-  let temp = WeiboPush[pushID];
+  let subsMap = await moracfg.getWeiboMap(pushID);
+  // let temp = WeiboPush[pushID];
   // if (!temp) {
   //   e.reply("你还妹在这里开启过微博动态推送呢");
   //   return true;
@@ -137,60 +133,77 @@ export async function updateWeiboList(e) {
 
   // 添加只能是 uid 的方式添加
   if (addComms.indexOf(operComm) > -1) {
-    // if (uids.indexOf(uid) > -1) {
-    //   e.reply("别闹，介UID已经加过了");
-    //   return true;
-    // }
+    if (subsMap.has(Number(uid))) {
+      e.reply("别闹，介UID已经加过了");
+      return true;
+    }
 
-    // let url = `${BiliUserInfoApiUrl}?mid=${uid}&token=&platform=web&jsonp=jsonp`; // 用户信息接口废弃了
-    let url = `${weiboUserApiUrl}??type=uid&value=${uid}`;
-    const response = await fetch(url, { method: "get" }).catch((err) => logger.error(err));;
+    let url = `${weiboUserApiUrl}?type=uid&value=${uid}`;
+    let res = await fetch(url, { method: "get" }).catch((err) => logger.error(err));;
 
-    if (!response.ok) {
+    if (!res.ok) {
       e.reply("哦噢，出了点问题，可能是本大爷网络不好也可能是B站出了问题呢，等会再试试吧~");
       return true;
     }
 
-    const res = await response.json();
+    res = await res.json();
 
-    if (res.code != 0) {
-      e.reply("老实说，介UID是不是你自己瞎填的？");
-      return true;
-    }
-
-    let data = res?.data || null;
+    let data = res.data || [];
     if (!data) {
       e.reply("老实说，介UID是不是你自己瞎填的？");
       return true;
     }
-
-    let userdata = res?.data?.userInfo || [];
-    let containerid = res?.data?.tabsInfo?.tabs[1].containerid || []
+    
+    let userdata = data.userInfo || [];
+    let containerid = Number(data.tabsInfo.tabs[1].containerid) || []
     let preMsg = '';
 
-    let savedata = {}
-    savedata[uid] = {
+    let savedata = {};
+    let savelist = [];
+    savedata = {
+      qq: e.user_id,
       isGroup: e.isGroup || false,
+      isPush: true
+    }
+    savelist.push({
       weiboId: userdata.id,
       weiboName: userdata.screen_name,
       containerid: containerid
-    }
+    })
+    savedata["weiboPushList"] = savelist;
     await moracfg.saveWeiboList(e.user_id, savedata);
-    logger.info(`[接口结果] 微博容器id：${containerid}`)
     e.reply(`${preMsg}添加成功~\n${userdata.screen_name}：${uid}`);
   }
 
   return true;
 }
+
 // 用户api
 export async function getWeibo (e) {
   /** e.msg 用户的命令消息 */
   logger.info('[用户命令]', e.msg);
 
   /** 获取微博用户页面 */
-  let uid = 7455443910;
-  let url = `${weiboUserApiUrl}?type=uid&value=${uid}`;
+  // 推送对象记录
+  let pushID = e.group_id || e.user_id;
+  if (!pushID) {
+    return true;
+  }
 
+  let subsMap = await moracfg.getWeiboMap(pushID);
+  let url, weibotxt = '';
+  subsMap.forEach(async (v,k) => {
+    url = `${weiboUserApiUrl}?type=uid&value=${k}&containerid=${v}`;
+    weibotxt = await getLatestWeibo(url);
+    
+    /** 输入日志 */
+    logger.info(`[接口结果] 微博：${weibotxt}`);
+    /** 最后回复消息 */
+    await e.reply(`微博：${weibotxt}`)
+  });
+}
+
+async function getLatestWeibo(url){
   /** 调用接口获取数据 */
   let userRes = await fetch(url).catch((err) => logger.error(err));
 
@@ -202,25 +215,16 @@ export async function getWeibo (e) {
 
   /** 接口结果，json字符串转对象 */
   userRes = await userRes.json();
-  let containerid = userRes.data.tabsInfo.tabs[1].containerid;
-  /** 输入日志 */
-  logger.info(`[接口结果] 微博容器id：${containerid}`)
-
-  /** 获取该用户微博页面 */
-  url += `&containerid=${containerid}`;
-  let weiboRes = await fetch(url).catch((err) => logger.error(err));
-  if (!weiboRes) {
-    logger.error('[微博] 接口请求失败')
-    return await e.reply('微博接口请求失败')
+  let cards = userRes.data.cards;
+  let weibotxt = '';
+  /** 获取不是置顶的第一条微博 */
+  for(let c in cards){
+    let mblog = cards[c].mblog;
+    let isTop = mblog.mblogtype;
+    if (isTop === 0) {
+      weibotxt = mblog.text;
+      break;
+    }
   }
-
-  /** 获取第一条微博 */
-  weiboRes = await weiboRes.json();
-  let weibotxt = weiboRes.data.cards[0].mblog.text;
-  /** 输入日志 */
-  logger.info(`[接口结果] 微博：${weibotxt}`)
-
-  /** 最后回复消息 */
-  await e.reply(`微博：${weibotxt}`)
+  return weibotxt;
 }
-

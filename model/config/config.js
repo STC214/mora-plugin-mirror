@@ -33,9 +33,9 @@ class moracfg {
 		}
 	}
 
-	/** 读取所有用户订阅列表 */
-	async getWeiboListAll() {
-		let wlist = [];
+	/** 读取所有用户配置 */
+	async getConfigAll() {
+		let cfglist = [];
 		let dir = `/plugins/${plugin}/data/weibo/`;
 		let files = fs.readdirSync(dir).filter(file => file.endsWith('.yaml'));
 
@@ -47,18 +47,35 @@ class moracfg {
 		const res = await Promise.all(promises);
 		res.forEach((v, index) => {
 			let tmp = YAML.parse(v);
-			wlist.push(tmp);
+			cfglist.push(tmp);
 		})
-		return wlist;
+		return cfglist;
 	}
 
-	/** 读取单个用户订阅列表 */
-	getWeiboListOne(userId) {
+	/** 读取单个用户配置 */
+	getConfigOne(userId) {
 		let file = `./plugins/${plugin}/data/weibo/${userId}.yaml`;
 		try {
-			let wlist = fs.readFileSync(file, 'utf-8');
-			wlist = YAML.parse(wlist);
-			return wlist;
+			let cfglist = fs.readFileSync(file, 'utf-8');
+			cfglist = YAML.parse(cfglist);
+			return cfglist;
+		} catch (error) {
+			return {};
+		}
+	}
+
+	/** 读取用户订阅列表 */
+	getWeiboMap(userId) {
+		let file = `./plugins/${plugin}/data/weibo/${userId}.yaml`;
+		try {
+			let cfglist = fs.readFileSync(file, 'utf-8');
+			cfglist = YAML.parse(cfglist);
+			cfglist = cfglist.weiboPushList;
+			let weiboMap = new Map();
+			for(let w in cfglist){
+				weiboMap.set(cfglist[w].weiboId, cfglist[w].containerid);
+			}
+			return weiboMap;
 		} catch (error) {
 			return {};
 		}
@@ -74,16 +91,26 @@ class moracfg {
 				if (!exists) {
 					fs.writeFileSync(file, "", 'utf8')
 				}
-				let wlist = fs.readFileSync(file, 'utf-8')
-				let yaml = YAML.stringify(data)
-				wlist = YAML.parse(wlist)
-				if (wlist?.uid||!wlist) {
+				let wlist = fs.readFileSync(file, 'utf-8');
+				let yaml = YAML.stringify(data);
+				wlist = YAML.parse(wlist);
+
+				if (wlist?.weiboId||!wlist) {	//wlist 空
 					fs.writeFileSync(file, yaml, 'utf8')
 				} else {
-					if(!wlist[Object.keys(data)[0]]){
+					/** 订阅列表整理 */
+					let weiboPushList = wlist.weiboPushList;	// 获取配置文件订阅列表
+					weiboPushList = weiboPushList.concat(data.weiboPushList);	// 合并新微博用户
+					wlist["weiboPushList"] = weiboPushList;	// 写入wlist
+					wlist = YAML.stringify(wlist);
+					fs.writeFileSync(file, wlist, 'utf8');
+					/**if(!wlist[Object.keys(data)[0]]){ //wlist键为 空
 						wlist = YAML.stringify(wlist)
 						fs.writeFileSync(file, yaml + wlist, 'utf8')
-					}
+						logger.info(`[判断] ?：${wlist[Object.keys(data)[0]]}`);
+					} else {
+
+					}*/
 				}
 			})
 		}
