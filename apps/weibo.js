@@ -10,9 +10,9 @@ const _path = process.cwd();
 const plugin = "mora-plugin"
 const dataPath=`${_path}/plugins/${plugin}/data/`;
 
-const DynamicPicCountLimit = 2; // 推送动态时，限制发送多少张图片
-const DynamicContentLenLimit = 50; // 推送文字和图文动态时，限制字数是多少
-const DynamicContentLineLimit = 3; // 推送文字和图文动态时，限制多少行文本
+// const DynamicPicCountLimit = 2; // 推送动态时，限制发送多少张图片
+// const DynamicContentLenLimit = 50; // 推送文字和图文动态时，限制字数是多少
+// const DynamicContentLineLimit = 3; // 推送文字和图文动态时，限制多少行文本
 
 let WeiboPush = {}; // 推送对象列表
 
@@ -216,8 +216,15 @@ export async function getWeibo (e) {
     date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${minute}`
 
     title = `【${subsList[subs].weiboName}】微博推送：\n${date}`;
+
+    // 获取图片
+    let pics = mblog.pic_ids || [];
+    pics = pics.map((item) => {
+      return segment.image(`https://wx1.sinaimg.cn/orj360/${item}.jpg`);
+    });
+      
     // 标题 时间 内容 图片 链接
-    msg.push(title,`${mblog.text}\n`, `https://m.weibo.cn/detail/${mblog.mid}`);
+    msg.push(title,mblog.text, ...pics, `https://m.weibo.cn/detail/${mblog.mid}`);
   }
   // await sendWeibo(pushID, );
   msg = await common.replyMake(msg, e.isGroup, '微博推送~');
