@@ -29,7 +29,7 @@ let rule = {
     describe: "添加随机回复上下文",
   },*/
   getWeibo: {
-    reg: "^#*微博*",
+    reg: "^#微博$",
     priority: 4003,
     describe: "微博订阅推送",
   },
