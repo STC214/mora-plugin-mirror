@@ -35,7 +35,7 @@ let rule = {
   },
   updateWeiboList: {
     reg: "^#*(订阅|增加|新增|移除|去除|取消)微博\\s*.*$",
-    priority: 5,
+    priority: 4005,
     describe: "添加或删除微博推送UID",
   },
   /** 更新 */
