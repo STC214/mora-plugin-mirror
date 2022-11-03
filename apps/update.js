@@ -21,7 +21,7 @@ export class updateMora extends plugin {
 
   async updateMoraPlugin(e) {
     let timer;
-    if (!await checkAuth(e)) {
+    if (!await this.checkAuth(e)) {
       return true;
     }
     let isForce = e.msg.includes("强制");
