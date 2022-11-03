@@ -2,7 +2,9 @@ import fs from "fs";
 import lodash from "lodash";
 
 const _path = process.cwd();
-const _logPath = `${_path}/plugins/mora-plugin/CHANGELOG.md`;
+const plugin = 'mora-plugin';
+const pluginPath = `${_path}/plugins/${plugin}`
+const _logPath = `${pluginPath}/CHANGELOG.md`;
 
 let logs = {};
 let changelogs = [];
@@ -72,4 +74,4 @@ try {
 const yunzaiVersion = packageJson.version;
 const isV3 = yunzaiVersion[0] === '3';
 
-export { moraVersion, yunzaiVersion, isV3, changelogs };
+export { moraVersion, yunzaiVersion, isV3, changelogs, pluginPath };
