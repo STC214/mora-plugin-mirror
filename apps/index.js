@@ -1,8 +1,6 @@
 // import { listMeme, addMeme, addMemeContext } from './zhiAssist.js';
 import { getWeibo,updateWeiboList } from './weibo.js';
-import { updateMoraPlugin} from './update.js';
 export {
-  updateMoraPlugin,
 	// listMeme,
   // addMeme,
   // addMemeContext,
@@ -37,14 +35,7 @@ let rule = {
     reg: "^#*(订阅|增加|新增|移除|去除|取消)微博\\s*.*$",
     priority: 4005,
     describe: "添加或删除微博推送UID",
-  },
-  /** 更新 */
-  updateMoraPlugin: {
-    reg: "^#*(摩拉更新|更新摩拉插件)$",
-    priority: 5,
-    describe: "更新摩拉插件",
-  },
-	
+  },	
 };
 
 
