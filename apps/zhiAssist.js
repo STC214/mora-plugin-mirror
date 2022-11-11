@@ -1,193 +1,101 @@
-import { segment } from "oicq";
-import lodash from "lodash";
+import plugin from "../../../lib/plugins/plugin.js";
+import cfg from '../../../lib/config/config.js';
+import common from '../../../lib/common/common.js';
 import fs from 'fs';
+import { randomApply }  from "../../zhi-plugin/apps/randomApply.js";
 
-//项目路径
-const _path = process.cwd();
+export class zhiAssist extends plugin {
+	constructor () {
+		super({
+			name: '白纸辅助',
+			dsc: '白纸表情辅助',
+			event: 'message',
+			priority: 5,
+			rule: [
+				{
+					reg: '^#添加(.*)',
+					fnc: 'addMeme'
+				},
+				{
+					reg: '^#*随机表情列表$',
+					fnc: 'listMeme'
+				}
+			]
+		})
+		//getTextData();
+		this.path = './data/randomApply/randomApply.json';
+	}
+	
+	/**
+	 * 获取随机表情列表
+	 */
+	async listMeme() {
+		let faceList = JSON.parse(fs.readFileSync(this.path,'utf-8'));
+		let faceArr = []
+		let count = 0;
+
+		// 关键词列表添加序号
+		for(let i in faceList){
+			count += 1;
+			faceArr.push(`${count}. ${i}`);
+		}
+
+		if(faceArr.length <= 0){
+			this.e.reply('暂无表情');
+			return;
+		}
+
+		// 合并发送
+		let msg = [];
+		msg.push(faceArr.join('\r\n'));
+		msg = await common.makeForwardMsg(this.e, msg, '随机表情列表~');
+		await this.e.reply(msg);
+
+		return true;
+	}
+	
+	/** 
+	 * * 加入权限控制 (引用云崽配置 )
+	 * 白纸插件：https://gitee.com/headmastertan/zhi-plugin
+	 * 原插件如果有相关功能的话，本插件会进行删除
+	 */
+	async addMeme (e) {
+		if ( !this.checkAuth() ) return;
+		await randomApply(e);
+	}
+
+	// 权限检查
+	checkAuth () {
+    if (this.e.isMaster) return true;
+
+    let groupCfg = cfg.getGroup(this.group_id);
+    if (groupCfg.imgAddLimit == 2) {
+      this.e.reply('暂无权限，只有主人才能操作');
+      return false;
+    }
+    if (groupCfg.imgAddLimit == 1) {
+      if (!Bot.gml.has(this.group_id)) {
+        return false;
+      }
+      if (!Bot.gml.get(this.group_id).get(this.e.user_id)) {
+        return false;
+      }
+      if (!this.e.member.is_admin) {
+        this.e.reply('暂无权限，只有管理员才能操作');
+        return false;
+      }
+    }
+
+    if (!this.e.isGroup && groupCfg.addPrivate != 1) {
+      this.e.reply('禁止私聊添加');
+      return false;
+    }
+
+    return true;
+  }
+}
 
 /** 
- * 大部分代码来自 HeadmasterTan 的 白纸插件
- * 白纸插件：https://gitee.com/headmastertan/zhi-plugin
- * 原插件如果有相关功能的话，本插件会进行删除
- */
-
-
-if (!fs.existsSync(`${_path}/data/randomApply/`)) {
-	fs.mkdirSync(`${_path}/data/randomApply/`);
-}
-
-// 跟原来的一样, 覆盖代码进行权限控制
-const JSON_PATH = `${_path}/data/randomApply/randomApply.json`;
-const BAKE_JSON_PATH = `${_path}/data/randomApply/randomApply_bake.json`;
-let context = {}; // 随机回复上下文
-let textArr = {};
-let bakeTextArr = {};
-let contextTimer = {};
-getTextData();
-
-export async function listMeme(e){
-	if (!e.message) {
-		return;
-	}
-	let path = './data/randomApply/randomApply.json';
-	let faceList = JSON.parse(fs.readFileSync(path,'utf-8'));
-	let faceArr = []
-	let count = 0;
-	for(var i in faceList){
-			count += 1;
-			faceArr.push(count + '.' + i);
-	}
-	if(faceArr.length <= 0){
-			e.reply('暂无表情');
-			return true;
-	}
-	let face = faceArr.join('\r\n');
-	e.reply('全部表情：\r\n' + face);
-	return true;
-}
-
-// 添加表情功能覆盖(有权限)
-export async function addMeme(e) {
-	if (!e.message) {
-	  return false;
-	}
-  
-	let name = lodash.truncate(e.sender.card, { length: 8 });
-  
-	let Msg = [];
-	let head;
-	for (let val of e.message) {
-	  if (val.type == "text" && /^[#|\s|\r]*添加(.*)/g.test(val.text)) {
-		val.isAdd = true;
-		val.text = val.text.replace(/#|＃|图片|表情|添加|删除|列表/g, "");
-		head = val;
-	  } else {
-		if (val.type == "at") {
-		  if (val.qq == BotConfig.account.qq) {
-			continue;
-		  }
-		  delete val.text;
-		}
-		Msg.push(val);
-	  }
-	}
-	Msg.unshift(head);
-  
-	if (!Msg[0] || Msg[0].type != "text" || !Msg[0].isAdd || (Msg.length == 1 && !Msg[0].text)) {
-	  return;
-	}
-
-  // 添加权限
-  if (e.groupConfig.imgAddLimit == 2) {
-    if (!e.isMaster) {
-      e.reply(`只有主人才能添加`);
-      return true;
-    }
-  }
-  if (e.groupConfig.imgAddLimit == 1 && !e.isMaster) {
-    if(!Bot.gml.has(group_id)){
-      return true;
-    }
-    if (!Bot.gml.get(group_id).get(e.user_id)) {
-      return true;
-    }
-    if (!e.member.is_admin) {
-      e.reply(`只有管理员才能添加`);
-      return true;
-    }
-  }
-  
-	// 关键词后携带图片的，直接添加图片
-	if (Msg.length == 2 && Msg[1].type == "image" && Msg[0].text) {
-	  let msgList = textArr.get(Msg[0].text.trim()) || [];
-	  msgList.push([Msg[1]]);
-  
-	  textArr.set(Msg[0].text.trim(), msgList);
-	  let name = lodash.truncate(e.sender.card, { length: 8 });
-	  e.reply([segment.at(e.user_id, name), "\n添加成功：", Msg[0].text.trim()]);
-	  Bot.logger.mark(`[${e.sender.nickname}(${e.user_id})] 添加成功:${Msg[0].text.trim()}`);
-  
-	  let obj = {};
-	  for (let [k, v] of textArr) {
-		obj[k] = v;
-	  }
-  
-	  fs.writeFileSync(JSON_PATH, JSON.stringify(obj, "", "\t"));
-	  return true;
-	}
-  
-	var re = new RegExp("{at:" + BotConfig.account.qq + "}", "g");
-  
-	// 上下文添加
-	context[e.user_id] = {
-	  text: e
-		.toString()
-		.replace(re, "")
-		.replace(/#|＃|图片|表情|添加|删除|列表/g, "")
-		.trim(),
-	  msg: Msg,
-	};
-  
-	Bot.logger.mark(`[${e.group_name}] 添加:${context[e.user_id].text}`);
-	e.reply([segment.at(e.user_id, name), ` 请发送内容`]);
-  
-	contextTimer[e.user_id] = setTimeout(() => {
-	  if (context[e.user_id]) {
-		delete context[e.user_id];
-		e.reply([segment.at(e.user_id, name), ` 添加已取消`]);
-	  }
-	}, 120000);
-  
-	return true;
-}
-
-// 将上下文设置为随机回复
-export async function addMemeContext(e) {
-  if (!context[e.user_id] || !e.message) {
-    return;
-  }
-  let name = lodash.truncate(e.sender.card, { length: 8 });
-
-  // 添加消息处理
-  for (let i in e.message) {
-    if (e.message[i].type == "at") {
-      if (e.message[i].qq == BotConfig.account.qq) {
-        e.reply([segment.at(e.user_id, name), " 不要@我啦，再给你一次机会哦"]);
-        return true;
-      }
-      e.message[i].text = e.message[i].text.replace(/^@/, "");
-    }
-  }
-
-  let msgList = textArr.get(context[e.user_id].text.trim()) || [];
-  let isExist = false
-  msgList.forEach(function(item) {
-    if (JSON.stringify(item) === JSON.stringify(e.message)) {
-      isExist = true
-    }
-  })
-  if (!isExist) {
-    msgList.push(e.message);
-  }
-
-  textArr.set(context[e.user_id].text.trim(), msgList);
-  e.reply([segment.at(e.user_id, name), "\n添加成功：", ...context[e.user_id].msg]);
-  Bot.logger.mark(`[${e.sender.nickname}(${e.user_id})] 添加成功:${context[e.user_id].text}`);
-
-  clearTimeout(contextTimer[e.user_id]);
-  delete context[e.user_id];
-  delete contextTimer[e.user_id];
-
-  let obj = {};
-  for (let [k, v] of textArr) {
-    obj[k] = v;
-  }
-
-  fs.writeFileSync(JSON_PATH, JSON.stringify(obj, "", "\t"));
-
-  return true;
-}
-
 // 获取随机回复列表
 function getTextData() {
   textArr = new Map();
@@ -208,3 +116,4 @@ function getTextData() {
   textArr = new Map(Object.entries(textJson));
   bakeTextArr = new Map(Object.entries(bakeTextJson));
 }
+*/
