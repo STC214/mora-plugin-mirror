@@ -111,14 +111,6 @@ class moracfg {
 			})
 		}
 	}
-
-	async getRenderData(model, data) {
-		let render = {
-			tplFile: `./plugins/${plugin}/resources/html/${model}/${model}.html`,
-			...data,
-		}
-		return render;
-	}
 }
 
 

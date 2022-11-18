@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="{{pluResPath}}html/AkashaAbyss/AkashaAbyss.css" type="text/css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="title">
+        <span class="area">{{ abyssVersion }}深渊12层使用率</span>
+        <span class="time">更新时间：{{ updateTime }}</span>
+      </div>
+      <ul class="card-list">
+        {{ each characterList character }}
+        <li class="item">
+          {{ if character.name === '主角' }}
+          <img class="role_img bg{{ character.rarity }}" src="{{ profilePic}}空.png" />
+          {{ else }}
+          <img class="role_img bg{{ character.rarity }}" src="{{ profilePic + character.name }}.png" />
+          {{/if}}
+          <p class="num_name">{{character.value}}%</p>
+        </li>
+        {{ /each }}
+      </ul>
+      
+    </div>
+  </body>
+</html>

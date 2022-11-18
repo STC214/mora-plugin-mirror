@@ -1,0 +1,216 @@
+@font-face {
+  font-family: "tttgbnumber";
+  src: url("../../../../../resources/font/tttgbnumber.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  font-family: "tttgbnumber";
+}
+
+body {
+  font-size: 16px;
+  font-family: "tttgbnumber";
+  transform: scale(1.5);
+  transform-origin: 0 0;
+  color: #f5f6f7;
+}
+
+.container {
+  width: auto;
+  padding: 20px 15px 10px 15px;
+  background-color: #f5f6fb;
+}
+
+.title {
+  display: flex;
+  position: relative;
+  margin-bottom: 13px;
+  color: #504c49;
+}
+
+.title .area {
+  flex: 1;
+  line-height: 22px;
+  padding-left: 10px;
+  padding-top: 5px;
+}
+
+.title .area:before {
+  content: " ";
+  position: absolute;
+  width: 5px;
+  height: 60px;
+  border-radius: 1px;
+  left: 0px;
+  top: 3px;
+  background: #d3bc8d;
+}
+
+.time {
+  line-height: 40px;
+  color: #696969;
+  font-size: 15px;
+}
+
+.all {
+  border-radius: 15px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  padding: 20px 15px 5px 15px;
+  background: #fff;
+  box-shadow: 0 5px 10px 0 rgb(0 0 0 / 15%);
+  position: relative;
+
+}
+
+.contentp {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.item {
+  display: table-cell;
+  text-align: center;
+  color: #333;
+  padding: 0.3rem;
+}
+
+.itemdown {
+  padding: 0.3rem;
+}
+
+.data_box {
+  border-radius: 15px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 20px 15px 5px 15px;
+  background: #fff;
+  box-shadow: 0 5px 10px 0 rgb(0 0 0 / 15%);
+  position: relative;
+}
+
+.tab_lable {
+  position: absolute;
+  top: -10px;
+  left: -8px;
+  background: #d9d9d9;
+  color: #fff;
+  font-size: 14px;
+  padding: 3px 10px;
+  border-radius: 15px 0px 15px 15px;
+  z-index: 20;
+}
+
+#chartContainer {
+  width: 100%;
+  height: 300px;
+}
+
+#chartContainer2 {
+  width: 100%;
+  height: 300px;
+}
+
+.tips {
+  font-size: 11px;
+
+  color: #9fa1a2;
+}
+
+.timeline {
+  border-left: 1px solid rgb(198, 197, 197);
+  border-bottom-right-radius: 4px;
+  border-top-right-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #333;
+  margin: 10px 0 15px 30px;
+  letter-spacing: 0.5px;
+  position: relative;
+  line-height: 1.4em;
+  font-size: 1.03em;
+  padding: 30px 20px 35px 30px;
+  list-style: none;
+  text-align: left;
+}
+
+.timeline .event {
+  /* border-bottom: 1px dashed #4298c3; */
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.timeline .event .event_day {
+  font-family: "tttgbnumber";
+  letter-spacing: 1.5px;
+  font-weight: 100;
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #999;
+}
+
+.logo {
+  font-size: 14px;
+  font-family: "tttgbnumber";
+  text-align: center;
+  color: #7994a7;
+}
+
+.card-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.card-list .item {
+  margin: 0 0 10px 10px;
+  border-radius: 7px;
+  box-shadow: 0 2px 6px 0 rgba(132, 93, 90, 0.3);
+  height: 88px;
+  position: relative;
+  overflow: hidden;
+  background: #e7e5d9;
+}
+.card-list .item img {
+  width: 70px;
+  height: 70px;
+  border-radius: 7px 7px 20px 0;
+}
+.card-list .item .num_name {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  z-index: 9;
+  font-size: 12px;
+  text-align: center;
+  width: 100%;
+  height: 16px;
+  line-height: 18px;
+}
+.card-list .item .num_name {
+  font-size: 16px;
+}
+/* .role .list .item .role_img {
+  width: 100%;
+  overflow: hidden;
+  background-size: 100%;
+  background-repeat: no-repeat;
+} */
+
+.bg5 {
+  background-image: url(../../../../genshin/resources/img/other/bg5.png);
+  background-size: 100%;
+  background-repeat: no-repeat;
+}
+
+.bg4 {
+  background-image: url(../../../../genshin/resources/img/other/bg4.png);
+  background-size: 100%;
+  background-repeat: no-repeat;
+}
