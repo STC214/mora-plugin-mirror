@@ -25,17 +25,21 @@ export class AkashaAbyss extends plugin {
   }
 
   async akashaUsageRate () {
-    let data = await this.getData(this.abyss_url);
+    // 稀有度
+    let rarity = /^#?虚空深渊(五星|四星)?使用率$/.exec(this.e.msg)[1];
+    if (rarity === "五星") {
+      rarity = 5;
+    } else if (rarity === "四星") {
+      rarity = 4;
+    }
+
+    let data = await this.getData(this.abyss_url);    
+
     let usageData = {
       abyssVersion: data.schedule_version_desc,
       updateTime: data.modify_time,
+      characterList: this.listFilter(data.character_used_list, rarity),
     }
-    let characterList = data.character_used_list;
-    for (let i in characterList) {
-      let role = gsCfg.getRole(characterList[i].name);
-      characterList[i].name = role.name;
-    }
-    usageData['characterList'] = characterList;
     let render = await commonTools.getRenderData('AkashaAbyss', usageData);
     let img = await puppeteer.screenshot('AkashaAbyss', render);
     if (img) await this.reply(img);
@@ -58,5 +62,27 @@ export class AkashaAbyss extends plugin {
     let res = await response.text();
     res = JSON.parse(res.split('=')[1]);
     return res;
+  }
+
+  /**
+   * 筛选数据
+   * @param {Array} list 原数据
+   * @param {Number} rarity 稀有度(筛选条件)
+   * @returns 筛选后的数据
+   */
+  listFilter (list, rarity) {
+    let rarityList = [];
+    for (let i in list) {
+      let role = gsCfg.getRole(list[i].name);
+      list[i].name = role.name;
+      if (list[i].rarity === rarity) {
+        rarityList.push(list[i]);
+      }
+    }
+    if (rarity) {
+      list = rarityList;
+    }
+
+    return list;
   }
 }

@@ -32,6 +32,7 @@ class commonTools {
 			tplFile: `${pluginPath}/resources/html/${model}/${model}.html`,
       pluResPath: `${pluginPath}/resources/`,
       profilePic: this.profilePicPath,
+      quality: 100,
 			...data,
 		}
 		return render;

@@ -3,26 +3,65 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" href="{{pluResPath}}html/AkashaAbyss/AkashaAbyss.css" type="text/css" />
+    <link rel="preload" href="../../发光分割线.svg" as="image">
   </head>
   <body>
     <div class="container">
-      <div class="title">
-        <span class="area">{{ abyssVersion }}深渊12层使用率</span>
+      <div class="card-header">
+        <h3 class="title">{{ abyssVersion }}深渊12层使用率</h3>
         <span class="time">更新时间：{{ updateTime }}</span>
       </div>
-      <ul class="card-list">
+      <div class="svg"></div>
+      <div class="card-body">
         {{ each characterList character }}
-        <li class="item">
-          {{ if character.name === '主角' }}
-          <img class="role_img bg{{ character.rarity }}" src="{{ profilePic}}空.png" />
-          {{ else }}
-          <img class="role_img bg{{ character.rarity }}" src="{{ profilePic + character.name }}.png" />
-          {{/if}}
-          <p class="num_name">{{character.value}}%</p>
-        </li>
+        {{ if character.value >= 75 }}
+        <div class="card">
+          <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
+          <span>{{ character.value }}%</span>
+        </div>
+        {{ /if}}
         {{ /each }}
-      </ul>
-      
+      </div>
+      <div class="card-body">
+        {{ each characterList character }}
+        {{ if character.value < 75 && character.value >= 50 }}
+        <div class="card">
+          <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
+          <span>{{ character.value }}%</span>
+        </div>
+        {{ /if}}
+        {{ /each }}
+      </div>
+      <div class="card-body">
+        {{ each characterList character }}
+        {{ if character.value < 50 && character.value >= 25 }}
+        <div class="card">
+          <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
+          <span>{{ character.value }}%</span>
+        </div>
+        {{ /if}}
+        {{ /each }}
+      </div>
+      <div class="card-body">
+        {{ each characterList character }}
+        {{ if character.value < 25 && character.value >= 10 }}
+        <div class="card">
+          <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
+          <span>{{ character.value }}%</span>
+        </div>
+        {{ /if}}
+        {{ /each }}
+      </div>
+      <div class="card-body">
+        {{ each characterList character }}
+        {{ if character.value < 10 }}
+        <div class="card">
+          <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
+          <span>{{ character.value }}%</span>
+        </div>
+        {{ /if}}
+        {{ /each }}
+      </div>
     </div>
   </body>
 </html>
