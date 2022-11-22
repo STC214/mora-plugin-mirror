@@ -50,14 +50,14 @@ body {
 }
 
 .container .card-header {
-  display: flex;
+  display: inline-block;
   align-items: center;
   margin: .5rem;
   margin-left: 20px;
-  padding-top: 20px;
-  padding-bottom: 10px;
+  margin-top: 20px;
   flex-direction: column!important;
   justify-content: center;
+  text-align: center;
   text-shadow: rgba(210,180,140,0.36) 0px 0px 19px;
 }
 
@@ -81,12 +81,30 @@ body {
   flex: 1 1 auto;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
-  padding: 1rem 1rem;
+}
+
+.card-left {
+  width: 10%;
+  text-align: center;
+}
+
+.card-right {
+  width: 90%;
+}
+
+.star-style{
+  color: transparent;
+  /* background-image: linear-gradient(#ffeeee, #DDEFBB, #ffeeee); */
+  background-image: linear-gradient(#fceabb, #ffe96b, #fceabb);
+  background-clip: text;
+  -webkit-background-clip: text;
+  text-shadow: rgba(255, 235, 171, 0.5) 0px 0px 25px;
 }
 
 .container .card-body .card {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   margin-right: 5px;
   position: relative;
   display: inline-block;
@@ -144,4 +162,13 @@ body {
   background-image: url(../../../../genshin/resources/img/other/bg4.png);
   background-size: 100%;
   background-repeat: no-repeat;
+}
+
+.footer {
+  margin-bottom: 10px;
+  font-weight: 600;
+  font-size: 20px;
+  text-align: center;
+  color: #88a3c7;
+  text-shadow: rgba(117,207,255,0.4) 0px 0px 19px;
 }

@@ -3,65 +3,99 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" href="{{pluResPath}}html/AkashaAbyss/AkashaAbyss.css" type="text/css" />
-    <link rel="preload" href="../../发光分割线.svg" as="image">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="preload" href="{{pluResPath}}img/Starburst_Shape.png" as="image">
   </head>
   <body>
     <div class="container">
       <div class="card-header">
-        <h3 class="title">{{ abyssVersion }}深渊12层使用率</h3>
+        <span class="title">{{ abyssVersion }}深渊12层使用率</span>
         <span class="time">更新时间：{{ updateTime }}</span>
       </div>
-      <div class="svg"></div>
       <div class="card-body">
-        {{ each characterList character }}
-        {{ if character.value >= 75 }}
-        <div class="card">
-          <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
-          <span>{{ character.value }}%</span>
+        <div class="card-left">
+          <% for(let i = 0; i < 5; i++){ %>
+          <i class="fa fa-star fa-2x star-style" aria-hidden="true"></i>
+          <% } %>
         </div>
-        {{ /if}}
-        {{ /each }}
+        <div class="card-right">
+          {{ each characterList character }}
+          {{ if character.value >= 75 }}
+          <div class="card">
+            <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
+            <span>{{ character.value }}%</span>
+          </div>
+          {{ /if}}
+          {{ /each }}
+        </div>
       </div>
       <div class="card-body">
-        {{ each characterList character }}
-        {{ if character.value < 75 && character.value >= 50 }}
-        <div class="card">
-          <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
-          <span>{{ character.value }}%</span>
+        <div class="card-left">
+          <% for(let i = 0; i < 4; i++){ %>
+          <i class="fa fa-star fa-2x star-style" aria-hidden="true"></i>
+          <% } %>
         </div>
-        {{ /if}}
-        {{ /each }}
+        <div class="card-right">
+          {{ each characterList character }}
+          {{ if character.value < 75 && character.value >= 50 }}
+          <div class="card">
+            <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
+            <span>{{ character.value }}%</span>
+          </div>
+          {{ /if}}
+          {{ /each }}
+        </div>
       </div>
       <div class="card-body">
-        {{ each characterList character }}
-        {{ if character.value < 50 && character.value >= 25 }}
-        <div class="card">
-          <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
-          <span>{{ character.value }}%</span>
+        <div class="card-left">
+          <% for(let i = 0; i < 3; i++){ %>
+          <i class="fa fa-star fa-2x star-style" aria-hidden="true"></i>
+          <% } %>
         </div>
-        {{ /if}}
-        {{ /each }}
+        <div class="card-right">
+          {{ each characterList character }}
+          {{ if character.value < 50 && character.value >= 25 }}
+          <div class="card">
+            <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
+            <span>{{ character.value }}%</span>
+          </div>
+          {{ /if}}
+          {{ /each }}
+        </div>
       </div>
       <div class="card-body">
-        {{ each characterList character }}
-        {{ if character.value < 25 && character.value >= 10 }}
-        <div class="card">
-          <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
-          <span>{{ character.value }}%</span>
+        <div class="card-left">
+          <% for(let i = 0; i < 2; i++){ %>
+          <i class="fa fa-star fa-2x star-style" aria-hidden="true"></i>
+          <% } %>
         </div>
-        {{ /if}}
-        {{ /each }}
+        <div class="card-right">
+          {{ each characterList character }}
+          {{ if character.value < 25 && character.value >= 10 }}
+          <div class="card">
+            <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
+            <span>{{ character.value }}%</span>
+          </div>
+          {{ /if}}
+          {{ /each }}
+        </div>
       </div>
       <div class="card-body">
-        {{ each characterList character }}
-        {{ if character.value < 10 }}
-        <div class="card">
-          <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
-          <span>{{ character.value }}%</span>
+        <div class="card-left">
+          <i class="fa fa-star fa-2x star-style" aria-hidden="true"></i>
         </div>
-        {{ /if}}
-        {{ /each }}
+        <div class="card-right">
+          {{ each characterList character }}
+          {{ if character.value < 10 }}
+          <div class="card">
+            <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
+            <span>{{ character.value }}%</span>
+          </div>
+          {{ /if}}
+          {{ /each }}
+        </div>
       </div>
+      <div class="footer">Created By Yunzai-Bot & Mora-Plugin</div>
     </div>
   </body>
 </html>
