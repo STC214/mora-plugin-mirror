@@ -23,13 +23,14 @@ class commonTools {
 
   /**
    * 截图模板
+   * @param {Object} parent 父级目录
    * @param {String} model 模型名称
    * @param {Object} data 数据
    * @returns 数据渲染模板
    */
-  async getRenderData(model, data) {
+  async getRenderData(parent, model, data) {
 		let render = {
-			tplFile: `${pluginPath}/resources/html/${model}/${model}.html`,
+			tplFile: `${pluginPath}/resources/html/${parent}/${model}.html`,
       pluResPath: `${pluginPath}/resources/`,
       profilePic: this.profilePicPath,
       quality: 100,

@@ -16,14 +16,21 @@ export class AkashaAbyss extends plugin {
         {
           reg: '^#?虚空深渊(五星|四星)?使用率$',
           fnc: 'akashaUsageRate'
+        },
+        {
+          reg: '^#?虚空深渊数据$',
+          fnc: 'akashaAnalysis'
         }
       ]
     });
-    this.abyss_url = 'https://xkdata.jdsha.com/static/data/abyss_total.js?v=';
+    this.abyss_url = 'https://akashadata.com/static/data/abyss_total.js?v=';
     this.myHeaders = new Headers();
     this.myHeaders.append("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.42");
   }
 
+  /**
+   * 使用率
+   */
   async akashaUsageRate () {
     // 稀有度
     let rarity = /^#?虚空深渊(五星|四星)?使用率$/.exec(this.e.msg)[1];
@@ -40,10 +47,58 @@ export class AkashaAbyss extends plugin {
       updateTime: data.modify_time,
       characterList: this.listFilter(data.character_used_list, rarity),
     }
-    let render = await commonTools.getRenderData('AkashaAbyss', usageData);
+    let render = await commonTools.getRenderData('Akasha', 'abyss', usageData);
     let img = await puppeteer.screenshot('AkashaAbyss', render);
     if (img) await this.reply(img);
   }
+
+  /**
+   * 数据总览
+   */
+  async akashaAnalysis () {
+    let data = await this.getData(this.abyss_url);
+
+    let fullMarkRate = data.level_data.player_level_data.maxstar_player_data;
+    let throughoutRate = data.level_data.player_level_data.pass_player_data;
+    let variousLevels = data.level_data.palyer_count_level_data;
+    let rateChart = [];
+    let levelChart = [];
+    for (let i = 0 ; i < 11 ; i++ ) {
+      rateChart.push(
+        {
+          'level': throughoutRate.x_list[i],
+          'rate': throughoutRate.y_list[i],
+          'title': throughoutRate.title
+        }
+      );
+      rateChart.push(
+        {
+          'level': fullMarkRate.x_list[i],
+          'rate': fullMarkRate.y_list[i],
+          'title': fullMarkRate.title
+        }
+      );
+      levelChart.push(
+        {
+          'level': variousLevels.level_data[i],
+          'players': variousLevels.player_count_data[i]
+        }
+      );
+    }
+
+    let analyzeData = {
+      abyssVersion: data.schedule_version_desc,
+      updateTime: data.modify_time,
+      abyssData: data.abyss_total_view,
+      dataVaries: data.last_rate,
+      rateChartData: JSON.stringify(rateChart),
+      levelChartData: JSON.stringify(levelChart),
+    }
+    let render = await commonTools.getRenderData('Akasha', 'analysis', analyzeData);
+    let img = await puppeteer.screenshot('AkashaAnalysis', render);
+    if (img) await this.reply(img);
+  }
+
 
   /**
    * 获取数据

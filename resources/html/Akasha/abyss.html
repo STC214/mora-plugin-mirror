@@ -2,16 +2,18 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <link rel="stylesheet" href="{{pluResPath}}html/AkashaAbyss/AkashaAbyss.css" type="text/css" />
-    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
-    <link rel="preload" href="{{pluResPath}}img/Starburst_Shape.png" as="image">
+    <link rel="preload" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css" as="style" />
+    <link rel="stylesheet" href="{{pluResPath}}html/Akasha/abyss.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css" />
   </head>
   <body>
     <div class="container">
+      <!-- 头部标题 -->
       <div class="card-header">
         <span class="title">{{ abyssVersion }}深渊12层使用率</span>
         <span class="time">更新时间：{{ updateTime }}</span>
       </div>
+      <!-- 使用率75%+ -->
       <div class="card-body">
         <div class="card-left">
           <% for(let i = 0; i < 5; i++){ %>
@@ -29,6 +31,7 @@
           {{ /each }}
         </div>
       </div>
+      <!-- 使用率50%+ -->
       <div class="card-body">
         <div class="card-left">
           <% for(let i = 0; i < 4; i++){ %>
@@ -46,6 +49,7 @@
           {{ /each }}
         </div>
       </div>
+      <!-- 使用率25%+ -->
       <div class="card-body">
         <div class="card-left">
           <% for(let i = 0; i < 3; i++){ %>
@@ -63,6 +67,7 @@
           {{ /each }}
         </div>
       </div>
+      <!-- 使用率10%+ -->
       <div class="card-body">
         <div class="card-left">
           <% for(let i = 0; i < 2; i++){ %>
@@ -80,6 +85,7 @@
           {{ /each }}
         </div>
       </div>
+      <!-- 使用率10%- -->
       <div class="card-body">
         <div class="card-left">
           <i class="fa fa-star fa-2x star-style" aria-hidden="true"></i>
@@ -95,6 +101,7 @@
           {{ /each }}
         </div>
       </div>
+      <!-- 脚部水印 -->
       <div class="footer">Created By Yunzai-Bot & Mora-Plugin</div>
     </div>
   </body>
