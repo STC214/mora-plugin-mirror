@@ -1,10 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js';
-import gsCfg from '../../genshin/model/gsCfg.js';
 import common from '../../../lib/common/common.js';
 import { segment } from 'oicq';
-import lodash from 'lodash';
-import fs from 'node:fs';
-import commonTools from '../model/commonTools.js';
+
 
 /**
  * 借鉴原云崽攻略代码
@@ -23,6 +20,10 @@ export class abyssVersion extends plugin {
           reg: '^#?[1-9]\.\\d深渊$',
           fnc: 'abyssVersion'
         },
+        {
+          reg: '^#?历代12-3(最低输出量)?$',
+          fnc: 'histry12_3'
+        }
       ]
     })
 
@@ -43,11 +44,10 @@ export class abyssVersion extends plugin {
     this.url += version;
     let msg = [];
     for (let i of pics) {
-      let img = `${this.url}/${i}.jpg`;
-      let res = await fetch(img);
-      if (res.ok) {
-        msg.push(segment.image(img));
-      }
+      let img = await this.getImg(`${this.url}/${i}.jpg`);
+      if (img) {
+        msg.push(img);
+      }  
     }
 
     if (msg.length == 0) {
@@ -58,4 +58,19 @@ export class abyssVersion extends plugin {
     await this.e.reply(await common.makeForwardMsg(this.e, msg, `${version}深渊`));
   }
 
+  /** 12-3历史 */
+  async histry12_3 () {
+    this.url = encodeURI(`${this.url}历代12-3最低输出量.png`);
+    await this.e.reply(await this.getImg(this.url));
+  }
+
+  /** 获取图片数据 */
+  async getImg (url) {
+    let res = await fetch(url);
+    if (res.ok) {
+      return segment.image(url);
+    } else {
+      return false;
+    }
+  }
 }

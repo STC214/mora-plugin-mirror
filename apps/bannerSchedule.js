@@ -13,39 +13,60 @@ export class bannerSchedule extends plugin {
       priority: 5000,
       rule: [
         {
-          reg:'^#?(角色|武器)?复刻表$',
+          reg:'^#?(更新)?(角色|武器)?复刻表$',
           fnc: 'bannerSchedule'
         }
       ]
     })
 
-    this.path = `${pluginPath}/resources/GenshinBanners`;
+    this.path = `${pluginPath}/data/GenshinBanners`;
+    this.url = 'https://gitee.com/Rrrrrrray/mora-plugin-res/raw/master/GenshinBanners/'
+  }
+
+  /** 初始化 */
+  async init() {
+    if(!fs.existsSync(`${pluginPath}/data`)){
+      fs.mkdirSync(`${pluginPath}/data`);
+    }
+    if(!fs.existsSync(this.path)){
+      fs.mkdirSync(this.path);
+    }
   }
 
   /** 发送复刻表 */
   async bannerSchedule() {
-    if(!fs.existsSync(this.path)) {
+    let match = /^#?(更新)?(角色|武器)?复刻表$/.exec(this.e.msg);
+    let isUpdate = !!match[1];
+    let banner = !!match[2] ? [`${match[2]}.png`] : ['角色.png', '武器.png'];
+
+    let msg = [];
+    for (let i of banner) {
+      let imgUrl = encodeURI(this.url + i);
+      let imgPath = `${this.path}/${i}`;
+      if (!fs.existsSync(imgPath) || isUpdate) {
+        await this.getImg(imgUrl, imgPath);
+      }
+      if (fs.existsSync(imgPath)) {
+        msg.push(segment.image(`file://${imgPath}`));
+      }
+    }
+
+    if (msg.length === 0) {
       return false;
     }
 
-    let match = /^#?(角色|武器)?复刻表$/.exec(this.e.msg);
-    let banner = match[1];
-
-    this.imgPath = `${this.path}/${banner}.png`;
-    if (fs.existsSync(this.imgPath)) {
-      await this.e.reply(segment.image(`file://${this.imgPath}`));
+    if (msg.length > 1) {
+      await this.e.reply(await common.makeForwardMsg(this.e, msg, `复刻时间表`));
     } else {
-      await this.e.reply(await this.allSchedule(this.e));
+      await this.e.reply(msg[0]);
     }
   }
 
-  async allSchedule(e) {
-    let msg = [];
-    let imgList = fs.readdirSync(this.path);
-    for (let i of imgList) {
-      let img = segment.image(`file://${this.path}/${i}`);
-      msg.push(img);
+  /** 获取图片数据 */
+  async getImg (url, path) {
+    let res = await fetch(url);
+    if (res.ok) {
+      return await common.downFile(url, path);
     }
-    return await common.makeForwardMsg(this.e, msg, '复刻时间表');
   }
 }
