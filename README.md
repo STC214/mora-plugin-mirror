@@ -7,6 +7,7 @@ Mora-Plugin是一个Yunzai-Bot的插件
 感谢云崽，喵喵，图鉴，白纸等等作者的开源代码贡献
 
 ## 功能
+### :arrow_right: [食用指南](./%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md)
 #### 白纸插件辅助
 > 大部分代码来自[白纸插件](https://gitee.com/headmastertan/zhi-plugin)
 > 原插件如果有相关功能的话，本插件会进行删除
