@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import { pluginPath } from "../components/Changelog.js";
-
+import gsCfg from "../../genshin/model/gsCfg.js";
 class commonTools {
   constructor () {
     this._path = process.cwd();
@@ -28,7 +28,7 @@ class commonTools {
    * @param {Object} data 数据
    * @returns 数据渲染模板
    */
-  async getRenderData(parent, model, data) {
+  async getRenderData (parent, model, data) {
 		let render = {
 			tplFile: `${pluginPath}/resources/html/${parent}/${model}.html`,
       pluResPath: `${pluginPath}/resources/`,
@@ -38,6 +38,25 @@ class commonTools {
 		}
 		return render;
 	}
+
+  getWeapon (msg) {
+    let name = this.getWeaponFullName(msg);
+    let weapon = gsCfg.getdefSet('weapon','data').Name;
+    console.log(weapon);
+  }
+  
+  getWeaponFullName (msg) {
+    let shortName = gsCfg.getdefSet('weapon','other').sortName;
+    let abbr = Object.values(shortName).indexOf(msg);
+    if (abbr < 0) {
+      return false;
+    }
+    let full = Object.keys(shortName)[abbr];
+    console.log(full);
+
+    return full;
+  }
+  
 }
 
 export default new commonTools();
