@@ -31,4 +31,7 @@ git clone https://github.com/Rrrrrrray/mora-plugin.git ./plugins/mora-plugin/
 
 ## 免责声明
 1. 功能仅限内部交流与小范围使用，请勿将Yunzai-Bot及Mora-Plugin用于任何以盈利为目的的场景
-3. 图片与其他素材均来自于网络，仅供交流学习使用，如有侵权请联系，会立即删除
+2. 图片与其他素材均来自于网络，仅供交流学习使用，如有侵权请联系，会立即删除
+
+## 赞助
+#### [爱发电](https://afdian.net/a/rrrrrrray):money_with_wings:
