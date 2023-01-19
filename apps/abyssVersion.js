@@ -1,7 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import common from '../../../lib/common/common.js';
 import { segment } from 'oicq';
-
+import commonTools from '../model/commonTools.js';
 
 /**
  * 借鉴原云崽攻略代码
@@ -26,8 +26,7 @@ export class abyssVersion extends plugin {
         }
       ]
     })
-
-    this.url = 'https://gitee.com/Rrrrrrray/mora-plugin-res/raw/master/AbyssVer/';
+    this.url = commonTools.getMoraRes('abyss');
   }
 
 
@@ -36,12 +35,12 @@ export class abyssVersion extends plugin {
   async abyssVersion () {
     let version = /^#?([1-9]\.\d)深渊$/.exec(this.e.msg)[1];
     console.log(version);
-    // let isUpdate = !!match[1];
 
     if(!version) return false;
 
     let pics = [version, `${version}-11`, `${version}-12`];
     this.url += version;
+
     let msg = [];
     for (let i of pics) {
       let img = await this.getImg(`${this.url}/${i}.jpg`);
