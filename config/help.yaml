@@ -15,7 +15,7 @@ user:
     des: '深渊版本原魔血量'
     icon: xiao
   - name: '#历代12-3 #历代12层'
-    des: '历代最低输出量'
+    des: '历代深渊12层最低输出量'
     icon: dinosaur
 master:
   - name: '白纸辅助'
