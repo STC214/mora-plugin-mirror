@@ -4,7 +4,8 @@ import common from '../../../lib/common/common.js';
 import { segment } from 'oicq';
 import lodash from 'lodash';
 import fs from 'node:fs';
-import fetch from 'node-fetch';
+import commonTools from '../model/commonTools.js';
+import { pluginPath } from '../components/index.js';
 
 /**
  * 借鉴原云崽攻略代码
@@ -23,17 +24,21 @@ export class roleGuides extends plugin{
         {
           reg: '^#?(更新)?\\S+一图流$',
           fnc: 'roleGuide'
+        },
+        {
+          reg: '^#?(更新)?\\S+配队$',
+          fnc: 'teamGuide'
         }
       ]
     })
 
-    this.path = './plugins/mora-plugin/data';
+    this.path = `${pluginPath}/data`;
     this.url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id=';
     this.uploader = [
       {
-      collection_id: 22148,
-      source: '坤易'
-      }
+        collection_id: 22148,
+        source: '坤易'
+      },
     ];
     this.oss = '?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg'
   }
@@ -43,42 +48,44 @@ export class roleGuides extends plugin{
     if(!fs.existsSync(this.path)){
       fs.mkdirSync(this.path);
     }
-    this.path += '/roleGuides';
-    if(!fs.existsSync(this.path)){
-      fs.mkdirSync(this.path)
+    if(!fs.existsSync(`${this.path}/roleGuides`)){
+      fs.mkdirSync(`${this.path}/roleGuides`);
     }
   }
 
-  /**一图流 */
-  async roleGuide(){
+  /**角色一图流 */
+  async roleGuide () {
     let match = /^#?(更新)?(\S+)一图流$/.exec(this.e.msg);
     let isUpdate = !!match[1];
     let roleName = match[2];
-
     // let group = match[3] ? match[3] : this.set.defaultSource
+    let guide = this.uploader[0];
 
     let role = gsCfg.getRole(roleName);
     if(!role) return false;
 
-    this.path += `/roleGuides/${this.uploader[0].source}`;
+    this.path += `/roleGuides/${guide.source}`;
     this.sfPath = `${this.path}/${role.name}.jpg`;
-    console.log(this.sfPath);
 
     if (fs.existsSync(this.sfPath) && !isUpdate) {
       await this.e.reply(segment.image(`file://${this.sfPath}`));
-      return
+      return;
     }
 
-    if (await this.getImg(role.name)) {
+    if (await this.getImg(role.name, guide)) {
       await this.e.reply(segment.image(`file://${this.sfPath}`));
     }
   }
 
-  /**下载攻略图 */
-  async getImg (name) {
+  /**
+   * 下载攻略图
+   * @param {String} name 角色名;
+   * @param {Object} author 作者;
+   */
+  async getImg (name, author) {
     let msyRes = []
-    // this.uploader[0].collection_id.forEach((id) => msyRes.push(this.getData(this.url + id)));
-    msyRes.push(this.getData(this.url + this.uploader[0].collection_id));
+    msyRes.push(await commonTools.getFetchData(this.url + author.collection_id));
+    console.log(msyRes);
     
 
     try {
@@ -127,7 +134,7 @@ export class roleGuides extends plugin{
     }
 
     if (!url) {
-      this.e.reply(`暂无${name}攻略（${this.uploader[0].source}）\n请尝试其他的攻略来源查询\n#攻略帮助，查看说明`)
+      this.e.reply(`暂无${name}攻略（${author.source}）\n请尝试其他的攻略来源查询\n#攻略帮助，查看说明`)
       return false
     }
 
@@ -142,13 +149,4 @@ export class roleGuides extends plugin{
     return true
   }
 
-   /** 获取数据 */
-   async getData (url) {
-    let response = await fetch(url, { method: 'get' });
-    if (!response.ok) {
-      return false;
-    }
-    const res = await response.json();
-    return res;
-  }
 }

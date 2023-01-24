@@ -4,7 +4,7 @@ import { segment } from "oicq";
 import common from "../components/common.js";
 import { botConfig } from "../components/common.js";
 import YAML from 'yaml';
-import moracfg from '../model/config/config.js'
+import moracfg from '../model/config.js'
 
 const _path = process.cwd();
 const plugin = "mora-plugin"
@@ -274,20 +274,30 @@ async function replaceTXT(txt) {
   if(!txt){
     return true;
   }
-  let chaohua = txt.indexOf('阴阳师手游</span></a>');
-  if(chaohua > -1){
-    txt = txt.split('阴阳师手游</span></a> ')[1];
+
+  // br改成换行
+  let br = txt.split('<br />');
+  br = br.filter(item => item !== "" && item !== " ");
+  console.log('br')
+  console.log(br);
+
+  // 去掉头部链接
+  let link = txt.split('<a>');
+  link = link.filter(item => item !== "" && item !== " " && !item.startsWith('<a') && !item.startsWith(' <a'));
+  txt = link.join('');
+
+  // 去掉span标签
+  let span = txt.split('<sp');
+  span = span.filter(item => !item.startsWith('an'));
+  txt = span.join('');
+
+  // 去掉尾部全文链接
+  if(txt.includes('全文')){
+    txt = txt.substring(0,txt.lastIndexOf('<a href'));
   }
-  let full = txt.indexOf('全文</a>');
-  if(full > -1){
-    full = txt.lastIndexOf('<a href');
-    txt = txt.substring(0,full);
-  }
-  let txt1 = txt.split('<br />');
-  if(txt1[0] === ''){
-    txt1.shift();
-  }
-  txt = txt1.join('\n')
+
+  
+
   return txt;
 }
 

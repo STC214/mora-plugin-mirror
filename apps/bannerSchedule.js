@@ -1,6 +1,6 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import common from '../../../lib/common/common.js';
-import { pluginPath } from '../components/Changelog.js';
+import { pluginPath } from '../components/index.js';
 import { segment } from 'oicq';
 import fs from 'node:fs';
 import commonTools from '../model/commonTools.js';

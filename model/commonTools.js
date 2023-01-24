@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { pluginPath } from "../components/Changelog.js";
+import { pluginPath } from "../components/index.js";
 import gsCfg from "../../genshin/model/gsCfg.js";
 import moment from 'moment';
 

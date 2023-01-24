@@ -3,10 +3,10 @@ import chokidar from 'chokidar'
 import fs from 'node:fs'
 import { promisify } from 'node:util'
 import lodash from 'lodash'
-import { Data, isV3 } from "../../components/index.js";
+import { Data, isV3, pluginPath } from "../components/index.js";
 
-const plugin = "mora-plugin"
-const pathPlugin=`./plugins/${plugin}/data/`
+// const plugin = "mora-plugin"
+// const pathPlugin=`./plugins/${plugin}/data/`
 /**
  * 配置文件
  * 借鉴逍遥插件

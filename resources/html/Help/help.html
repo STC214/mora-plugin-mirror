@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="{{pluResPath}}html/Help/help.css" />
+  </head>
+  <body>
+    <div class="container" id="container">
+      <div class="info_box">
+        <div class="title">#摩拉帮助</div>
+      </div>
+
+      <div class="cont-box">
+        <div class="help-group">摩拉功能</div>
+        <div class="help-table">
+          {{each user item idx}} 
+          {{if idx%4 == 0}}
+          <div class="tr">
+            {{/if}}
+            <div class="td">
+              <img class="help-icon" src="{{pluResPath}}img/icons/{{item.icon}}.png" />
+              <strong class="help-title">{{item.name}}</strong>
+              <span class="help-desc">{{item.des}}</span>
+            </div>
+            {{if idx%4 == 3 || idx == user.length -1}}
+          </div>
+          {{/if}} 
+          {{/each}}
+        </div>
+      </div>
+      {{ if isMaster}}
+      <div class="cont-box">
+        <div class="help-group">摩拉主人命令</div>
+        <div class="help-table">
+          {{each master item idx}} 
+          {{if idx%4 == 0}}
+          <div class="tr">
+            {{/if}}
+            <div class="td">
+              <img class="help-icon" src="{{pluResPath}}img/icons/{{item.icon}}.png" />
+              <strong class="help-title">{{item.name}}</strong>
+              <span class="help-desc">{{item.des}}</span>
+            </div>
+            {{if idx%4 == 3 || idx == master.length -1}}
+          </div>
+          {{/if}} 
+          {{/each}}
+        </div>
+      </div>
+      {{ /if }}
+      <!-- 脚部水印 -->
+      <div class="footer">Created By Yunzai-Bot & Mora-Plugin</div>
+    </div>
+  </body>
+</html>

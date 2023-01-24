@@ -1,0 +1,26 @@
+user:
+  - name: '#随机表情列表'
+    des: '基于白纸插件的随机表情'
+    icon: doge
+  - name: '#钟离一图流'
+    des: '米游社@坤易 的角色攻略'
+    icon: paimon
+  - name: '#角色复刻表 #更新武器复刻表'
+    des: '#复刻表 开服至今复刻情况' 
+    icon: banner
+  - name: '#雷神卡池 #薙刀复刻'
+    des: 'UP卡池详情'
+    icon: emerald
+  - name: '#3.3深渊'
+    des: '深渊版本原魔血量'
+    icon: xiao
+  - name: '#历代12-3 #历代12层'
+    des: '历代最低输出量'
+    icon: dinosaur
+master:
+  - name: '白纸辅助'
+    des: '非命令，取用云崽相应功能的权限配置'
+    icon: monkas
+  - name: '#摩拉更新'
+    des: '更新摩拉插件'
+    icon: update

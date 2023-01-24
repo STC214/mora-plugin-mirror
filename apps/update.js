@@ -1,6 +1,6 @@
 import plugin from "../../../lib/plugins/plugin.js";
 import { exec } from "child_process";
-import { pluginPath } from "../components/Changelog.js";
+import { pluginPath } from "../components/index.js";
 const _path = process.cwd();
 
 export class updateMora extends plugin {
