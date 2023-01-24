@@ -21,8 +21,8 @@ export class abyssVersion extends plugin {
           fnc: 'abyssVersion'
         },
         {
-          reg: '^#?历代12-3(最低输出量)?$',
-          fnc: 'histry12_3'
+          reg: '^#?历代12(层|-[1-3])?(最低输出量)?$',
+          fnc: 'history12'
         }
       ]
     })
@@ -34,7 +34,6 @@ export class abyssVersion extends plugin {
   /**深渊版本 */
   async abyssVersion () {
     let version = /^#?([1-9]\.\d)深渊$/.exec(this.e.msg)[1];
-    console.log(version);
 
     if(!version) return false;
 
@@ -57,10 +56,32 @@ export class abyssVersion extends plugin {
     await this.e.reply(await common.makeForwardMsg(this.e, msg, `${version}深渊`));
   }
 
-  /** 12-3历史 */
-  async histry12_3 () {
-    this.url = encodeURI(`${this.url}历代12-3最低输出量.png`);
-    await this.e.reply(await this.getImg(this.url));
+  /** 12层历史 */
+  async history12 () {
+    let room = /^#?历代12(层|-[1-3])?(最低输出量)?$/.exec(this.e.msg)[1];
+    if(!room) return false;
+
+    this.url += 'history12';
+
+    let msg = [];
+    let imgUrl = '';
+
+    if (room === '层') {
+      let pics = [1, 2, 3];
+      for (let i of pics) {
+        imgUrl = encodeURI(`${this.url}/历代12-${i}最低输出量.png`);
+        let img = await this.getImg(imgUrl);
+        if (img) {
+          msg.push(img);
+        }  
+      }
+      await this.e.reply(await common.makeForwardMsg(this.e, msg, `历代深渊12层最低输出量`));
+    } else {
+      imgUrl = encodeURI(`${this.url}/历代12${room}最低输出量.png`);
+      msg = await this.getImg(imgUrl);
+      await this.e.reply(msg);
+    }
+
   }
 
   /** 获取图片数据 */
