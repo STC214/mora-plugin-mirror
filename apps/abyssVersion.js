@@ -2,6 +2,7 @@ import plugin from '../../../lib/plugins/plugin.js';
 import common from '../../../lib/common/common.js';
 import { segment } from 'oicq';
 import commonTools from '../model/commonTools.js';
+import fetch from 'node-fetch';
 
 /**
  * 借鉴原云崽攻略代码

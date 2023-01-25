@@ -4,6 +4,7 @@ import { pluginPath } from '../components/index.js';
 import { segment } from 'oicq';
 import fs from 'node:fs';
 import commonTools from '../model/commonTools.js';
+import fetch from 'node-fetch';
 
 export class bannerSchedule extends plugin {
   constructor() {
