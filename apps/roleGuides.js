@@ -2,49 +2,54 @@ import plugin from '../../../lib/plugins/plugin.js';
 import gsCfg from '../../genshin/model/gsCfg.js';
 import common from '../../../lib/common/common.js';
 import { segment } from 'oicq';
-import lodash from 'lodash';
+import _ from 'lodash';
 import fs from 'node:fs';
 import commonTools from '../model/commonTools.js';
+import moracfg from '../model/config.js';
 import { pluginPath } from '../components/index.js';
 
 /**
  * 借鉴原云崽攻略代码
- * 不会覆盖原指令
- * 攻略来自米游社@坤易
+ * 默认覆盖所有【xx攻略】原指令，不想覆盖可以把priority调整为5000
+ * 攻略来自米游社
  */
+const _path = process.cwd();
 
 export class roleGuides extends plugin{
   constructor(){
     super({
-      name: '角色一图流',
-      dsc: '角色一图流',
+      name: '米游社攻略一图流',
+      dsc: '米游社攻略一图流',
       event: 'message',
-      priority: 500,
+      priority: 100,
       rule: [
         {
-          reg: '^#?(更新)?\\S+一图流$',
+          reg: '^#?(更新)?\\S+(攻略|一图流)$',
           fnc: 'roleGuide'
         },
-        {
-          reg: '^#?(更新)?\\S+配队$',
-          fnc: 'teamGuide'
-        }
+
       ]
     })
-
+    this.defpath = `${_path}/data/strategy/`;
     this.path = `${pluginPath}/data`;
     this.url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id=';
-    this.uploader = [
-      {
-        collection_id: 22148,
-        source: '坤易'
-      },
-    ];
+    this.uploader = moracfg.getfileYaml(`${pluginPath}/config/`, 'guides');
     this.oss = '?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg'
   }
 
   /**初始化 */
   async init () {
+    if (!fs.existsSync(this.defpath)) {
+      fs.mkdirSync(this.defpath)
+    }
+    /** 初始化子目录 */
+    for (let subId of [1, 2, 3, 4]) {
+      let defpath = this.defpath + '/' + subId
+      if (!fs.existsSync(defpath)) {
+        fs.mkdirSync(defpath)
+      }
+    }
+
     if(!fs.existsSync(this.path)){
       fs.mkdirSync(this.path);
     }
@@ -55,26 +60,41 @@ export class roleGuides extends plugin{
 
   /**角色一图流 */
   async roleGuide () {
-    let match = /^#?(更新)?(\S+)一图流$/.exec(this.e.msg);
+    let match = /^#?(更新)?(\S+)(攻略|一图流)$/.exec(this.e.msg);
     let isUpdate = !!match[1];
     let roleName = match[2];
-    // let group = match[3] ? match[3] : this.set.defaultSource
-    let guide = this.uploader[0];
+    let guide = this.uploader.roleGuide;
 
     let role = gsCfg.getRole(roleName);
     if(!role) return false;
 
-    this.path += `/roleGuides/${guide.source}`;
-    this.sfPath = `${this.path}/${role.name}.jpg`;
+    let dir = fs.readdirSync(this.defpath);
+    dir = _.map(dir, (v) => `${this.defpath + v}/${role.name}.jpg`);
+    let sources = _.map(guide, (v) => v.source);
+    let source = _.drop(sources, 4);
+    source = _.map(source, (v) => `${this.path}/roleGuides/${v}/${role.name}.jpg`);
+    dir = _.concat(dir, source);
 
-    if (fs.existsSync(this.sfPath) && !isUpdate) {
-      await this.e.reply(segment.image(`file://${this.sfPath}`));
-      return;
+    let msg = [];
+    for (const i in dir) {
+      let success = true;
+      if (!fs.existsSync(dir[i]) || isUpdate) {
+        success = await this.getImg(role.name, guide[i], dir[i]);
+      }  
+      if (success) {
+        msg.push(segment.image(`file://${dir[i]}`));
+      } 
+      // else {
+      //   msg.push(`暂无${role.name}攻略（${sources[i]}）`);
+      // }
     }
 
-    if (await this.getImg(role.name, guide)) {
-      await this.e.reply(segment.image(`file://${this.sfPath}`));
+    if (msg.length === 0) {
+      await this.e.reply('暂无攻略数据，请稍后再试');
+      return false;
     }
+
+    await this.e.reply(await common.makeForwardMsg(this.e, msg, `${role.name}攻略`));
   }
 
   /**
@@ -82,25 +102,24 @@ export class roleGuides extends plugin{
    * @param {String} name 角色名;
    * @param {Object} author 作者;
    */
-  async getImg (name, author) {
+  async getImg (name, author, sfPath) {
     let msyRes = []
-    msyRes.push(await commonTools.getFetchData(this.url + author.collection_id));
-    console.log(msyRes);
+    for (const i of author.collection_id) {
+      msyRes.push(await commonTools.getFetchData(this.url + i));
+    }
     
-
     try {
-      msyRes = await Promise.all(msyRes)
+      msyRes = await Promise.all(msyRes);
     } catch (error) {
-      this.e.reply('暂无攻略数据，请稍后再试')
       logger.error(`米游社接口报错：${error}}`)
-      return false
+      return false;
     }
 
-    let posts = lodash.flatten(lodash.map(msyRes, (item) => item.data.posts))
+    let posts = _.flatten(_.map(msyRes, (item) => item.data.posts))
     let url
     for (let val of posts) {
       /** 攻略图个别来源特殊处理 */
-      /**if (group == 4) {
+      if (author.collection_id.includes(341523)) {
         if (val.post.structured_content.includes(name + '】')) {
           let content = val.post.structured_content.replace(/\\\/\{\}/g, '')
           let pattern = new RegExp(name + '】.*?image":"(.*?)"')
@@ -122,29 +141,21 @@ export class roleGuides extends plugin{
           url = val.image_list[max].url
           break
         }
-      }*/
-      if (val.post.subject.includes(name)) {
-        let max = 0
-        val.image_list.forEach((v, i) => {
-          if (Number(v.size) >= Number(val.image_list[max].size)) max = i
-        })
-        url = val.image_list[max].url
-        break
       }
     }
 
     if (!url) {
-      this.e.reply(`暂无${name}攻略（${author.source}）\n请尝试其他的攻略来源查询\n#攻略帮助，查看说明`)
+      logger.mark(`暂无${name}攻略（${author.source}）`);
+      return false;
+    }
+
+    logger.mark(`${this.e.logFnc} 下载${author.source}-${name}攻略图`)
+
+    if (!await common.downFile(url + this.oss, sfPath)) {
       return false
     }
 
-    logger.mark(`${this.e.logFnc} 下载${name}攻略图`)
-
-    if (!await common.downFile(url + this.oss, this.sfPath)) {
-      return false
-    }
-
-    logger.mark(`${this.e.logFnc} 下载${name}攻略成功`)
+    logger.mark(`${this.e.logFnc} 下载${author.source}-${name}攻略成功`)
 
     return true
   }
