@@ -93,7 +93,7 @@ export class roleGuides extends plugin{
       await this.e.reply('暂无攻略数据，请稍后再试');
       return false;
     }
-
+    _.reverse(msg);
     await this.e.reply(await common.makeForwardMsg(this.e, msg, `${role.name}攻略`));
   }
 
