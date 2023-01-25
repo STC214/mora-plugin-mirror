@@ -95,6 +95,7 @@ export class roleGuides extends plugin{
     }
     _.reverse(msg);
     await this.e.reply(await common.makeForwardMsg(this.e, msg, `${role.name}攻略`));
+    return true;
   }
 
   /**
