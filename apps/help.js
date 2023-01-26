@@ -18,7 +18,7 @@ export class moraHelp extends plugin {
         }
       ]
     })
-    this.path = `${pluginPath}/config/`;
+    this.path = `${pluginPath}/config/default/`;
   }
 
   async moraHelp() {

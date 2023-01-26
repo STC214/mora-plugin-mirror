@@ -14,12 +14,40 @@ import { Data, isV3, pluginPath } from "../components/index.js";
 class moracfg {
 	constructor() {
 
+		this.def = `${pluginPath}/config/default/`;
+		this.user = `${pluginPath}/config/user/`;
 	}
 	/** 通用yaml读取*/
-	getfileYaml(path, name) {
+	getfileYaml (path, name) {
 		return YAML.parse(
 			fs.readFileSync(path + name + ".yaml", 'utf8')
 		);
+	}
+
+	getSetYaml (name, isCopy = false) {	
+		if (isCopy) {
+			this.defSetCopy(name);
+		}
+
+		let setYaml = {};
+		if (!fs.existsSync(`${this.user + name}.yaml`)) {
+			setYaml = this.getfileYaml(this.def, name);
+		} else {
+			setYaml = this.getfileYaml(this.user, name);
+		}
+
+		return setYaml;
+	}
+
+	/** 配置拷贝 */
+	defSetCopy (name) {
+		name += '.yaml';
+		if (!fs.existsSync(this.user)) {
+			fs.mkdirSync(this.user)
+		}
+		if (!fs.existsSync(this.user + name)) {
+			fs.copyFileSync(this.def + name, this.user + name);
+		}
 	}
 
 	async getWeiboYaml(userId){

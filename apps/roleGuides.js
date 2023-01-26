@@ -27,13 +27,12 @@ export class roleGuides extends plugin{
           reg: '^#?(更新)?\\S+(攻略|一图流)$',
           fnc: 'roleGuide'
         },
-
       ]
     })
     this.defpath = `${_path}/data/strategy/`;
     this.path = `${pluginPath}/data`;
+    this.uploader = moracfg.getSetYaml('roleGuides', true);
     this.url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id=';
-    this.uploader = moracfg.getfileYaml(`${pluginPath}/config/`, 'guides');
     this.oss = '?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg'
   }
 
@@ -56,6 +55,9 @@ export class roleGuides extends plugin{
     if(!fs.existsSync(`${this.path}/roleGuides`)){
       fs.mkdirSync(`${this.path}/roleGuides`);
     }
+    if(!fs.existsSync(`${this.path}/roleGuides/add_ons`)){
+      fs.mkdirSync(`${this.path}/roleGuides/add_ons`);
+    }
   }
 
   /**角色一图流 */
@@ -63,20 +65,33 @@ export class roleGuides extends plugin{
     let match = /^#?(更新)?(\S+)(攻略|一图流)$/.exec(this.e.msg);
     let isUpdate = !!match[1];
     let roleName = match[2];
-    let guide = this.uploader.roleGuide;
 
     let role = gsCfg.getRole(roleName);
     if(!role) return false;
 
-    let dir = fs.readdirSync(this.defpath);
-    dir = _.map(dir, (v) => `${this.defpath + v}/${role.name}.jpg`);
-    let sources = _.map(guide, (v) => v.source);
-    let source = _.drop(sources, 4);
-    source = _.map(source, (v) => `${this.path}/roleGuides/${v}/${role.name}.jpg`);
-    dir = _.concat(dir, source);
-
     let msg = [];
-    for (const i in dir) {
+    /** 主角特殊处理 */
+    if (['10000005', '10000007', '20000000'].includes(String(role.roleId))) {
+      let travelers = ['风主', '岩主', '雷主', '草主'];
+      if (!travelers.includes(role.alias)) {
+        travelers = _.map(travelers, (v) => `${v}攻略`);
+        msg = `请选择${roleName}攻略：${_.join(travelers, '、')}`;
+        await this.e.reply(msg);
+        return;
+      } else {
+        role.name = role.alias;
+      }
+    }
+
+    let guide = _.concat(this.uploader.news, this.uploader.olds);
+    let addons = fs.readdirSync(`${this.path}/roleGuides/add_ons`);
+    let dir = this.dirPath(role.name, this.uploader.news, addons);
+
+    for (let i in dir) {
+      if (!_.isNil(guide[i]) && addons.includes(guide[i].source)) {
+        continue;
+      }
+
       let success = true;
       if (!fs.existsSync(dir[i]) || isUpdate) {
         success = await this.getImg(role.name, guide[i], dir[i]);
@@ -84,18 +99,29 @@ export class roleGuides extends plugin{
       if (success) {
         msg.push(segment.image(`file://${dir[i]}`));
       } 
-      // else {
-      //   msg.push(`暂无${role.name}攻略（${sources[i]}）`);
-      // }
     }
 
     if (msg.length === 0) {
       await this.e.reply('暂无攻略数据，请稍后再试');
       return false;
     }
-    _.reverse(msg);
+
     await this.e.reply(await common.makeForwardMsg(this.e, msg, `${role.name}攻略`));
     return true;
+  }
+
+  /** 路径处理 */
+  dirPath (name, news, addons) {
+    let dir = _.take(fs.readdirSync(this.defpath), 4);
+    dir = _.map(dir, (v) => `${this.defpath + v}/${name}.jpg`);
+
+    let newdir = _.map(news, (v) => `${this.path}/roleGuides/${v.source}/${name}.jpg`);
+
+    let addondir = _.map(addons, (v) => `${this.path}/roleGuides/add_ons/${v}/${name}.jpg`);
+    addondir = _.filter(addondir, (v) => fs.existsSync(v));
+    dir = _.concat(newdir, dir, addondir);
+
+    return dir;
   }
 
   /**

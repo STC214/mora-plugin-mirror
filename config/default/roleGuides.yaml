@@ -1,0 +1,24 @@
+olds:  #不能改
+  - source: 西风驿站
+    collection_id: 
+      - 839176
+      - 839179
+      - 839181
+      - 1180811
+  - source: 原神观测枢
+    collection_id: 
+      - 813033
+  - source: 派蒙喵喵屋
+    collection_id: 
+      - 341284
+  - source: OH是姜姜呀 # (需特殊处理)
+    collection_id: 
+      - 341523
+news: 
+  - source: 坤易
+    collection_id: 
+      - 22148  
+  #新增攻略合集来源 请在下面添加(注意空格)
+  # - source: 攻略up名字
+  #   collection_id:
+  #     - 合集id
