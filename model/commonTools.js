@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import common from '../../../lib/common/common.js';
 import { pluginPath } from "../components/index.js";
 import gsCfg from "../../genshin/model/gsCfg.js";
 import moment from 'moment';
@@ -158,8 +159,18 @@ class commonTools {
       case 'abyss':
         url += 'AbyssVer/'
         break;
+      case 'team':
+        url += 'TeamGuides/'
     }
     return url;
+  }
+
+  /** 下载文件 */
+  async download (url, path) {
+    let res = await fetch(url);
+    if (res.ok) {
+      return await common.downFile(url, path);
+    }
   }
 }
 

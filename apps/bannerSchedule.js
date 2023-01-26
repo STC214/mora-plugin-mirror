@@ -4,7 +4,6 @@ import { pluginPath } from '../components/index.js';
 import { segment } from 'oicq';
 import fs from 'node:fs';
 import commonTools from '../model/commonTools.js';
-import fetch from 'node-fetch';
 
 export class bannerSchedule extends plugin {
   constructor() {
@@ -50,7 +49,7 @@ export class bannerSchedule extends plugin {
       let imgUrl = encodeURI(url + i);
       let imgPath = `${this.path}/${i}`;
       if (!fs.existsSync(imgPath) || isUpdate) {
-        await this.getImg(imgUrl, imgPath);
+        await commonTools.download(imgUrl, imgPath);
       }
       if (fs.existsSync(imgPath)) {
         msg.push(segment.image(`file://${imgPath}`));
@@ -88,13 +87,4 @@ export class bannerSchedule extends plugin {
 
     await this.e.reply(await common.makeForwardMsg(this.e, msg, msg[0]));
   }
-
-  /** 获取图片数据 */
-  async getImg (url, path) {
-    let res = await fetch(url);
-    if (res.ok) {
-      return await common.downFile(url, path);
-    }
-  }
-
 }
