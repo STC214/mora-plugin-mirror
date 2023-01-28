@@ -84,11 +84,12 @@ export class roleGuides extends plugin{
     }
 
     let guide = _.concat(this.uploader.news, this.uploader.olds);
+    let dir = this.dirPath(role.name, this.uploader.news);
     let addons = fs.readdirSync(`${this.path}/roleGuides/add_ons`);
-    let dir = this.dirPath(role.name, this.uploader.news, addons);
-
+    let addon_img = this.addonImg(role.name, addons);
+    
     for (let i in dir) {
-      if (!_.isNil(guide[i]) && addons.includes(guide[i].source)) {
+      if (addons.includes(guide[i].source)) {
         continue;
       }
 
@@ -101,6 +102,8 @@ export class roleGuides extends plugin{
       } 
     }
 
+    msg.push(...addon_img);
+
     if (msg.length === 0) {
       await this.e.reply('暂无攻略数据，请稍后再试');
       return false;
@@ -111,17 +114,29 @@ export class roleGuides extends plugin{
   }
 
   /** 路径处理 */
-  dirPath (name, news, addons) {
+  dirPath (name, news) {
     let dir = _.take(fs.readdirSync(this.defpath), 4);
     dir = _.map(dir, (v) => `${this.defpath + v}/${name}.jpg`);
 
     let newdir = _.map(news, (v) => `${this.path}/roleGuides/${v.source}/${name}.jpg`);
-
-    let addondir = _.map(addons, (v) => `${this.path}/roleGuides/add_ons/${v}/${name}.jpg`);
-    addondir = _.filter(addondir, (v) => fs.existsSync(v));
-    dir = _.concat(newdir, dir, addondir);
+    dir = _.concat(newdir, dir);
 
     return dir;
+  }
+
+  /** 附加包 */
+  addonImg (name, addons) {
+    let msg = [];
+    let addondir = _.map(addons, (v) => `${this.path}/roleGuides/add_ons/${v}/${name}.jpg`);
+    addondir = _.filter(addondir, (v) => fs.existsSync(v));
+
+    _.each(addondir, (v) => {
+      if (!fs.existsSync(v)) {
+        msg.push(segment.image(`file://${v}`));
+      }
+    });
+
+    return msg;
   }
 
   /**
@@ -150,7 +165,7 @@ export class roleGuides extends plugin{
         if (val.post.structured_content.includes(name + '】')) {
           let content = val.post.structured_content.replace(/\\\/\{\}/g, '');
           // 常驻角色特殊处理
-          let pattern = new RegExp(name + '】.*?image\\\\?":\\\\?"(.*?)\\\\"');
+          let pattern = new RegExp(name + '】.*?image\\\\?":\\\\?"(.*?)\\\\?"');
           let imgId = pattern.exec(content)[1];
           for (let image of val.image_list) {
             if (image.image_id == imgId) {

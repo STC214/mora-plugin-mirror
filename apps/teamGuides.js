@@ -51,11 +51,15 @@ export class teamGuides extends plugin {
     let teams = moracfg.getfileYaml(`${this.path}/teamGuides/`, 'teamGuides');
     teams = await this.searchTeams(teams, query);
     
-    if (!teams) {
+    if (!_.isEmpty(teams.traveler)) {
+      await this.e.reply(teams.traveler);
+      return false;
+    }
+    if (!teams.find) {
       await this.e.reply(`暂无${query}配队`);
       return false;
     }
-    teams = _.map(_.castArray(teams), (v) => `茗血茶/${v}.png`);
+    teams = _.map(_.castArray(teams.find), (v) => `茗血茶/${v}.png`);
 
     let msg = []
     for (const team of teams) {
@@ -85,7 +89,7 @@ export class teamGuides extends plugin {
     await commonTools.download(this.url + this.file, `${this.path}/teamGuides/${this.file}`);
   }
 
-  async searchTeams (teams, query) {
+  searchTeams (teams, query) {
     let names = _.keys(teams);
 
     let find = _.includes(names, query);
@@ -102,6 +106,7 @@ export class teamGuides extends plugin {
       find = !_.isEmpty(names);
     }
 
+    let traveler = '';
     if (!find) {
       let role = gsCfg.getRole(query);
       if(!role) return false;
@@ -110,8 +115,8 @@ export class teamGuides extends plugin {
         let travelers = ['风主', '岩主', '雷主', '草主'];
         if (!travelers.includes(role.alias)) {
           travelers = _.map(travelers, (v) => `${v}配队`);
-          await this.e.reply(`请选择${roleName}配队：${_.join(travelers, '、')}`);
-          return;
+          traveler = `请选择${query}配队：${_.join(travelers, '、')}`;
+          find = false;
         } else {
           role.name = role.alias;
         }
@@ -122,6 +127,9 @@ export class teamGuides extends plugin {
       find = !_.isEmpty(names);
     }
 
-    return find ? names : find;
+    return {
+      find: find ? names : find,
+      traveler: traveler
+    }
   }
 }
