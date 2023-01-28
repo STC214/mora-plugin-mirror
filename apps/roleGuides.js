@@ -131,7 +131,7 @@ export class roleGuides extends plugin{
     addondir = _.filter(addondir, (v) => fs.existsSync(v));
 
     _.each(addondir, (v) => {
-      if (!fs.existsSync(v)) {
+      if (fs.existsSync(v)) {
         msg.push(segment.image(`file://${v}`));
       }
     });
