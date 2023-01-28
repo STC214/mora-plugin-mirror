@@ -21,7 +21,7 @@ export class roleGuides extends plugin{
       name: '米游社攻略一图流',
       dsc: '米游社攻略一图流',
       event: 'message',
-      priority: 100,
+      priority: 5,
       rule: [
         {
           reg: '^#?(更新)?\\S+(攻略|一图流)$',
@@ -148,9 +148,10 @@ export class roleGuides extends plugin{
       /** 攻略图个别来源特殊处理 */
       if (author.collection_id.includes(341523)) {
         if (val.post.structured_content.includes(name + '】')) {
-          let content = val.post.structured_content.replace(/\\\/\{\}/g, '')
-          let pattern = new RegExp(name + '】.*?image":"(.*?)"')
-          let imgId = pattern.exec(content)[1]
+          let content = val.post.structured_content.replace(/\\\/\{\}/g, '');
+          // 常驻角色特殊处理
+          let pattern = new RegExp(name + '】.*?image\\\\?":\\\\?"(.*?)\\\\"');
+          let imgId = pattern.exec(content)[1];
           for (let image of val.image_list) {
             if (image.image_id == imgId) {
               url = image.url

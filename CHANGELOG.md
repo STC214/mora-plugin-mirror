@@ -6,7 +6,7 @@
     - 请在此插件目录下`config/user/roleGuides.yaml`末尾添加
     - 支持一键更新（注：图片可能会下载失败）
   - **添加方式2：其他自制攻略图包**
-    - 放在插件目录下`resources/roleGuides/add_ons/`
+    - 放在插件目录下`data/roleGuides/add_ons/`
     - 文件夹命名为攻略作者名字，如：`../add_ons/西风驿站`
     - 图片命名为角色名，如：`../add_ons/西风驿站/托马.jpg`
     - 不支持手动更新，需要自行替换
