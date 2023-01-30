@@ -28,27 +28,31 @@ export class teamGuides extends plugin {
     })
     this.url = commonTools.getMoraRes('team');
     this.path = `${pluginPath}/data`;
+    this.cfgpath = `${pluginPath}/config/user`;
     this.file = 'teamGuides.yaml';
   }
   
   async init () {
-    if(!fs.existsSync(this.path)){
+    if(!fs.existsSync(this.path)) {
       fs.mkdirSync(this.path);
     }
 
     let path = `${this.path}/teamGuides`;
-    if(!fs.existsSync(path)){
+    if(!fs.existsSync(path)) {
       fs.mkdirSync(path);
     }
-    if (!fs.existsSync(`${path}/${this.file}`)) {
-      this.updateTeams();
+    if (fs.existsSync(`${path}/${this.file}`)) {
+      fs.unlinkSync(`${path}/${this.file}`);
+    }
+    if (!fs.existsSync(`${this.cfgpath}/${this.file}`)) {
+      await commonTools.download(this.url + this.file, `${this.cfgpath}/${this.file}`);
     }
   }
 
   async teamGuides () {
     let query = /^#(\S+)配队$/.exec(this.e.msg)[1];
 
-    let teams = moracfg.getfileYaml(`${this.path}/teamGuides/`, 'teamGuides');
+    let teams = moracfg.getfileYaml(this.cfgpath, 'teamGuides');
     teams = await this.searchTeams(teams, query);
     
     if (!_.isEmpty(teams.traveler)) {
@@ -86,7 +90,14 @@ export class teamGuides extends plugin {
   }
 
   async updateTeams () {
-    await commonTools.download(this.url + this.file, `${this.path}/teamGuides/${this.file}`);
+    if (this.e.isMaster || _.includes([289873439, 1767666852], Number(this.e.user_id))){
+      await commonTools.download(this.url + this.file, `${this.cfgpath}/${this.file}`);
+    } else {
+      await this.e.reply('暂无操作权限');
+      return false;
+    }
+    logger.mark("配队更新完成");
+    await this.e.reply('配队更新完成');
   }
 
   searchTeams (teams, query) {
