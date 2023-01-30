@@ -33,12 +33,12 @@ export class teamGuides extends plugin {
   }
   
   async init () {
-    if(!fs.existsSync(this.path)) {
+    if (!fs.existsSync(this.path)) {
       fs.mkdirSync(this.path);
     }
 
     let path = `${this.path}/teamGuides`;
-    if(!fs.existsSync(path)) {
+    if (!fs.existsSync(path)) {
       fs.mkdirSync(path);
     }
     if (fs.existsSync(`${path}/${this.file}`)) {
