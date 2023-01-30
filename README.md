@@ -8,11 +8,6 @@ Mora-Plugin是一个Yunzai-Bot的插件
 
 ## 功能
 ### [点击就看:arrow_right:食用指南](./%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md) 或使用`#摩拉帮助`命令
-#### 白纸插件辅助
-> 大部分代码来自[白纸插件](https://gitee.com/headmastertan/zhi-plugin)
-> 原插件如果有相关功能的话，本插件会进行删除
-- [x] 全部表情的词条列表
-- [x] 添加表情增加权限控制
 #### 摩拉功能
 - [x] 角色攻略 (覆盖其他相同触发词的指令)
 - [x] 复刻表 (目前仅支持五星角色、武器) 
@@ -36,3 +31,10 @@ git clone https://github.com/Rrrrrrray/mora-plugin.git ./plugins/mora-plugin/
 
 ## 赞助
 #### [动动手指给我发电](https://afdian.net/a/rrrrrrray):money_with_wings:
+
+### 致谢
+| 来源 | 贡献 |
+|:---:|:---:|
+| [坤易](https://www.miyoushe.com/ys/collection/22148) | 角色攻略一图流授权 |
+| [茗血茶](https://www.miyoushe.com/ys/collection/1070358) | 配队攻略一图流授权 |
+| [妮可少年](https://bbs.nga.cn/read.php?tid=31508898) | 深渊历史原魔阵容 |

@@ -33,7 +33,7 @@ export class roleGuides extends plugin{
     this.path = `${pluginPath}/data`;
     this.uploader = moracfg.getSetYaml('roleGuides', true);
     this.url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id=';
-    this.oss = '?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg'
+    this.oss = '?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg';
   }
 
   /**初始化 */
@@ -119,6 +119,7 @@ export class roleGuides extends plugin{
     dir = _.map(dir, (v) => `${this.defpath + v}/${name}.jpg`);
 
     let newdir = _.map(news, (v) => `${this.path}/roleGuides/${v.source}/${name}.jpg`);
+
     dir = _.concat(newdir, dir);
 
     return dir;
