@@ -52,7 +52,7 @@ export class teamGuides extends plugin {
   async teamGuides () {
     let query = /^#(\S+)配队$/.exec(this.e.msg)[1];
 
-    let teams = moracfg.getfileYaml(this.cfgpath, 'teamGuides');
+    let teams = moracfg.getfileYaml(`${this.cfgpath}/`, 'teamGuides');
     teams = await this.searchTeams(teams, query);
     
     if (!_.isEmpty(teams.traveler)) {
