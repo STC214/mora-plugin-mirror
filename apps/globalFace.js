@@ -39,8 +39,7 @@ export class globalFace extends plugin {
   async globalFace () {
     this.isGlobal = this.e?.msg.includes("全局");
     this.isMaster = this.e?.isMaster;
-    console.log(!this.isGlobal);
-    console.log(this.isMaster);
+
     if (this.isMaster || !this.isGlobal) {
       return false;
     } else {
