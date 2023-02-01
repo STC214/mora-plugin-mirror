@@ -14,7 +14,7 @@ export class teamGuides extends plugin {
       name: '角色配队一图流',
       dsc: '角色配队一图流 @茗血茶',
       event: 'message',
-      priority: 500,
+      priority: 5,
       rule: [
         {
           reg: '^#\\S+配队$',

@@ -9,7 +9,7 @@ export class updateMora extends plugin {
       name: '摩拉更新',
       dsc: '摩拉插件更新',
       event: 'message',
-      priority: 5000,
+      priority: 5,
       rule: [
         {
           reg: "^#摩拉(强制)?更新$",

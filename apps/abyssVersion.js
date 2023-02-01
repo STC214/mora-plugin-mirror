@@ -15,7 +15,7 @@ export class abyssVersion extends plugin {
       name: '深渊版本',
       dsc: '各版本深渊怪物',
       event: 'message',
-      priority: 500,
+      priority: 5,
       rule: [
         {
           reg: '^#?[1-9]\.\\d深渊$',

@@ -10,7 +10,7 @@ export class AkashaAbyss extends plugin {
       name: '虚空深渊',
       dsc: '虚空数据库by白猫团队',
       event: 'message',
-      priority: 5000,
+      priority: 5,
       rule: [
         {
           reg: '^#?虚空深渊(五星|四星)?使用率$',

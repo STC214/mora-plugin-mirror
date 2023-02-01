@@ -11,7 +11,7 @@ export class bannerSchedule extends plugin {
       name: '复刻表',
       dsc: '复刻时间表',
       event: 'message',
-      priority: 5000,
+      priority: 5,
       rule: [
         {
           reg:'^#?(更新)?(角色|武器)?复刻表$',

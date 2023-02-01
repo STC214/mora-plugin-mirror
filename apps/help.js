@@ -10,7 +10,7 @@ export class moraHelp extends plugin {
       name: '摩拉帮助',
       dsc: '摩拉插件帮助',
       event: 'message',
-      priority: 500,
+      priority: 5,
       rule: [
         {
           reg: '^#摩拉帮助$',
