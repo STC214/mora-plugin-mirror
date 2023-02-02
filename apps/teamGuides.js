@@ -27,7 +27,7 @@ export class teamGuides extends plugin {
       ]
     })
     this.url = commonTools.getMoraRes('team');
-    this.path = `${pluginPath}/data`;
+    this.path = `${pluginPath}/data/teamGuides`;
     this.cfgpath = `${pluginPath}/config/user`;
     this.file = 'teamGuides.yaml';
   }
@@ -36,13 +36,8 @@ export class teamGuides extends plugin {
     if (!fs.existsSync(this.path)) {
       fs.mkdirSync(this.path);
     }
-
-    let path = `${this.path}/teamGuides`;
-    if (!fs.existsSync(path)) {
-      fs.mkdirSync(path);
-    }
-    if (fs.existsSync(`${path}/${this.file}`)) {
-      fs.unlinkSync(`${path}/${this.file}`);
+    if (fs.existsSync(`${this.path}/${this.file}`)) {
+      fs.unlinkSync(`${this.path}/${this.file}`);
     }
     if (!fs.existsSync(`${this.cfgpath}/${this.file}`)) {
       await commonTools.download(this.url + this.file, `${this.cfgpath}/${this.file}`);
@@ -71,7 +66,7 @@ export class teamGuides extends plugin {
     let msg = []
     for (const team of teams) {
       let url = encodeURI(this.url + team);
-      let path = `${this.path}/teamGuides/${team}`;
+      let path = `${this.path}/${team}`;
       if (!fs.existsSync(path)) {
         await commonTools.download(url, path);
       }

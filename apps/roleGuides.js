@@ -30,7 +30,7 @@ export class roleGuides extends plugin{
       ]
     })
     this.defpath = `${_path}/data/strategy/`;
-    this.path = `${pluginPath}/data`;
+    this.path = `${pluginPath}/data/roleGuides`;
     this.uploader = moracfg.getSetYaml('roleGuides', true);
     this.url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id=';
     this.oss = '?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg';
@@ -41,11 +41,8 @@ export class roleGuides extends plugin{
     if(!fs.existsSync(this.path)){
       fs.mkdirSync(this.path);
     }
-    if(!fs.existsSync(`${this.path}/roleGuides`)){
-      fs.mkdirSync(`${this.path}/roleGuides`);
-    }
-    if(!fs.existsSync(`${this.path}/roleGuides/add_ons`)){
-      fs.mkdirSync(`${this.path}/roleGuides/add_ons`);
+    if(!fs.existsSync(`${this.path}/add_ons`)){
+      fs.mkdirSync(`${this.path}/add_ons`);
     }
   }
 
@@ -74,7 +71,7 @@ export class roleGuides extends plugin{
 
     let guide = _.concat(this.uploader.news, this.uploader.olds);
     let dir = this.dirPath(role.name, this.uploader.news);
-    let addons = fs.readdirSync(`${this.path}/roleGuides/add_ons`);
+    let addons = fs.readdirSync(`${this.path}/add_ons`);
     let addon_img = this.addonImg(role.name, addons);
     
     for (let i in dir) {
@@ -107,7 +104,7 @@ export class roleGuides extends plugin{
     let dir = _.take(fs.readdirSync(this.defpath), 4);
     dir = _.map(dir, (v) => `${this.defpath + v}/${name}.jpg`);
 
-    let newdir = _.map(news, (v) => `${this.path}/roleGuides/${v.source}/${name}.jpg`);
+    let newdir = _.map(news, (v) => `${this.path}/${v.source}/${name}.jpg`);
 
     dir = _.concat(newdir, dir);
 
@@ -117,7 +114,7 @@ export class roleGuides extends plugin{
   /** 附加包 */
   addonImg (name, addons) {
     let msg = [];
-    let addondir = _.map(addons, (v) => `${this.path}/roleGuides/add_ons/${v}/${name}.jpg`);
+    let addondir = _.map(addons, (v) => `${this.path}/add_ons/${v}/${name}.jpg`);
     addondir = _.filter(addondir, (v) => fs.existsSync(v));
 
     _.each(addondir, (v) => {
