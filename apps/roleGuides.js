@@ -38,17 +38,6 @@ export class roleGuides extends plugin{
 
   /**初始化 */
   async init () {
-    if (!fs.existsSync(this.defpath)) {
-      fs.mkdirSync(this.defpath)
-    }
-    /** 初始化子目录 */
-    for (let subId of [1, 2, 3, 4]) {
-      let defpath = this.defpath + '/' + subId
-      if (!fs.existsSync(defpath)) {
-        fs.mkdirSync(defpath)
-      }
-    }
-
     if(!fs.existsSync(this.path)){
       fs.mkdirSync(this.path);
     }

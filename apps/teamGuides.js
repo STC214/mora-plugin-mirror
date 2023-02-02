@@ -51,6 +51,9 @@ export class teamGuides extends plugin {
 
   async teamGuides () {
     let query = /^#(\S+)配队$/.exec(this.e.msg)[1];
+    if (_.includes(query, '深渊')) {
+      return false;
+    }
 
     let teams = moracfg.getfileYaml(`${this.cfgpath}/`, 'teamGuides');
     teams = await this.searchTeams(teams, query);
