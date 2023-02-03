@@ -157,14 +157,26 @@ class commonTools {
         url += 'GenshinBanners/';
         break;
       case 'abyss':
-        url += 'AbyssVer/'
+        url += 'Abyss/';
         break;
       case 'team':
-        url += 'TeamGuides/'
+        url += 'TeamGuides/';
     }
     return url;
   }
 
+  abyssUrl (type) {
+    let url = this.getMoraRes('abyss');
+    switch (type) {
+      case 'ver':
+        url += 'Version/';
+        break;
+      case 'team':
+        url += 'Teams/';
+    }
+    return url;
+  }
+  
   /** 下载文件 */
   async download (url, path) {
     let res = await fetch(url);
