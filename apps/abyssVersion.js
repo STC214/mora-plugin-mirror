@@ -31,7 +31,7 @@ export class abyssVersion extends plugin {
         }
       ]
     })
-    this.url = commonTools.abyssUrl('version');
+    this.url = commonTools.abyssUrl('ver');
   }
 
 
