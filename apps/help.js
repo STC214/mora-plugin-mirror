@@ -56,9 +56,9 @@ export class moraHelp extends plugin {
         await this.e.reply('正在更新...')
       }
     } else {
-      command = `git clone https://gitee.com/Rrrrrrray/mora-plugin-res.git '${this.resPath}/mora-plugin-res/'`;
+      command = `git clone https://gitee.com/Rrrrrrray/mora-plugin-res.git '${this.resPath}mora-plugin-res/'`;
     }
-    exec(command, { cwd: `${this.resPath}/mora-plugin-res/` }, async (err, stdout, stderr) => {
+    exec(command, { cwd: `${this.resPath}mora-plugin-res/` }, async (err, stdout, stderr) => {
       if (/Already up to date/.test(stdout) || stdout.includes("最新")) {
         await this.e.reply("资源包已经是最新了~");
         return true;
