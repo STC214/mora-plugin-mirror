@@ -53,7 +53,7 @@ export class moraHelp extends plugin {
         await this.e.reply('正在更新...')
       }
     } else {
-      command = `git clone https://gitee.com/Rrrrrrray/mora-plugin-res.git ${this.resPath}`
+      command = `git clone https://gitee.com/Rrrrrrray/mora-plugin-res.git '${this.resPath}'`;
     }
     exec(command, { cwd: `${this.resPath}` }, async (err, stdout, stderr) => {
       if (/Already up to date/.test(stdout) || stdout.includes("最新")) {
