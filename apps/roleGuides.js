@@ -6,7 +6,6 @@ import _ from 'lodash';
 import fs from 'node:fs';
 import commonTools from '../model/commonTools.js';
 import moracfg from '../model/config.js';
-import { pluginPath } from '../components/index.js';
 
 /**
  * 借鉴原云崽攻略代码
@@ -32,6 +31,7 @@ export class roleGuides extends plugin{
     this.defpath = `${_path}/data/strategy/`;
     this.path = moracfg.getMoraPath('data');
     this.uploader = moracfg.getSetYaml('roleGuides', true);
+    this.resPath = moracfg.getMoraPlus('role');
     this.url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id=';
     this.oss = '?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg';
   }
@@ -74,16 +74,23 @@ export class roleGuides extends plugin{
       }
     }
 
+    // TODO: 同作者res、data的进行整合
+    let res = fs.readdirSync(this.resPath);
+    let resdir = this.resImg(role.name, res);
     let guide = _.concat(this.uploader.news, this.uploader.olds);
     let dir = this.dirPath(role.name, this.uploader.news);
     let addons = fs.readdirSync(`${this.path}/add_ons`);
     let addon_img = this.addonImg(role.name, addons);
     
+    msg.push(...resdir);
+
     for (let i in dir) {
+      if (res.includes(guide[i].source)) {
+        continue;
+      }
       if (addons.includes(guide[i].source)) {
         continue;
       }
-
       let success = true;
       if (!fs.existsSync(dir[i]) || isUpdate) {
         success = await this.getImg(role.name, guide[i], dir[i]);
@@ -102,6 +109,25 @@ export class roleGuides extends plugin{
 
     await this.e.reply(await common.makeForwardMsg(this.e, msg, `${role.name}攻略`));
     return true;
+  }
+
+  /** 资源包 */
+  resImg (name, res) {
+    let msg = [];
+    let resdir = _.map(res, (v) => {
+      let role = fs.readdirSync(`${this.resPath}/${v}`);
+      role = _.filter(role, (r) => _.includes(r, name));
+      if (_.isEmpty(role)) {
+        return false;
+      } else {
+        return `${this.resPath}/${v}/${role}`;
+      }
+    });
+    
+    _.each(resdir, (v) => {
+      msg.push(segment.image(`file://${v}`));
+    });
+    return msg;
   }
 
   /** 路径处理 */
@@ -130,6 +156,8 @@ export class roleGuides extends plugin{
 
     return msg;
   }
+
+
 
   /**
    * 下载攻略图
