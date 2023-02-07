@@ -30,7 +30,7 @@ export class roleGuides extends plugin{
       ]
     })
     this.defpath = `${_path}/data/strategy/`;
-    this.path = `${pluginPath}/data/roleGuides`;
+    this.path = moracfg.getMoraPath('data');
     this.uploader = moracfg.getSetYaml('roleGuides', true);
     this.url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id=';
     this.oss = '?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg';
@@ -38,11 +38,14 @@ export class roleGuides extends plugin{
 
   /**初始化 */
   async init () {
-    if(!fs.existsSync(this.path)){
+    if (!fs.existsSync(this.path)) {
       fs.mkdirSync(this.path);
     }
-    if(!fs.existsSync(`${this.path}/add_ons`)){
-      fs.mkdirSync(`${this.path}/add_ons`);
+    if(!fs.existsSync(`${this.path}roleGuides`)){
+      fs.mkdirSync(`${this.path}roleGuides`);
+    }
+    if(!fs.existsSync(`${this.path}roleGuides/add_ons`)){
+      fs.mkdirSync(`${this.path}roleGuides/add_ons`);
     }
   }
 
@@ -54,6 +57,8 @@ export class roleGuides extends plugin{
 
     let role = gsCfg.getRole(roleName);
     if(!role) return false;
+
+    this.path += 'roleGuides';
 
     let msg = [];
     /** 主角特殊处理 */
