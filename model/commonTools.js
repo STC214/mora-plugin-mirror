@@ -50,12 +50,12 @@ class commonTools {
   getBanner (msg) {
     let name = msg;
     let type = 301;
-    let role5 = ['刻晴', '莫娜', '七七', '迪卢克', '琴', '提纳里'];
+    let notUP = ['安柏', '凯亚', '丽莎', '刻晴', '莫娜', '七七', '迪卢克', '琴', '提纳里'];
     let role = gsCfg.getRole(name);
     if (role) {
       // 角色
       name = role.name;
-      if (role5.includes(name)) {
+      if (notUP.includes(name)) {
         return false;
       }
     } else {
@@ -143,38 +143,6 @@ class commonTools {
     });
 
     return [elapsed, ...pool];
-  }
-
-  /**
-   * res地址
-   * @param {String} type res类型
-   * @returns 
-   */
-  getMoraRes (type) {
-    let url = 'https://gitee.com/Rrrrrrray/mora-plugin-res/raw/master/'
-    switch (type) {
-      case 'banner':
-        url += 'GenshinBanners/';
-        break;
-      case 'abyss':
-        url += 'Abyss/';
-        break;
-      case 'team':
-        url += 'TeamGuides/';
-    }
-    return url;
-  }
-
-  abyssUrl (type) {
-    let url = this.getMoraRes('abyss');
-    switch (type) {
-      case 'ver':
-        url += 'Version/';
-        break;
-      case 'team':
-        url += 'Teams/';
-    }
-    return url;
   }
   
   /** 下载文件 */

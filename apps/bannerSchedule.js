@@ -1,9 +1,10 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import common from '../../../lib/common/common.js';
-import { pluginPath } from '../components/index.js';
 import { segment } from 'oicq';
 import fs from 'node:fs';
+import moracfg from '../model/config.js';
 import commonTools from '../model/commonTools.js';
+import _ from 'lodash';
 
 export class bannerSchedule extends plugin {
   constructor() {
@@ -14,7 +15,7 @@ export class bannerSchedule extends plugin {
       priority: 5,
       rule: [
         {
-          reg:'^#?(更新)?(角色|武器)?复刻表$',
+          reg:'^#?(角色|武器)?复刻表$',
           fnc: 'bannerSchedule'
         },
         {
@@ -24,39 +25,28 @@ export class bannerSchedule extends plugin {
       ]
     })
 
-    this.path = `${pluginPath}/data/GenshinBanners`;    
-  }
-
-  /** 初始化 */
-  async init () {
-    if(!fs.existsSync(`${pluginPath}/data`)){
-      fs.mkdirSync(`${pluginPath}/data`);
-    }
-    if(!fs.existsSync(this.path)){
-      fs.mkdirSync(this.path);
-    }
+    this.path = moracfg.getMoraPlus('banner');    
   }
 
   /** 发送复刻表 */
   async bannerSchedule () {
-    let match = /^#?(更新)?(角色|武器)?复刻表$/.exec(this.e.msg);
-    let isUpdate = !!match[1];
-    let banner = !!match[2] ? [`${match[2]}.png`] : ['角色.png', '武器.png'];
-    let url = commonTools.getMoraRes('banner');
+    if (!fs.existsSync(this.path)) {
+      await this.e.reply('还没下载资源包，复刻表功能用不了捏');
+      return false;
+    }
+
+    let match = /^#?(角色|武器)?复刻表$/.exec(this.e.msg);
+    let banner = !!match[1] ? [match[1]] : ['角色', '武器'];
 
     let msg = [];
     for (let i of banner) {
-      let imgUrl = encodeURI(url + i);
-      let imgPath = `${this.path}/${i}`;
-      if (!fs.existsSync(imgPath) || isUpdate) {
-        await commonTools.download(imgUrl, imgPath);
-      }
+      let imgPath = `${this.path}/${i}.png`;
       if (fs.existsSync(imgPath)) {
         msg.push(segment.image(`file://${imgPath}`));
       }
     }
 
-    if (msg.length === 0) {
+    if (_.isEmpty(msg)) {
       return false;
     }
 
@@ -65,6 +55,7 @@ export class bannerSchedule extends plugin {
     } else {
       await this.e.reply(msg[0]);
     }
+    return true;
   }
 
   /** 复刻详情 */
@@ -86,5 +77,6 @@ export class bannerSchedule extends plugin {
     let msg = [`${name.name}卡池详情`, ...pool];
 
     await this.e.reply(await common.makeForwardMsg(this.e, msg, msg[0]));
+    return true;
   }
 }

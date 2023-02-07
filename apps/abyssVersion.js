@@ -1,8 +1,9 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import common from '../../../lib/common/common.js';
 import { segment } from 'oicq';
-import commonTools from '../model/commonTools.js';
-import fetch from 'node-fetch';
+import moracfg from '../model/config.js';
+import _ from 'lodash';
+import fs from 'node:fs';
 
 /**
  * 借鉴原云崽攻略代码
@@ -31,34 +32,36 @@ export class abyssVersion extends plugin {
         }
       ]
     })
-    this.url = commonTools.abyssUrl('ver');
+    this.path = moracfg.getMoraPlus('abyss');
   }
-
-
 
   /**深渊版本 */
   async abyssVersion () {
-    let version = /^#?([1-9]\.\d)深渊$/.exec(this.e.msg)[1];
-
-    if(!version) return false;
-
-    let pics = [version, `${version}-11`, `${version}-12`];
-    this.url += version;
-
-    let msg = [];
-    for (let i of pics) {
-      let img = await this.getImg(`${this.url}/${i}.jpg`);
-      if (img) {
-        msg.push(img);
-      }  
+    if (!fs.existsSync(this.path)) {
+      await this.e.reply('还没下载资源包，深渊版本功能用不了捏');
+      return false;
     }
 
-    if (msg.length == 0) {
+    let version = /^#?([1-9]\.\d)深渊$/.exec(this.e.msg)[1];
+    if(!version) return false;
+
+    this.path += `/Version/${version}`;
+    if (!fs.existsSync(this.path)) {
       await this.e.reply('暂无此版本');
+      return false;
+    }
+
+    let msg = [];
+    let pics = fs.readdirSync(this.path);
+    _.each(pics, (v) => msg.push(segment.image(`file://${this.path}/${v}`)));
+
+    if (_.isEmpty(msg)) {
+      logger.error('图片获取失败');
       return false;
     }
     
     await this.e.reply(await common.makeForwardMsg(this.e, msg, `${version}深渊`));
+    return true;
   }
 
   /** 12层历史 */
@@ -66,51 +69,35 @@ export class abyssVersion extends plugin {
     let room = /^#?历代12(层|-[1-3])?(最低输出量)?$/.exec(this.e.msg)[1];
     if (!room) return false;
 
-    this.url += 'history12';
+    this.path += '/Version/history12';
 
     let msg = [];
-    let imgUrl = '';
 
     if (room === '层') {
-      let pics = [1, 2, 3];
-      for (let i of pics) {
-        imgUrl = encodeURI(`${this.url}/历代12-${i}最低输出量.png`);
-        let img = await this.getImg(imgUrl);
-        if (img) {
-          msg.push(img);
-        }  
-      }
+      let pics = fs.readdirSync(this.path);;
+      _.each(pics, (v) => msg.push(segment.image(`file://${this.path}/${v}`)));
       await this.e.reply(await common.makeForwardMsg(this.e, msg, `历代深渊12层最低输出量`));
     } else {
-      imgUrl = encodeURI(`${this.url}/历代12${room}最低输出量.png`);
-      msg = await this.getImg(imgUrl);
-      await this.e.reply(msg);
+      let img = `${this.path}/历代12${room}最低输出量.png`;
+      if (fs.existsSync(img)) {
+        await this.e.reply(segment.image(`file://${img}`));
+      }
     }
-
+    return true;
   }
 
   async teamRefer () {
     let ver = /^#?([1-9]\.\d)深渊?阵容(参考|推荐)?$/.exec(this.e.msg)[1];
     if (!ver) return false;
 
-    this.url = commonTools.abyssUrl('team');
-    this.url = encodeURI(`${this.url}卡玛sei亚/${ver}.png`);
+    this.path += 'Teams/';
 
-    let img = await this.getImg(this.url);
-    if (!img) {
+    let img = `${this.path}卡玛sei亚/${ver}.png`;
+    if (!fs.existsSync(img)) {
       await this.e.reply(`暂无${ver}深渊阵容`);
       return false;
     }
     await this.e.reply(img);
-  }
-
-  /** 获取图片数据 */
-  async getImg (url) {
-    let res = await fetch(url);
-    if (res.ok) {
-      return segment.image(url);
-    } else {
-      return false;
-    }
+    return true;
   }
 }

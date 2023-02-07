@@ -12,11 +12,11 @@ import { Data, isV3, pluginPath } from "../components/index.js";
  * 借鉴逍遥插件
  */
 class moracfg {
-	constructor() {
-
+	constructor () {
 		this.def = `${pluginPath}/config/default/`;
 		this.user = `${pluginPath}/config/user/`;
 	}
+
 	/** 通用yaml读取*/
 	getfileYaml (path, name) {
 		return YAML.parse(
@@ -24,6 +24,7 @@ class moracfg {
 		);
 	}
 
+	/** 设置读取 */
 	getSetYaml (name, isCopy = false) {	
 		if (isCopy) {
 			this.defSetCopy(name);
@@ -48,6 +49,47 @@ class moracfg {
 		if (!fs.existsSync(this.user + name)) {
 			fs.copyFileSync(this.def + name, this.user + name);
 		}
+	}
+
+	getMoraPath (name) {
+		let path = pluginPath;
+		switch (name) {
+			case 'def':
+				path = this.def;
+				break;
+			case 'user':
+				path = this.user;
+				break;
+			case 'res':
+				path += '/resources/';
+				break;
+			case 'plus':
+				path += '/resources/mora-plugin-res/';
+				break;
+			case 'data':
+				path += '/data/';
+				break;
+		}
+		return path;
+	}
+
+	getMoraPlus (name) {
+		let path = this.getMoraPath('plus');
+		switch (name) {
+			case 'banner':
+				path += 'GenshinBanners'
+				break;
+			case 'role':
+				path += 'RoleGuides'
+				break;
+			case 'team':
+				path += 'TeamGuides'
+				break;
+			case 'abyss':
+				path += 'Abyss'
+				break;
+		}
+		return path;
 	}
 
 	async getWeiboYaml(userId){

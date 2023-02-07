@@ -4,9 +4,7 @@ import fs from 'node:fs';
 import _ from 'lodash';
 import { segment } from 'oicq';
 import gsCfg from '../../genshin/model/gsCfg.js';
-import moracfg from '../model/config.js'
-import commonTools from '../model/commonTools.js';
-import { pluginPath } from '../components/index.js';
+import moracfg from '../model/config.js';
 
 export class teamGuides extends plugin {
   constructor () {
@@ -19,38 +17,26 @@ export class teamGuides extends plugin {
         {
           reg: '^#\\S+配队$',
           fnc: 'teamGuides'
-        },
-        {
-          reg: '^#配队(更新|下载)$',
-          fnc: 'updateTeams'
         }
       ]
     })
-    this.url = commonTools.getMoraRes('team');
-    this.path = `${pluginPath}/data/teamGuides`;
-    this.cfgpath = `${pluginPath}/config/user`;
+    this.path = moracfg.getMoraPlus('team');
     this.file = 'teamGuides.yaml';
   }
   
-  async init () {
-    if (!fs.existsSync(this.path)) {
-      fs.mkdirSync(this.path);
-    }
-    if (fs.existsSync(`${this.path}/${this.file}`)) {
-      fs.unlinkSync(`${this.path}/${this.file}`);
-    }
-    if (!fs.existsSync(`${this.cfgpath}/${this.file}`)) {
-      await commonTools.download(this.url + this.file, `${this.cfgpath}/${this.file}`);
-    }
-  }
 
   async teamGuides () {
+    if (!fs.existsSync(this.path)) {
+      await this.e.reply('还没下载资源包，配队功能用不了捏');
+      return false;
+    }
+
     let query = /^#(\S+)配队$/.exec(this.e.msg)[1];
     if (_.includes(query, '深渊')) {
       return false;
     }
 
-    let teams = moracfg.getfileYaml(`${this.cfgpath}/`, 'teamGuides');
+    let teams = moracfg.getfileYaml(this.path, 'teamGuides');
     teams = await this.searchTeams(teams, query);
     
     if (!_.isEmpty(teams.traveler)) {
@@ -61,22 +47,18 @@ export class teamGuides extends plugin {
       await this.e.reply(`暂无${query}配队`);
       return false;
     }
-    teams = _.map(_.castArray(teams.find), (v) => `茗血茶/${v}.png`);
 
+    teams = _.map(_.castArray(teams.find), (v) => `茗血茶/${v}.png`);
     let msg = []
     for (const team of teams) {
-      let url = encodeURI(this.url + team);
       let path = `${this.path}/${team}`;
-      if (!fs.existsSync(path)) {
-        await commonTools.download(url, path);
-      }
       if (fs.existsSync(path)) {
         msg.push(segment.image(`file://${path}`));
       }
     }
 
     if (_.isEmpty(msg)) {
-      logger.error(`图片下载失败`);
+      logger.error(`图片获取失败`);
       return false;
     }
 
@@ -85,17 +67,8 @@ export class teamGuides extends plugin {
     } else {
       await this.e.reply(msg[0]);
     }
-  }
 
-  async updateTeams () {
-    if (this.e.isMaster || _.includes([289873439, 1767666852], Number(this.e.user_id))){
-      await commonTools.download(this.url + this.file, `${this.cfgpath}/${this.file}`);
-    } else {
-      await this.e.reply('暂无操作权限');
-      return false;
-    }
-    logger.mark("配队更新完成");
-    await this.e.reply('配队更新完成');
+    return true;
   }
 
   searchTeams (teams, query) {
