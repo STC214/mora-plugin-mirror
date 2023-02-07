@@ -66,7 +66,7 @@ export class moraHelp extends plugin {
         return true;
       }
       if (err) {
-        await this.e.reply("更新失败！\nError code: " + error.code + "\n" + error.stack + "\n 请稍后重试。");
+        await this.e.reply("更新失败！\nError code: " + err.code + "\n" + err.stack + "\n 请稍后重试。");
       } else {
         await this.e.reply("摩拉资源包更新成功！后续也可以通过【#更新摩拉资源】更新资源包");
       }
