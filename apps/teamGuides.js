@@ -36,7 +36,7 @@ export class teamGuides extends plugin {
       return false;
     }
 
-    let teams = moracfg.getfileYaml(this.path, 'teamGuides');
+    let teams = moracfg.getfileYaml(`${this.path}/`, 'teamGuides');
     teams = await this.searchTeams(teams, query);
     
     if (!_.isEmpty(teams.traveler)) {
