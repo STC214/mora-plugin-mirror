@@ -5,10 +5,12 @@ import commonTools from '../model/commonTools.js';
 import puppeteer from '../../../lib/puppeteer/puppeteer.js';
 import fs from 'node:fs';
 import _ from 'lodash';
+
 /**
  * 帮助借鉴白纸
  * 资源包借鉴喵喵、图鉴
  */
+const _path = process.cwd();
 export class moraHelp extends plugin {
   constructor () {
     super ({
@@ -29,7 +31,6 @@ export class moraHelp extends plugin {
       ]
     })
     this.helpPath = moracfg.getMoraPath('def');
-    this.resPath = moracfg.getMoraPath('plus')
   }
 
   async moraHelp() {
@@ -42,9 +43,11 @@ export class moraHelp extends plugin {
   }
 
   async updateMoraRes () {
+    this.resPath = `${_path}/plugins/mora-plugin/resources/`;
     let force = _.includes(this.e.msg, '强制');
     let command = '';
-    if (fs.existsSync(this.resPath)) {
+    
+    if (fs.existsSync(`${this.resPath}/mora-plugin-res/`)) {
       command = 'git pull';
       if (force) {
         command = 'git checkout . && git pull';
@@ -53,16 +56,16 @@ export class moraHelp extends plugin {
         await this.e.reply('正在更新...')
       }
     } else {
-      command = `git clone https://gitee.com/Rrrrrrray/mora-plugin-res.git '${this.resPath}'`;
+      command = `git clone https://gitee.com/Rrrrrrray/mora-plugin-res.git '${this.resPath}/mora-plugin-res/'`;
     }
-    exec(command, { cwd: `${this.resPath}` }, async (err, stdout, stderr) => {
+    exec(command, { cwd: `${this.resPath}/mora-plugin-res/` }, async (err, stdout, stderr) => {
       if (/Already up to date/.test(stdout) || stdout.includes("最新")) {
         await this.e.reply("资源包已经是最新了~");
         return true;
       }
       let changed = /(\d*) files changed,/.exec(stdout);
       if (changed && changed[1]) {
-        await this.e.reply(`资源包更新成功，此次更新了${numRet[1]}个~`);
+        await this.e.reply(`资源包更新成功，此次更新了${changed[1]}个~`);
         return true;
       }
       if (err) {
