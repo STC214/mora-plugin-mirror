@@ -117,7 +117,11 @@ export class roleGuides extends plugin{
     let resdir = _.map(res, (v) => {
       let role = fs.readdirSync(`${this.resPath}/${v}`);
       role = _.filter(role, (r) => _.includes(r, name));
-      return `${this.resPath}/${v}/${role}`;
+      if (_.isEmpty(role)) {
+        return false;
+      } else {
+        return `${this.resPath}/${v}/${role}`;
+      }
     });
     
     _.each(resdir, (v) => {
