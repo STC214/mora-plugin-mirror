@@ -37,6 +37,7 @@ export class abyssVersion extends plugin {
 
   /**深渊版本 */
   async abyssVersion () {
+    this.path += '/Version/';
     if (!fs.existsSync(this.path)) {
       await this.e.reply('还没下载资源包，深渊版本功能用不了捏');
       return false;
@@ -45,7 +46,7 @@ export class abyssVersion extends plugin {
     let version = /^#?([1-9]\.\d)深渊$/.exec(this.e.msg)[1];
     if(!version) return false;
 
-    this.path += `/Version/${version}`;
+    this.path += version;
     if (!fs.existsSync(this.path)) {
       await this.e.reply('暂无此版本');
       return false;
@@ -66,10 +67,14 @@ export class abyssVersion extends plugin {
 
   /** 12层历史 */
   async history12 () {
+    this.path += '/Version/history12';
+    if (!fs.existsSync(this.path)) {
+      await this.e.reply('还没下载资源包，深渊版本功能用不了捏');
+      return false;
+    }
+
     let room = /^#?历代12(层|-[1-3])?(最低输出量)?$/.exec(this.e.msg)[1];
     if (!room) return false;
-
-    this.path += '/Version/history12';
 
     let msg = [];
 
@@ -87,10 +92,14 @@ export class abyssVersion extends plugin {
   }
 
   async teamRefer () {
+    this.path += 'Teams/';
+    if (!fs.existsSync(this.path)) {
+      await this.e.reply('还没下载资源包，深渊版本功能用不了捏');
+      return false;
+    }
+
     let ver = /^#?([1-9]\.\d)深渊?阵容(参考|推荐)?$/.exec(this.e.msg)[1];
     if (!ver) return false;
-
-    this.path += 'Teams/';
 
     let img = `${this.path}卡玛sei亚/${ver}.png`;
     if (!fs.existsSync(img)) {
