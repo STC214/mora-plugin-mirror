@@ -106,7 +106,7 @@ export class abyssVersion extends plugin {
       await this.e.reply(`暂无${ver}深渊阵容`);
       return false;
     }
-    await this.e.reply(img);
+    await this.e.reply(segment.image(`file://${img}`));
     return true;
   }
 }
