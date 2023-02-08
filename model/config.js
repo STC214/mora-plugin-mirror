@@ -80,7 +80,7 @@ class moracfg {
 				path += 'GenshinBanners'
 				break;
 			case 'role':
-				path += 'RoleGuides'
+				path += 'Roles'
 				break;
 			case 'team':
 				path += 'TeamGuides'

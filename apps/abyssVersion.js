@@ -92,7 +92,7 @@ export class abyssVersion extends plugin {
   }
 
   async teamRefer () {
-    this.path += 'Teams/';
+    this.path += '/Teams/';
     if (!fs.existsSync(this.path)) {
       await this.e.reply('还没下载资源包，深渊版本功能用不了捏');
       return false;

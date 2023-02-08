@@ -75,12 +75,18 @@ export class roleGuides extends plugin{
     }
 
     // TODO: 同作者res、data的进行整合
-    let res = fs.readdirSync(this.resPath);
-    let resdir = this.resImg(role.name, res);
     let guide = _.concat(this.uploader.news, this.uploader.olds);
+    // let dir = _.take(fs.readdirSync(this.defpath), 4);
+    // let sources = _.mapValues(guide,)
+
+    // return true;
+    let res = fs.readdirSync(`${this.resPath}/Guides`);
+    let resdir = this.resImg(role.name, res);
     let dir = this.dirPath(role.name, this.uploader.news);
     let addons = fs.readdirSync(`${this.path}/add_ons`);
     let addon_img = this.addonImg(role.name, addons);
+
+
     
     msg.push(...resdir);
 
@@ -115,12 +121,12 @@ export class roleGuides extends plugin{
   resImg (name, res) {
     let msg = [];
     let resdir = _.map(res, (v) => {
-      let role = fs.readdirSync(`${this.resPath}/${v}`);
+      let role = fs.readdirSync(`${this.resPath}/Guides/${v}`);
       role = _.filter(role, (r) => _.includes(r, name));
       if (_.isEmpty(role)) {
         return false;
       } else {
-        return `${this.resPath}/${v}/${role}`;
+        return `${this.resPath}/Guides/${v}/${role}`;
       }
     });
     
