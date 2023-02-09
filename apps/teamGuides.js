@@ -5,7 +5,12 @@ import _ from 'lodash';
 import { segment } from 'oicq';
 import gsCfg from '../../genshin/model/gsCfg.js';
 import moracfg from '../model/config.js';
+import commonTools from '../model/commonTools.js';
 
+/** 
+ * 
+ * @author Rrrrrrray
+ */
 export class teamGuides extends plugin {
   constructor () {
     super ({
@@ -44,7 +49,7 @@ export class teamGuides extends plugin {
       return false;
     }
     if (!teams.find) {
-      await this.e.reply(`暂无${query}配队`);
+      await this.e.reply(`暂无${query}配队捏`);
       return false;
     }
 
@@ -93,16 +98,14 @@ export class teamGuides extends plugin {
       let role = gsCfg.getRole(query);
       if(!role) return false;
       /** 主角特殊处理 */
-      if (['10000005', '10000007', '20000000'].includes(String(role.roleId))) {
-        let travelers = ['风主', '岩主', '雷主', '草主'];
-        if (!travelers.includes(role.alias)) {
-          travelers = _.map(travelers, (v) => `${v}配队`);
-          traveler = `请选择${query}配队：${_.join(travelers, '、')}`;
-          find = false;
-        } else {
-          role.name = role.alias;
+      if (commonTools.travelerID().includes(String(role.roleId))) {
+        traveler = commonTools.traveler(role.alias, query, '配队');
+        if (_.isEqual(role.alias, traveler)) {
+          role.name = traveler;
+          traveler = '';
         }
       }
+
       let roles = _.mapValues(teams, 'role');
       roles = _.pickBy(roles, (v) => v.includes(role.name));
       names = _.keys(roles);

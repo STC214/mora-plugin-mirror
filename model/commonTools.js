@@ -3,6 +3,7 @@ import common from '../../../lib/common/common.js';
 import { pluginPath } from "../components/index.js";
 import gsCfg from "../../genshin/model/gsCfg.js";
 import moment from 'moment';
+import _ from 'lodash';
 
 class commonTools {
   constructor () {
@@ -150,6 +151,21 @@ class commonTools {
     let res = await fetch(url);
     if (res.ok) {
       return await common.downFile(url, path);
+    }
+  }
+
+  travelerID () {
+    return ['10000005', '10000007', '20000000'];
+  }
+
+  /** 主角特殊处理 */
+  traveler (alias, name, type) {
+    let travelers = ['风主', '岩主', '雷主', '草主'];
+    if (!travelers.includes(alias)) {
+      travelers = _.map(travelers, (v) => `${v}${type}`);
+      return `请选择${name}${type}：${_.join(travelers, '、')}`;
+    } else {
+      return alias;
     }
   }
 }

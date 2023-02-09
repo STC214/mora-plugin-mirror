@@ -11,14 +11,16 @@ import moracfg from '../model/config.js';
  * 借鉴原云崽攻略代码
  * 默认覆盖所有【xx攻略】原指令，不想覆盖可以把priority调整为5000
  * 攻略来自米游社
+ * @author Rrrrrrray
+ * !!!禁止倒卖
  */
 const _path = process.cwd();
 
 export class roleGuides extends plugin{
   constructor(){
     super({
-      name: '米游社攻略一图流',
-      dsc: '米游社攻略一图流',
+      name: '米游社角色攻略',
+      dsc: '米游社角色攻略',
       event: 'message',
       priority: 5,
       rule: [
@@ -26,6 +28,10 @@ export class roleGuides extends plugin{
           reg: '^#?(更新)?\\S+(攻略|一图流)$',
           fnc: 'roleGuide'
         },
+        {
+          reg: '^#?\\S+(参考面板|收益曲线)$',
+          fnc: 'roleRef'
+        }
       ]
     })
     this.defpath = `${_path}/data/strategy/`;
@@ -60,55 +66,35 @@ export class roleGuides extends plugin{
 
     this.path += 'roleGuides';
 
-    let msg = [];
     /** 主角特殊处理 */
-    if (['10000005', '10000007', '20000000'].includes(String(role.roleId))) {
-      let travelers = ['风主', '岩主', '雷主', '草主'];
-      if (!travelers.includes(role.alias)) {
-        travelers = _.map(travelers, (v) => `${v}攻略`);
-        msg = `请选择${roleName}攻略：${_.join(travelers, '、')}`;
-        await this.e.reply(msg);
-        return;
+    if (commonTools.travelerID().includes(String(role.roleId))) {
+      let traveler = commonTools.traveler(role.alias, roleName, '攻略');
+      if (_.isEqual(role.alias, traveler)) {
+        role.name = traveler;
       } else {
-        role.name = role.alias;
+        await this.e.reply(traveler);
+        return;
       }
     }
-
-    // TODO: 同作者res、data的进行整合
-    let guide = _.concat(this.uploader.news, this.uploader.olds);
-    // let dir = _.take(fs.readdirSync(this.defpath), 4);
-    // let sources = _.mapValues(guide,)
-
-    // return true;
-    let res = fs.readdirSync(`${this.resPath}/Guides`);
-    let resdir = this.resImg(role.name, res);
-    let dir = this.dirPath(role.name, this.uploader.news);
-    let addons = fs.readdirSync(`${this.path}/add_ons`);
-    let addon_img = this.addonImg(role.name, addons);
-
-
     
-    msg.push(...resdir);
+    let guide = _.concat(this.uploader.news, this.uploader.olds);
+    let res_dir = this.findPack(`${this.resPath}/Guides`, role.name);
+    let add_dir = this.findPack(`${this.path}/add_ons`, role.name);
+    let dir = this.dirPath(role.name, res_dir, add_dir);
 
+    let msg = [...res_dir];
     for (let i in dir) {
-      if (res.includes(guide[i].source)) {
-        continue;
-      }
-      if (addons.includes(guide[i].source)) {
-        continue;
-      }
       let success = true;
       if (!fs.existsSync(dir[i]) || isUpdate) {
         success = await this.getImg(role.name, guide[i], dir[i]);
       }  
       if (success) {
-        msg.push(segment.image(`file://${dir[i]}`));
+        msg.push(dir[i]);
       } 
     }
 
-    msg.push(...addon_img);
-
-    if (msg.length === 0) {
+    msg = _.map(_.uniq(msg), v => segment.image(v));
+    if (_.isEmpty(msg)) {
       await this.e.reply('暂无攻略数据，请稍后再试');
       return false;
     }
@@ -117,55 +103,95 @@ export class roleGuides extends plugin{
     return true;
   }
 
-  /** 资源包 */
-  resImg (name, res) {
-    let msg = [];
-    let resdir = _.map(res, (v) => {
-      let role = fs.readdirSync(`${this.resPath}/Guides/${v}`);
-      role = _.filter(role, (r) => _.includes(r, name));
-      if (_.isEmpty(role)) {
-        return false;
+  async roleRef () {
+    let match = /^#?(\S+)(参考面板|收益曲线)$/.exec(this.e.msg);
+    let roleName = match[1];
+    let type = match[2];
+
+    if (_.isEqual(type, '参考面板')) {
+      this.resPath += '/RefStat';
+    } else {
+      this.resPath += '/YieldCurve';
+      return false;
+    }
+    if (!fs.existsSync(this.resPath)) {
+      await this.e.reply(`还没下载资源包，角色${type}功能用不了捏`);
+      return false;
+    }
+
+    let role = gsCfg.getRole(roleName);
+    if(!role) return false;
+    /** 主角特殊处理 */
+    if (commonTools.travelerID().includes(String(role.roleId))) {
+      let traveler = commonTools.traveler(role.alias, roleName, type);
+      if (_.isEqual(role.alias, traveler)) {
+        role.name = traveler;
       } else {
-        return `${this.resPath}/Guides/${v}/${role}`;
+        await this.e.reply(traveler);
+        return;
       }
-    });
-    
-    _.each(resdir, (v) => {
-      if (fs.existsSync(v)) {
-        msg.push(segment.image(`file://${v}`));
-      }
-    });
-    return msg;
+    }
+
+    let img = fs.readdirSync(this.resPath);
+    img = _.filter(img, v => _.includes(v, role.name));
+    if (_.isEmpty(img)) {
+      await this.e.reply(`暂无${query}${type}捏`);
+      return;
+    }
+
+    img = _.map(img, v => `${this.resPath}/${v}`)[0];
+    let msg = segment.image(`file://${img}`);
+    await this.e.reply([msg, `\n※来源：米游社 @blue菌hehe ※`]);
+    return true;
   }
 
-  /** 路径处理 */
-  dirPath (name, news) {
-    let dir = _.take(fs.readdirSync(this.defpath), 4);
-    dir = _.map(dir, (v) => `${this.defpath + v}/${name}.jpg`);
+  // 找本地图片
+  findPack (path, name) {
+    let _sources = fs.readdirSync(path);
+    let dir = [];
+    _.each(_sources, (author) => {
+      let _roles = fs.readdirSync(`${path}/${author}`);
+      _roles = _.filter(_roles, (r) => _.includes(r, name));
+      let au_path = _.isEmpty(_roles) ? false : `${path}/${author}/${_roles[0]}`;
+      dir.push(au_path);
+    });
 
-    let newdir = _.map(news, (v) => `${this.path}/${v.source}/${name}.jpg`);
-
-    dir = _.concat(newdir, dir);
-
+    dir = _.filter(dir, (v) => !!v);
     return dir;
   }
 
-  /** 附加包 */
-  addonImg (name, addons) {
-    let msg = [];
-    let addondir = _.map(addons, (v) => `${this.path}/add_ons/${v}/${name}.jpg`);
-    addondir = _.filter(addondir, (v) => fs.existsSync(v));
+  /** 路径处理 */
+  dirPath (name, res, add) {
+    let olds = _.map(this.uploader.olds, (v) => v.source);
+    let news = _.map(this.uploader.news, (v) => v.source);
+    let dir = _.take(fs.readdirSync(this.defpath), 4);
 
-    _.each(addondir, (v) => {
-      if (fs.existsSync(v)) {
-        msg.push(segment.image(`file://${v}`));
-      }
+    let _dir = [];
+    // news
+    _.each(news, (n) => {
+      let _path = `${this.path}/${n}/${name}.jpg`;
+      _.each(res, (r) => {
+        if (_.includes(r, n)) {
+          _path = r;
+        }
+      });
+      _dir.push(_path);
     });
-
-    return msg;
+    // olds
+    _.each(olds, (o, idx) => {
+      let _def = `${this.defpath}${idx + 1}/${name}.jpg`;
+      _.each(add, (a) => {
+        if (_.includes(a, o)) {
+          _def = a;
+        }
+      });
+      _dir.push(_def);
+    });
+    
+    dir = _.concat(_dir, add);
+    dir = _.uniq(dir);
+    return dir;
   }
-
-
 
   /**
    * 下载攻略图
