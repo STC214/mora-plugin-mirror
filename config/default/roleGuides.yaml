@@ -18,9 +18,6 @@ news:
   - source: 坤易
     collection_id: 
       - 22148
-  - source: Asgater
-    collection_id:
-      - 613
   #新增攻略合集来源 请在下面添加(注意空格)
   # - source: 攻略up名字
   #   collection_id:
