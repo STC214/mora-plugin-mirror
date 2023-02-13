@@ -50,3 +50,4 @@ git clone https://github.com/Rrrrrrray/mora-plugin.git ./plugins/mora-plugin/
 | [茗血茶](https://www.miyoushe.com/ys/collection/1070358) | 配队一图流 |
 | [妮可少年](https://bbs.nga.cn/read.php?tid=31508898) | 深渊历史原魔阵容 |
 | [卡玛sei亚](https://www.miyoushe.com/ys/collection/491538) | 深渊阵容、各系配队 |
+| [blue菌hehe](https://www.miyoushe.com/ys/collection/10772) | 参考面板、收益曲线 |
