@@ -114,7 +114,7 @@ export class roleGuides extends plugin{
     let refPath = `${this.resPath}/RefStat`;
     let curvePath = `${this.resPath}/YieldCurve`;
     if (!fs.existsSync(refPath) && !fs.existsSync(curvePath)) {
-      await this.e.reply(`还没下载资源包，角色进阶攻略功能用不了捏`);
+      await this.e.reply(`还没下载资源包，角色进阶参考功能用不了捏`);
       return false;
     }
 
@@ -122,7 +122,7 @@ export class roleGuides extends plugin{
     if(!role) return false;
     /** 主角特殊处理 */
     if (commonTools.travelerID().includes(String(role.roleId))) {
-      let traveler = commonTools.traveler(role.alias, roleName, '进阶攻略');
+      let traveler = commonTools.traveler(role.alias, roleName, '进阶参考');
       if (_.isEqual(role.alias, traveler)) {
         role.name = traveler;
       } else {
@@ -136,7 +136,7 @@ export class roleGuides extends plugin{
     let curve = fs.readdirSync(curvePath);
     curve = _.filter(curve, v => _.includes(v, role.name));
     if (_.isEmpty(ref) && _.isEmpty(curve)) {
-      await this.e.reply(`暂无${role.name}进阶攻略捏`);
+      await this.e.reply(`暂无${role.name}进阶参考捏`);
       return;
     }
 
@@ -152,7 +152,7 @@ export class roleGuides extends plugin{
       }
     }
     
-    await this.e.reply(await common.makeForwardMsg(this.e, _.compact(msg), `${role.name}进阶攻略 @blue菌hehe`));
+    await this.e.reply(await common.makeForwardMsg(this.e, _.compact(msg), `${role.name}进阶参考 @blue菌hehe`));
     return true;
   }
 
