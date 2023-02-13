@@ -29,8 +29,12 @@ export class roleGuides extends plugin{
           fnc: 'roleGuide'
         },
         {
-          reg: '^#?\\S+(参考面板|收益曲线)$',
+          reg: '^#?\\S+(参考面板|收益曲线|进阶(攻略|参考)?)$',
           fnc: 'roleRef'
+        },
+        {
+          reg: '^#?收益曲线帮助$',
+          fnc: 'curveHelp'
         }
       ]
     })
@@ -104,18 +108,13 @@ export class roleGuides extends plugin{
   }
 
   async roleRef () {
-    let match = /^#?(\S+)(参考面板|收益曲线)$/.exec(this.e.msg);
+    let match = /^#?(\S+)(参考面板|收益曲线|进阶(攻略|参考)?)$/.exec(this.e.msg);
     let roleName = match[1];
-    let type = match[2];
 
-    if (_.isEqual(type, '参考面板')) {
-      this.resPath += '/RefStat';
-    } else {
-      this.resPath += '/YieldCurve';
-      return false;
-    }
-    if (!fs.existsSync(this.resPath)) {
-      await this.e.reply(`还没下载资源包，角色${type}功能用不了捏`);
+    let refPath = `${this.resPath}/RefStat`;
+    let curvePath = `${this.resPath}/YieldCurve`;
+    if (!fs.existsSync(refPath) && !fs.existsSync(curvePath)) {
+      await this.e.reply(`还没下载资源包，角色进阶攻略功能用不了捏`);
       return false;
     }
 
@@ -123,7 +122,7 @@ export class roleGuides extends plugin{
     if(!role) return false;
     /** 主角特殊处理 */
     if (commonTools.travelerID().includes(String(role.roleId))) {
-      let traveler = commonTools.traveler(role.alias, roleName, type);
+      let traveler = commonTools.traveler(role.alias, roleName, '进阶攻略');
       if (_.isEqual(role.alias, traveler)) {
         role.name = traveler;
       } else {
@@ -132,16 +131,42 @@ export class roleGuides extends plugin{
       }
     }
 
-    let img = fs.readdirSync(this.resPath);
-    img = _.filter(img, v => _.includes(v, role.name));
-    if (_.isEmpty(img)) {
-      await this.e.reply(`暂无${query}${type}捏`);
+    let ref = fs.readdirSync(refPath);
+    ref = _.filter(ref, v => _.includes(v, role.name));
+    let curve = fs.readdirSync(curvePath);
+    curve = _.filter(curve, v => _.includes(v, role.name));
+    if (_.isEmpty(ref) && _.isEmpty(curve)) {
+      await this.e.reply(`暂无${role.name}进阶攻略捏`);
       return;
     }
 
-    img = _.map(img, v => `${this.resPath}/${v}`)[0];
-    let msg = segment.image(`file://${img}`);
-    await this.e.reply([msg, `\n※来源：米游社 @blue菌hehe ※`]);
+    ref = _.map(ref, v => segment.image(`file://${refPath}/${v}`));
+    curve = _.map(curve, v => segment.image(`file://${curvePath}/${v}`));
+    let msg = [...ref, '', ...curve];
+
+    let notes = this.advancedInfo(role.name);
+    if (notes) {
+      msg[1] = `圣遗物思路推荐：\n${notes.arti}`;
+      if (!_.isEmpty(notes.brief)) {
+        msg.push(`【蓝佬小课堂】：\n${notes.brief}`);
+      }
+    }
+    
+    await this.e.reply(await common.makeForwardMsg(this.e, _.compact(msg), `${role.name}进阶攻略 @blue菌hehe`));
+    return true;
+  }
+
+  async curveHelp () {
+    this.resPath += '/YieldCurve';
+    if (!fs.existsSync(this.resPath)) {
+      await this.e.reply(`还没下载资源包，收益曲线功能用不了捏`);
+      return false;
+    }
+
+    let refUrl = '曲线详细帮助：\n收益曲线说明书：https://www.miyoushe.com/ys/article/28119112\n《属性收益论》：https://www.miyoushe.com/ys/article/34217426\n《属性收益论》附录：https://www.miyoushe.com/ys/article/35015246';
+    let msg = [segment.image(`file://${this.resPath}/帮助.png`), '角色默认配置：五星0命，四星满命，天赋满级', refUrl];
+    
+    await this.e.reply(await common.makeForwardMsg(this.e, msg, '收益曲线帮助 @blue菌hehe'));
     return true;
   }
 
@@ -193,6 +218,19 @@ export class roleGuides extends plugin{
     return dir;
   }
 
+  advancedInfo (name) {
+    let artiRef = moracfg.getfileYaml(`${this.resPath}/YieldCurve/`, 'RefNotes');
+    let arti = _.pick(artiRef, name);
+    arti = arti[name];
+    if (_.isEmpty(arti)) {
+      return false;
+    } else {
+      return {
+        arti: `主词条：${arti.mainProp}\n副词条：${arti.viceProp}`,
+        brief: arti.brief,
+      };
+    }
+  }
   /**
    * 下载攻略图
    * @param {String} name 角色名;
