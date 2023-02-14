@@ -79,7 +79,7 @@ export class abyssVersion extends plugin {
     let msg = [];
 
     if (room === '层') {
-      let pics = fs.readdirSync(this.path);;
+      let pics = fs.readdirSync(this.path);
       _.each(pics, (v) => msg.push(segment.image(`file://${this.path}/${v}`)));
       await this.e.reply(await common.makeForwardMsg(this.e, msg, `历代深渊12层最低输出量`));
     } else {

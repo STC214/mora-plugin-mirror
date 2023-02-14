@@ -1,9 +1,6 @@
 import plugin from '../../../lib/plugins/plugin.js';
-import commonTools from '../model/commonTools.js';
-import fetch, { Headers } from 'node-fetch';
+import AkashaDB from '../model/AkashaDB.js';
 import puppeteer from '../../../lib/puppeteer/puppeteer.js';
-import gsCfg from '../../genshin/model/gsCfg.js';
-
 export class AkashaAbyss extends plugin {
   constructor () {
     super({
@@ -18,11 +15,6 @@ export class AkashaAbyss extends plugin {
         },
       ]
     });
-    this.abyss_url = 'https://akashadata.com/static/data/abyss_total.js?v=';
-    const meta = {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.42"
-    }
-    this.myHeaders = new Headers(meta);
   }
 
   /**
@@ -37,58 +29,11 @@ export class AkashaAbyss extends plugin {
       rarity = 4;
     }
 
-    let data = await this.getData(this.abyss_url);    
+    let data = await new AkashaDB(this.e).getData(rarity);
+    if (!data) return false;
 
-    let usageData = {
-      abyssVersion: data.schedule_version_desc,
-      updateTime: data.modify_time,
-      characterList: this.listFilter(data.character_used_list, rarity),
-    }
-    let render = await commonTools.getRenderData('Akasha', 'abyss', usageData);
-    let img = await puppeteer.screenshot('AkashaAbyss', render);
-    if (img) await this.reply(img);
-  }
-
-
-
-  /**
-   * 获取数据
-   * @param {String} url 请求地址
-   * @returns json数据
-   */
-  async getData (url) {
-    let v = Math.random() * 10;
-    url += v;
-    console.log(url);
-    let response = await fetch(url, { headers: this.myHeaders, method: 'get', redirect: 'follow' });
-    if (!response.ok) {
-      return false;
-    }
-    
-    let res = await response.text();
-    res = JSON.parse(res.split('=')[1]);
-    return res;
-  }
-
-  /**
-   * 筛选数据
-   * @param {Array} list 原数据
-   * @param {Number} rarity 稀有度(筛选条件)
-   * @returns 筛选后的数据
-   */
-  listFilter (list, rarity) {
-    let rarityList = [];
-    for (let i in list) {
-      let role = gsCfg.getRole(list[i].name);
-      list[i].name = role.name;
-      if (list[i].rarity === rarity) {
-        rarityList.push(list[i]);
-      }
-    }
-    if (rarity) {
-      list = rarityList;
-    }
-
-    return list;
+    let img = await puppeteer.screenshot('AkashaAbyss', data); 
+    if (img) await this.e.reply(img);
+    return true;
   }
 }
