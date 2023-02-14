@@ -11,7 +11,6 @@ export default class team extends moraBase{
   constructor (e) {
     super(e);
     this.path = moracfg.getMoraPlus('team');
-    this.file = 'teamGuides.yaml';
   }
 
   async guides (query) {
