@@ -4,7 +4,7 @@ import moment from 'moment';
 import fs from 'node:fs';
 import { segment } from 'oicq';
 import moraBase from './moraBase.js';
-import moracfg from '../model/config.js';
+import moracfg from './config.js';
 import common from '../../../lib/common/common.js';
 
 export default class banner extends moraBase {

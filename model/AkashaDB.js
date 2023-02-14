@@ -1,7 +1,7 @@
-import moraBase from "./moraBase.js";
+import moraBase from './moraBase.js';
 import fetch, { Headers } from 'node-fetch';
 import gsCfg from '../../genshin/model/gsCfg.js';
-import _ from "lodash";
+import _ from 'lodash';
 import commonTools from './commonTools.js';
 
 export default class AkashaDB extends moraBase{
