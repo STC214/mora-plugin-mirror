@@ -1,6 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import AkashaDB from '../model/AkashaDB.js';
 import puppeteer from '../../../lib/puppeteer/puppeteer.js';
+
 export class AkashaAbyss extends plugin {
   constructor () {
     super({
@@ -13,8 +14,14 @@ export class AkashaAbyss extends plugin {
           reg: '^#?虚空深渊(五星|四星)?使用率$',
           fnc: 'akashaUsageRate'
         },
-      ]
+      ],
+      
     });
+    this.task = {
+      name: '虚空数据库',
+      fnc: () => this.akashaData(),
+      cron: '0 0 */2 * * ?'
+    };
   }
 
   /**
@@ -29,11 +36,16 @@ export class AkashaAbyss extends plugin {
       rarity = 4;
     }
 
-    let data = await new AkashaDB(this.e).getData(rarity);
+    let data = await new AkashaDB(this.e).getUsageRate(rarity);
     if (!data) return false;
 
     let img = await puppeteer.screenshot('AkashaAbyss', data); 
     if (img) await this.e.reply(img);
     return true;
+  }
+
+  async akashaData () {
+    logger.mark('虚空数据：更新中...');
+    return await new AkashaDB(this.e).getData();
   }
 }
