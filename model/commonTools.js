@@ -1,8 +1,6 @@
 import fetch from "node-fetch";
 import common from '../../../lib/common/common.js';
-import { pluginPath } from "../components/index.js";
-import gsCfg from "../../genshin/model/gsCfg.js";
-import moment from 'moment';
+import { pluginPath, moraVersion, yunzaiVersion } from "../components/Changelog.js";
 import _ from 'lodash';
 
 class commonTools {
@@ -37,6 +35,7 @@ class commonTools {
 			tplFile: `${pluginPath}/resources/html/${parent}/${model}.html`,
       pluResPath: `${pluginPath}/resources/`,
       profilePic: this.rolePicPath,
+      watermark: `Created By Yunzai-Bot ${yunzaiVersion} & Mora-Plugin ${moraVersion}`,
       quality: 100,
 			...data,
 		}
