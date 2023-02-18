@@ -1,25 +1,25 @@
 @font-face {
-  font-family: "问藏书房";
-  src: url("../../问藏书房.ttf");
-  font-weight: normal;
-  font-style: normal;
+  font-family: "SourceHanSerifCN-Heavy";
+  src: url("../../font/SourceHanSerifCN-Heavy.otf");
+  font-weight: bolder;
+  font-style: bolder;
 }
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   user-select: none;
-  font-family: "问藏书房";
+  font-family: "SourceHanSerifCN-Heavy";
 }
 body {
   font-size: 16px;
-  font-family: "问藏书房";
+  font-family: "SourceHanSerifCN-Heavy";
   transform: scale(1.2);
   transform-origin: 0 0;
   color: #f5f6f7;
-  width: 1920px;
-  height: 1080px;
-  background-image: url(../../img/Abyss_bg2.jpg);
+  width: 3000px;
+  height: 1688px;
+  background-image: url(../../img/background/AbyssUR_bg.webp);
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -49,49 +49,71 @@ body {
 
 }
 
-.container .card-header {
-  display: inline-block;
+.container .con-left {
+  width: 70%;
+  float: left;
+  padding-left: 2%;
+}
+.container .con-right {
+  width: 30%;
+  float: left;
+  padding-right: 3%;
+}
+
+
+.container .con-right .card-header {
+  /* display: inline-block;
+  position: relative; */
   align-items: center;
   margin: .5rem;
   margin-left: 20px;
   margin-top: 20px;
   flex-direction: column!important;
   justify-content: center;
-  text-align: center;
+  text-align: right;
   text-shadow: rgba(210,180,140,0.36) 0px 0px 19px;
 }
 
-.container .card-header .title {
+.container .con-right .card-header .title {
   font-weight: 600!important;
-  font-size: 3rem; 
+  font-size: 10rem; 
   color: #FFFFFF!important;
   margin: 0 .75rem 0 0;
   flex-wrap: wrap;
   letter-spacing: 3px;
 }
 
-.container .card-header .time {
+.container .con-right .card-header .time {
   font-weight: 500!important;
   font-size: 1.5rem;
   color: #a1a5e6!important;
   padding-top: .5rem!important;
 }
 
-.container .card-body {
+.container .con-left .card-body {
   flex: 1 1 auto;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+  padding-top: 20px;
+}
+
+.split {
+  padding-bottom: 20px;
+}
+
+.split img {
+  width: 66%;
 }
 
 .card-left {
-  width: 10%;
-  text-align: center;
+  width:100%
 }
 
 .card-right {
-  width: 90%;
+  width: 95%;
+  margin: 0 5%;
 }
 
 .star-style{
@@ -109,27 +131,27 @@ body {
   position: relative;
   display: inline-block;
   vertical-align: middle;
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 160px;
   background-size: cover;
   background-color: transparent;
-  border-radius: 3px;
+  /* border-radius: 3px; */
   overflow: hidden;
-  background: rgba( 255, 255, 255, 0.2 );
+  /* background: rgba( 255, 255, 255, 0.2 );
   box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
   backdrop-filter: blur( 5px );
   -webkit-backdrop-filter: blur( 5px );
   border-radius: 10px;
-  border: 1px solid rgba( 255, 255, 255, 0.18 );
+  border: 1px solid rgba( 255, 255, 255, 0.18 ); */
 }
 
 .container .card-body .card img {
-  width: 90px;
-  height: 90px;
+  width: 140px;
+  height: 150px;
   margin: 4px;
   vertical-align: 0;
   /* float: left; */
-  border-radius: 10px;
+  /* border-radius: 10px; */
   overflow: hidden;
   background-size: 100%;
   background-repeat: no-repeat;
@@ -152,7 +174,7 @@ body {
   text-shadow: rgba(240,225,185,0.8) 0px 0px 19px;
 }
 
-.bg5 {
+/* .bg5 {
   background-image: url(../../../../genshin/resources/img/other/bg5.png);
   background-size: 100%;
   background-repeat: no-repeat;
@@ -161,11 +183,11 @@ body {
 .bg4 {
   background-image: url(../../../../genshin/resources/img/other/bg4.png);
   background-size: 100%;
-  background-repeat: no-repeat;
-}
+  background-repeat: no-repeat; 
+}*/
 
 .footer {
-  margin-bottom: 10px;
+  /* margin-bottom: 5px; */
   font-weight: 600;
   font-size: 20px;
   text-align: center;

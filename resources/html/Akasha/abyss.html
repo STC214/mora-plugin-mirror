@@ -8,97 +8,89 @@
   </head>
   <body>
     <div class="container">
-      <!-- 头部标题 -->
-      <div class="card-header">
-        <span class="title">{{ abyssVersion }}深渊12层使用率</span>
-        <span class="time">更新时间：{{ updateTime }}</span>
-      </div>
-      <!-- 使用率75%+ -->
-      <div class="card-body">
-        <div class="card-left">
-          <% for(let i = 0; i < 5; i++){ %>
-          <i class="fa fa-star fa-2x star-style" aria-hidden="true"></i>
-          <% } %>
-        </div>
-        <div class="card-right">
-          {{ each characterList character }}
-          {{ if character.value >= 75 }}
-          <div class="card">
-            <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
-            <span>{{ character.value }}%</span>
+      <div class="con">
+        <div class="con-left">
+          <!-- 使用率75%+ -->
+          <div class="card-body">
+            <div class="card-right">
+              <div class="split"><img src="{{pluResPath}}img/separator/split100.png" ></div>
+              {{ each characterList character }}
+              {{ if character.value >= 75 }}
+              <div class="card">
+                <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name }}.png" />
+                <span>{{ character.value }}%</span>
+              </div>
+              {{ /if}}
+              {{ /each }}
+            </div>
           </div>
-          {{ /if}}
-          {{ /each }}
-        </div>
-      </div>
-      <!-- 使用率50%+ -->
-      <div class="card-body">
-        <div class="card-left">
-          <% for(let i = 0; i < 4; i++){ %>
-          <i class="fa fa-star fa-2x star-style" aria-hidden="true"></i>
-          <% } %>
-        </div>
-        <div class="card-right">
-          {{ each characterList character }}
-          {{ if character.value < 75 && character.value >= 50 }}
-          <div class="card">
-            <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
-            <span>{{ character.value }}%</span>
+          <!-- 使用率50%+ -->
+          <div class="card-body">
+            <div class="card-right">
+              <div class="split"><img src="{{pluResPath}}img/separator/split75.png"></div>
+              {{ each characterList character }}
+              {{ if character.value < 75 && character.value >= 50 }}
+              <div class="card">
+                <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name }}.png" />
+                <span>{{ character.value }}%</span>
+              </div>
+              {{ /if}}
+              {{ /each }}
+            </div>
           </div>
-          {{ /if}}
-          {{ /each }}
-        </div>
-      </div>
-      <!-- 使用率25%+ -->
-      <div class="card-body">
-        <div class="card-left">
-          <% for(let i = 0; i < 3; i++){ %>
-          <i class="fa fa-star fa-2x star-style" aria-hidden="true"></i>
-          <% } %>
-        </div>
-        <div class="card-right">
-          {{ each characterList character }}
-          {{ if character.value < 50 && character.value >= 25 }}
-          <div class="card">
-            <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
-            <span>{{ character.value }}%</span>
+          <!-- 使用率25%+ -->
+          <div class="card-body">
+            <div class="card-right">
+              <div class="split"><img src="{{pluResPath}}img/separator/split50.png"></div>
+              {{ each characterList character }}
+              {{ if character.value < 50 && character.value >= 25 }}
+              <div class="card">
+                <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name }}.png" />
+                <span>{{ character.value }}%</span>
+              </div>
+              {{ /if}}
+              {{ /each }}
+            </div>
           </div>
-          {{ /if}}
-          {{ /each }}
+        </div>
+        <!-- 头部标题 -->
+        <div class="con-right">
+          <div class="card-header">
+            <div class="title">{{ abyssVersion }}</div>
+            <div class="title">深渊<font color="red">12层</font></div>
+            <div class="title">使用率</div>
+            <div class="time">{{ updateTime }}</div>
+          </div>
         </div>
       </div>
       <!-- 使用率10%+ -->
-      <div class="card-body">
-        <div class="card-left">
-          <% for(let i = 0; i < 2; i++){ %>
-          <i class="fa fa-star fa-2x star-style" aria-hidden="true"></i>
-          <% } %>
-        </div>
-        <div class="card-right">
-          {{ each characterList character }}
-          {{ if character.value < 25 && character.value >= 10 }}
-          <div class="card">
-            <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
-            <span>{{ character.value }}%</span>
+      <div class="card-left">
+        <div class="card-body">
+          <div class="card-right">
+            <div class="split"><img src="{{pluResPath}}img/separator/split25.png"></div>
+            {{ each characterList character }}
+            {{ if character.value < 25 && character.value >= 10 }}
+            <div class="card">
+              <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name }}.png" />
+              <span>{{ character.value }}%</span>
+            </div>
+            {{ /if}}
+            {{ /each }}
           </div>
-          {{ /if}}
-          {{ /each }}
         </div>
-      </div>
-      <!-- 使用率10%- -->
-      <div class="card-body">
-        <div class="card-left">
-          <i class="fa fa-star fa-2x star-style" aria-hidden="true"></i>
-        </div>
-        <div class="card-right">
-          {{ each characterList character }}
-          {{ if character.value < 10 }}
-          <div class="card">
-            <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name==='主角'?'空':character.name }}.png" />
-            <span>{{ character.value }}%</span>
+        <!-- 使用率10%- -->
+        <div class="card-body">
+          <div class="card-right">
+            <div class="split"><img src="{{pluResPath}}img/separator/split10.png"></div>
+            {{ each characterList character }}
+            {{ if character.value < 10 }}
+            <div class="card">
+              <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name }}.png" />
+              <span>{{ character.value }}%</span>
+            </div>
+            {{ /if}}
+            {{ /each }}
           </div>
-          {{ /if}}
-          {{ /each }}
         </div>
       </div>
       <!-- 脚部水印 -->

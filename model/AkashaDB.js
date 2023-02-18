@@ -3,7 +3,6 @@ import fetch, { Headers } from 'node-fetch';
 import gsCfg from '../../genshin/model/gsCfg.js';
 import _ from 'lodash';
 import commonTools from './commonTools.js';
-import moracfg from '../model/config.js';
 
 export default class AkashaDB extends moraBase{
   constructor (e) {
@@ -41,9 +40,9 @@ export default class AkashaDB extends moraBase{
       v.name = role.name;
     });
 
-    _.each(res.team_list, team => {
-      team.tl = _.map(team.tl, i => role_res[i].name);
-    });
+    res.team_list = this.transTeamList(res.team_list, role_res);
+    res.team_up_list = this.transTeamList(res.team_up_list, role_res);
+    res.team_down_list = this.transTeamList(res.team_down_list, role_res);
 
     await redis.set(`${this.prefix}abyss_total`, JSON.stringify(res));
     return true;
@@ -55,10 +54,7 @@ export default class AkashaDB extends moraBase{
   * @returns json数据
   */
   async getUsageRate (rarity) {
-    if (!await redis.exists(`${this.prefix}abyss_total`)) {
-      await this.getData();
-    }
-    let data = JSON.parse(await redis.get(`${this.prefix}abyss_total`));
+    let data = await this.get_data();
     let usageData = {
       abyssVersion: data.schedule_version_desc,
       updateTime: data.modify_time,
@@ -66,10 +62,38 @@ export default class AkashaDB extends moraBase{
     }
 
     let render = await commonTools.getRenderData('Akasha', 'abyss', usageData);
-    
     return render;
   }
 
+  async getTeamsOV (half, sort, num) {
+    let data = await this.get_data();
+    let teamList = data.team_list;
+    let _sort = 'mr';
+    if (_.isEqual(half, '上半')) {
+      teamList = data.team_up_List;
+      _sort = 'umr';
+    } else if (_.isEqual(half, '下半')){
+      teamList = data.team_down_List;
+      _sort = 'dmr';
+    }
+    if (_.isEqual(sort, '满星率')) {
+      teamList = _.orderBy(teamList, [_sort], ['desc']);
+    }
+    teamList = _.take(teamList, num);
+    if (num > 20) {
+      teamList = _.chunk(teamList, 20);
+    }
+    let render = await commonTools.getRenderData('Akasha', 'teams', teamList);
+    return render;
+  }
+
+  async get_data () {
+    let key = `${this.prefix}abyss_total`;
+    if (!await redis.exists(key)) {
+      await this.getData();
+    }
+    return JSON.parse(await redis.get(key));
+  }
   /**
    * 筛选数据
    * @param {Array} list 原数据
@@ -80,6 +104,19 @@ export default class AkashaDB extends moraBase{
     if (rarity) {
       list = _.filter(list, v => _.isEqual(v.rarity, rarity));
     }
+    return list;
+  }
+
+  transTeamList (list, role_res) {
+    _.each(list, v => {
+      v.tl = _.map(v.tl, i => role_res[i].name);
+      v.mr = Number(v.mr);
+      v.uc = Number(v.uc);
+      v.dc = Number(v.dc);
+      v.umr = Number(v.umr);
+      v.dmr = Number(v.dmr);
+    });
+
     return list;
   }
 }

@@ -11,9 +11,12 @@ export class AkashaAbyss extends plugin {
       priority: 5,
       rule: [
         {
-          reg: '^#?虚空深渊(五星|四星)?使用率$',
+          reg: '^#?虚空(深渊)?(五星|四星)?使用率$',
           fnc: 'akashaUsageRate'
-        },
+        }, {
+          reg: '^#?虚空(深渊)?(上半|下半)?队伍(出战数|满星率)?([1-9][0-9]0?)?$',
+          fnc: 'teamsOverview'
+        }
       ],
       
     });
@@ -29,7 +32,7 @@ export class AkashaAbyss extends plugin {
    */
   async akashaUsageRate () {
     // 稀有度
-    let rarity = /^#?虚空深渊(五星|四星)?使用率$/.exec(this.e.msg)[1];
+    let rarity = /^#?虚空(深渊)?(五星|四星)?使用率$/.exec(this.e.msg)[2];
     if (rarity === "五星") {
       rarity = 5;
     } else if (rarity === "四星") {
@@ -40,6 +43,20 @@ export class AkashaAbyss extends plugin {
     if (!data) return false;
 
     let img = await puppeteer.screenshot('AkashaAbyss', data); 
+    if (img) await this.e.reply(img);
+    return true;
+  }
+
+  async teamsOverview () {
+    let match = /^#?虚空(深渊)?(上半|下半)?队伍(出战数|满星率)?([1-9][0-9]0?)?$/.exec(this.e.msg);
+    let half = match[2];
+    let sort = match[3];
+    let num = match[4] ? Number(match[4]) : 20;
+
+    let data = await new AkashaDB(this.e).getTeamsOV(half, sort, num);
+    if (!data) return false;
+
+    let img = await puppeteer.screenshot('AkashaAbyss', data);
     if (img) await this.e.reply(img);
     return true;
   }

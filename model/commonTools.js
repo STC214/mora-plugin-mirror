@@ -8,7 +8,7 @@ import _ from 'lodash';
 class commonTools {
   constructor () {
     this._path = process.cwd();
-    this.profilePicPath = `${this._path}/plugins/genshin/resources/img/role/`;
+    this.rolePicPath = `${pluginPath}/resources/img/role/`;
   }
 
   /**
@@ -36,7 +36,7 @@ class commonTools {
 		let render = {
 			tplFile: `${pluginPath}/resources/html/${parent}/${model}.html`,
       pluResPath: `${pluginPath}/resources/`,
-      profilePic: this.profilePicPath,
+      profilePic: this.rolePicPath,
       quality: 100,
 			...data,
 		}
