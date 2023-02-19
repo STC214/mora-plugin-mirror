@@ -56,36 +56,34 @@ export default class team extends moraBase{
     if (_.endsWith(query, '队')) {
       query = _.replace(query, '队', '');
     }
-    let find = _.filter(names, v => v.includes(query));
-    names = query;
+    let find_tname = _.filter(names, v => v.includes(query));
+
     // 别名
-    if (_.isEmpty(find)) {
-      let alias = _.mapValues(teams, 'alias');
-      alias = _.pickBy(alias, v => v.includes(query));
-      names = _.keys(alias);
-      find = !_.isEmpty(names);
-    }
+    let alias = _.mapValues(teams, 'alias');
+    alias = _.pickBy(alias, v => v.includes(query));
+    let find_alias = _.keys(alias);
+
     // 角色
     let traveler = '';
-    if (!find) {
-      let role = gsCfg.getRole(query);
-      if(!role) return false;
-      /** 主角特殊处理 */
-      if (_.includes(commonTools.travelerID(), String(role.roleId))) {
-        traveler = commonTools.traveler(role.alias, query, '配队');
-        if (_.isEqual(role.alias, traveler)) {
-          role.name = traveler;
-          traveler = '';
-        }
+    let role = gsCfg.getRole(query);
+    if(!role) return false;
+    /** 主角特殊处理 */
+    if (_.includes(commonTools.travelerID(), String(role.roleId))) {
+      traveler = commonTools.traveler(role.alias, query, '配队');
+      if (_.isEqual(role.alias, traveler)) {
+        role.name = traveler;
+        traveler = '';
       }
-
-      let roles = _.mapValues(teams, 'role');
-      roles = _.pickBy(roles, v => v.includes(role.name));
-      names = _.keys(roles);
-      find = !_.isEmpty(names);
     }
+
+    let roles = _.mapValues(teams, 'role');
+    roles = _.pickBy(roles, v => v.includes(role.name));
+    let find_rname = _.keys(roles);
+
+    names = _.uniq(_.concat(find_tname, find_alias, find_rname));
+    
     return {
-      find: find ? names : find,
+      find: _.isEmpty(names) ? false : names,
       traveler: traveler
     }
   }

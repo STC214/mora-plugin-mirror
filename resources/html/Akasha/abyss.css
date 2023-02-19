@@ -87,6 +87,7 @@ body {
 .container .con-right .card-header .time {
   font-weight: 500!important;
   font-size: 2rem;
+  font-style: italic;
   color: #babac0!important;
   padding-top: .3rem!important;
   margin-right: .75rem;
@@ -201,6 +202,7 @@ body {
   /* margin-bottom: 5px; */
   font-weight: 600;
   font-size: 1.75rem;
+  font-style: italic;
   text-align: right;
   color: #babac0;
   /* text-shadow: rgba(117,207,255,0.4) 0px 0px 19px; */
