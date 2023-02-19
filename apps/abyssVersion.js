@@ -61,7 +61,13 @@ export class abyssVersion extends plugin {
       return false;
     }
     
-    await this.e.reply(await common.makeForwardMsg(this.e, msg, `${version}深渊`));
+    if (msg.length > 1) {
+      msg = await common.makeForwardMsg(this.e, msg, `${version}深渊`);
+    } else {
+      msg = msg[0];
+    }
+    
+    await this.e.reply(msg);
     return true;
   }
 
