@@ -20,8 +20,11 @@ user:
   - name: '#历代12-3 #历代12层'
     des: '历代深渊12层最低输出量'
     icon: dinosaur
-  - name: '#虚空深渊使用率 '
+  - name: '#虚空深渊使用率'
     des: '支持筛选四星/五星 #虚空深渊五星使用率'
+    icon: akasha
+  - name: '#虚空深渊队伍'
+    des: '支持筛选上下半 出战数/满星率排序'
     icon: akasha
 master:
   - name: '表情辅助'

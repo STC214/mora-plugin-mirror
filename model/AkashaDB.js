@@ -59,31 +59,43 @@ export default class AkashaDB extends moraBase{
       abyssVersion: data.schedule_version_desc,
       updateTime: data.modify_time,
       characterList: this.listFilter(data.character_used_list, rarity),
-    }
+    };
 
     let render = await commonTools.getRenderData('Akasha', 'abyss', usageData);
     return render;
   }
 
-  async getTeamsOV (half, sort, num) {
+  async teamsPage (half, sort, page) {
     let data = await this.get_data();
     let teamList = data.team_list;
     let _sort = 'mr';
+    let _count = 'ac'
     if (_.isEqual(half, '上半')) {
-      teamList = data.team_up_List;
+      teamList = data.team_up_list;
       _sort = 'umr';
+      _count = 'uc';
     } else if (_.isEqual(half, '下半')){
-      teamList = data.team_down_List;
+      teamList = data.team_down_list;
       _sort = 'dmr';
+      _count = 'dc';
     }
     if (_.isEqual(sort, '满星率')) {
       teamList = _.orderBy(teamList, [_sort], ['desc']);
     }
-    teamList = _.take(teamList, num);
-    if (num > 20) {
-      teamList = _.chunk(teamList, 20);
-    }
-    let render = await commonTools.getRenderData('Akasha', 'teams', teamList);
+    _.each(teamList, v => {
+      v.count = v[_count];
+      v.fullstar = v[_sort];
+    });
+
+    teamList = _.chunk(teamList, 14);
+    let teamData = {
+      abyssVersion: data.schedule_version_desc,
+      updateTime: data.modify_time,
+      page: page,
+      teamList: teamList[page - 1],
+    };
+
+    let render = await commonTools.getRenderData('Akasha', 'teams', teamData);
     return render;
   }
 
@@ -109,7 +121,13 @@ export default class AkashaDB extends moraBase{
 
   transTeamList (list, role_res) {
     _.each(list, v => {
-      v.tl = _.map(v.tl, i => role_res[i].name);
+      v.tl = _.map(v.tl, i => {
+        if (_.isEqual(role_res[i].name, '旅行者')) {
+          return '主角';
+        } else {
+          return role_res[i].name;
+        }  
+      });
       v.mr = Number(v.mr);
       v.uc = Number(v.uc);
       v.dc = Number(v.dc);

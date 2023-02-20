@@ -14,7 +14,7 @@ export class AkashaAbyss extends plugin {
           reg: '^#?虚空(深渊)?(五星|四星)?使用率$',
           fnc: 'akashaUsageRate'
         }, {
-          reg: '^#?虚空(深渊)?(上半|下半)?队伍(出战数|满星率)?([1-9][0-9]0?)?$',
+          reg: '^#?虚空(深渊)?(上半|下半)?队伍(出战数|满星率)?([1-7])?$',
           fnc: 'teamsOverview'
         }
       ],
@@ -48,16 +48,17 @@ export class AkashaAbyss extends plugin {
   }
 
   async teamsOverview () {
-    let match = /^#?虚空(深渊)?(上半|下半)?队伍(出战数|满星率)?([1-9][0-9]0?)?$/.exec(this.e.msg);
-    let half = match[2];
-    let sort = match[3];
-    let num = match[4] ? Number(match[4]) : 20;
+    let match = /^#?虚空(深渊)?(上半|下半)?队伍(出战数|满星率)?([1-7])?$/.exec(this.e.msg);
+    let half = match[2] || '';
+    let sort = match[3] || '出战数';
+    let page = match[4] ? Number(match[4]) : 1;
 
-    let data = await new AkashaDB(this.e).getTeamsOV(half, sort, num);
+    let data = await new AkashaDB(this.e).teamsPage(half, sort, page);
     if (!data) return false;
+    data.filter = `${half}队伍${sort}`;
 
     let img = await puppeteer.screenshot('AkashaAbyss', data);
-    if (img) await this.e.reply(img);
+    if (img) await this.e.reply([img]);
     return true;
   }
 

@@ -31,8 +31,7 @@ export default class team extends moraBase{
       return false;
     }
 
-    teams = _.map(_.castArray(teams.find), v => `茗血茶/${v}.png`);
-    teams = _.filter(teams, v => fs.existsSync(`${this.path}/${v}`));
+    teams = _.filter(teams.find, v => fs.existsSync(`${this.path}/${v}`));
     if (_.isEmpty(teams)) {
       logger.error(`图片获取失败`);
       await this.e.reply(`没找到捏，是不是没更新资源包捏捏捏捏捏？`);
@@ -50,7 +49,7 @@ export default class team extends moraBase{
   }
 
   searchTeams (teams, query) {
-    let names = _.keys(teams);
+    let names = _.keys(teams['茗血茶']);
 
     // 队名
     if (_.endsWith(query, '队')) {
@@ -58,7 +57,7 @@ export default class team extends moraBase{
     }
     let find_tname = _.filter(names, v => v.includes(query));
     // 别名
-    let alias = _.mapValues(teams, 'alias');
+    let alias = _.mapValues(teams['茗血茶'], 'alias');
     alias = _.pickBy(alias, v => v.includes(query));
     let find_alias = _.keys(alias);
 
@@ -66,6 +65,7 @@ export default class team extends moraBase{
     let traveler = '';
     let role = gsCfg.getRole(query);
     let find_rname = [];
+    let team2 = [];
     if (role){
       /** 主角特殊处理 */
       if (_.includes(commonTools.travelerID(), String(role.roleId))) {
@@ -75,13 +75,18 @@ export default class team extends moraBase{
           traveler = '';
         }
       }
-
-      let roles = _.mapValues(teams, 'role');
+      let roles = _.mapValues(teams['茗血茶'], 'role');
       roles = _.pickBy(roles, v => v.includes(role.name));
       find_rname = _.keys(roles);
+
+      team2 = _.pickBy(teams['卡玛sei亚'], v => v.includes(role.name));
+      team2 = _.keys(team2);
     };
     
-    names = _.uniq(_.concat(find_tname, find_alias, find_rname));
+    let team1 = _.uniq(_.concat(find_tname, find_alias, find_rname));
+    team1 = _.map(team1, v => `茗血茶/${v}.png`);
+    team2 = _.map(team2, v => `卡玛sei亚/${v}.png`);
+    names = _.concat(team1, team2);
 
     return {
       find: _.isEmpty(names) ? false : names,

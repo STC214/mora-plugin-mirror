@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="{{pluResPath}}html/Akasha/teams.css" type="text/css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- 头部标题 -->
+      <div class="card-header">
+        <!-- 水印 -->
+        <div class="title">
+          {{ abyssVersion }}深渊<font color="red">12层</font>
+          <br/>{{ filter }}
+        </div>
+        <div class="time">数据来自 <span style="text-decoration: underline;">akashadata.com</span>  更新时间 {{ updateTime }}</div>
+        <div class="mark">{{ watermark }} @容容容三岁 设计</div>
+      </div>
+      <div class="con">
+        <div class="con-left">
+          {{ each teamList team idx }}
+          <div class="card-body">
+            {{ if idx % 2 == 0 }}
+            <div class="split"><img src="{{pluResPath}}img/separator/team_split.png" ></div>
+            <div class="team">
+              <span class="num">{{ idx + 1 }}</span>
+              <div class="card-case">
+                {{ each team.tl role }}
+                <div class="card"><img src="{{ profilePic}}{{ role }}.png" /></div>
+                {{ /each }}
+              </div>
+              <div class="info">
+                <div class="data">
+                  <div>{{ team.count }}</div>
+                  <div class="dsc">出战数</div>
+                </div>
+                <div class="data" style="width: 60px;"><div class="wordSplit"><img src="{{pluResPath}}img/separator/word_split.png" ></div></div>
+                <div class="data" style="width: 25%;">
+                  <div>{{ team.fullstar }}%</div>
+                  <div class="dsc">满星率</div>
+                </div>
+                <div class="data" style="width: 60px;"><div class="wordSplit"><img src="{{pluResPath}}img/separator/word_split.png" ></div></div>
+                <div class="data">
+                  <div>{{ team.ud }}</div>
+                  <div class="dsc">上下比</div>
+                </div>
+              </div>
+            </div>
+            {{ /if }}
+          </div>
+          {{ /each }}
+        </div>
+        <div class="con-right">
+          {{ each teamList team idx }}
+          <div class="card-body">
+            {{ if idx % 2 != 0 }}
+            <div class="split"><img src="{{pluResPath}}img/separator/team_split.png" ></div>
+            <div class="team">
+              <span class="num">{{ idx + 1 }}</span>
+              <div class="card-case">
+                {{ each team.tl role }}
+                <div class="card"><img src="{{ profilePic}}{{ role }}.png" /></div>
+                {{ /each }}
+              </div>
+              <div class="info">
+                <div class="data">
+                  <div>{{ team.ac }}</div>
+                  <div class="dsc">出战数</div>
+                </div>
+                <div class="data" style="width: 60px;"><div class="wordSplit"><img src="{{pluResPath}}img/separator/word_split.png" ></div></div>
+                <div class="data" style="width: 25%;">
+                  <div>{{ team.mr }}%</div>
+                  <div class="dsc">满星率</div>
+                </div>
+                <div class="data" style="width: 60px;"><div class="wordSplit"><img src="{{pluResPath}}img/separator/word_split.png" ></div></div>
+                <div class="data">
+                  <div>{{ team.ud }}</div>
+                  <div class="dsc">上下比</div>
+                </div>
+              </div>
+            </div>
+            {{ /if }}
+          </div>
+          {{ /each }}
+        </div>
+      </div>
+      <div class="footer">
+        <p>当前第 {{ page }} 页&nbsp;&nbsp;&nbsp;共 7 页</p>
+        <p class="page">※输入【#虚空深渊{{ filter }} + 1-7】翻页※</p>
+      </div>
+    </div>
+  </body>
+</html>
