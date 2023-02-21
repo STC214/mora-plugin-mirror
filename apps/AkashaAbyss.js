@@ -1,6 +1,9 @@
 import plugin from '../../../lib/plugins/plugin.js';
 import AkashaDB from '../model/AkashaDB.js';
 import puppeteer from '../../../lib/puppeteer/puppeteer.js';
+import fs from 'node:fs';
+import moracfg from '../model/config.js';
+import { segment } from 'oicq';
 
 export class AkashaAbyss extends plugin {
   constructor () {
@@ -16,6 +19,9 @@ export class AkashaAbyss extends plugin {
         }, {
           reg: '^#?虚空(深渊)?(上半|下半)?队伍(出战数|满星率)?([1-7])?$',
           fnc: 'teamsOverview'
+        }, {
+          reg: '^#?虚空深渊帮助$',
+          fnc: 'akashaHelp'
         }
       ],
       
@@ -59,6 +65,15 @@ export class AkashaAbyss extends plugin {
 
     let img = await puppeteer.screenshot('AkashaAbyss', data);
     if (img) await this.e.reply([img]);
+    return true;
+  }
+
+  async akashaHelp () {
+    let path = `${moracfg.getMoraPath('res')}img/AkashaHelp.png`;
+    if (!fs.existsSync(path)) {
+      return false;
+    }
+    await this.e.reply(segment.image(path));
     return true;
   }
 
