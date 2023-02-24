@@ -7,6 +7,9 @@ Mora-Plugin是一个Yunzai-Bot的插件
 ###### P.S 如有与其他插件展现效果一致的功能，大概率会删除 ~~（跑路）~~
 ###### P.P.S 有授权的不会删
 
+## 注意事项
+### <font color=DarkSalmon>此插件合并进[插件库](https://gitee.com/yhArcadia/Yunzai-Bot-plugins-index)前（以该库首页README为准），要是写进一键脚本等大范围传播需要提前告知</font>
+
 ## 功能
 ### [点击就看:arrow_right:食用指南](./%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md) 或使用`#摩拉帮助`命令
 
