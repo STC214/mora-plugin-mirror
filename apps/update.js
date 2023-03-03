@@ -25,9 +25,9 @@ export class updateMora extends plugin {
       return true;
     }
     let isForce = e.msg.includes("强制");
-    let command = "git  pull";
+    let command = "git pull --no-rebase";
     if (isForce) {
-      command = "git  checkout . && git  pull";
+      command = "git checkout . && git pull --no-rebase";
       e.reply("正在执行强制更新操作，请稍等");
     } else {
       e.reply("正在执行更新操作，请稍等");

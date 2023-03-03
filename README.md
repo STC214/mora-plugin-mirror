@@ -30,10 +30,10 @@ Mora-Plugin是一个Yunzai-Bot的插件
 ## 安装
 ```
 // 使用gitee
-git clone https://gitee.com/Rrrrrrray/mora-plugin.git ./plugins/mora-plugin/
+git clone --depth=1 https://gitee.com/Rrrrrrray/mora-plugin.git ./plugins/mora-plugin/
 
 // 使用github
-git clone https://github.com/Rrrrrrray/mora-plugin.git ./plugins/mora-plugin/
+git clone --depth=1 https://github.com/Rrrrrrray/mora-plugin.git ./plugins/mora-plugin/
 ```
 如果是手工下载的zip压缩包，请将解压后的mora-plugin文件夹（请删除压缩自带的-master后缀）放置在Yunzai目录下的plugins文件夹内。
 
