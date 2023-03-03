@@ -47,9 +47,9 @@ export class moraHelp extends plugin {
     let command = '';
     
     if (fs.existsSync(this.resPath)) {
-      command = 'git pull';
+      command = 'git pull --no-rebase';
       if (force) {
-        command = 'git checkout . && git pull';
+        command = 'git checkout . && git pull --no-rebase';
         e.reply('正在强制更新...');
       } else {
         e.reply('正在更新...');
