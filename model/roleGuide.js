@@ -104,11 +104,12 @@ export default class roleGuide extends moraBase {
 
     ref = _.map(ref, v => segment.image(`file://${refPath}/${v}`));
     curve = _.map(curve, v => segment.image(`file://${curvePath}/${v}`));
-    let msg = [...ref, '', ...curve];
+    let msg = [...ref, 'arti', ...curve];
 
     let notes = this.advancedInfo(role.name);
     if (notes) {
-      msg[1] = `圣遗物思路推荐：\n${notes.arti}`;
+      let idx = _.findIndex(msg, i => _.isEqual(i, 'arti'));
+      msg[idx] = `圣遗物思路推荐：\n${notes.arti}`;
       if (!_.isEmpty(notes.brief)) {
         msg.push(`【蓝佬小课堂】：\n${notes.brief}`);
       }
@@ -116,6 +117,7 @@ export default class roleGuide extends moraBase {
 
     return await common.makeForwardMsg(this.e, _.compact(msg), `${role.name}进阶参考 @blue菌hehe`);
   }
+  
   // 找本地图片
   findPack (path, name) {
     let _sources = fs.readdirSync(path);
