@@ -40,12 +40,19 @@ export default class roleGuide extends moraBase {
     let dir = this.dirPath(role.name, res_dir, add_dir);
 
     let msg = [...res_dir];
+    let xf = true;
     for (let i in dir) {
       let success = true;
       if (!fs.existsSync(dir[i]) || isUpdate) {
         success = await this.getImg(role.name, guide[i], dir[i]);
       }  
       if (success) {
+        if (_.includes(dir[i], `/坤易/${role.name}`)) {
+          xf = false;
+        }
+        if (!xf && _.includes(dir[i], `/1/${role.name}`)) {
+          continue;
+        }
         msg.push(dir[i]);
       } 
     }
