@@ -14,10 +14,11 @@ export default class roleGuide extends moraBase {
     this.oss = '?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg';
     this.resPath = moracfg.getMoraPlus('role');
     this.uploader = moracfg.getSetYaml('roleGuides', true);
+    this.path = `${moracfg.getMoraPath('data')}roleGuides`;
+
   }
 
   async strategies (name, isUpdate) {
-    let path = `${moracfg.getMoraPath('data')}roleGuides`;
 
     let role = gsCfg.getRole(name);
     if(!role) return false;
@@ -35,7 +36,7 @@ export default class roleGuide extends moraBase {
 
     let guide = _.concat(this.uploader.news, this.uploader.olds);
     let res_dir = this.findPack(`${this.resPath}/Guides`, role.name);
-    let add_dir = this.findPack(`${path}/add_ons`, role.name);
+    let add_dir = this.findPack(`${this.path}/add_ons`, role.name);
     let dir = this.dirPath(role.name, res_dir, add_dir);
 
     let msg = [...res_dir];
