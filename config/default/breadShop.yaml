@@ -1,0 +1,12 @@
+# 面包店开关
+shop: true
+# 物品
+stuff: 面包
+# 单位
+unit: 个
+# 自动开关店
+isAuto: true
+# 开店时间
+open: 0 0 8 * * ?
+# 关店时间
+close: 0 0 11 * * ?
