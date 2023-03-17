@@ -17,7 +17,8 @@ export default class breadShop extends moraBase {
     let cache = _.cloneDeep(getCache);  // 深拷贝以免影响源数据
     const _cm = data.msg.replace(this.stuff, '');
     const qq = data.user_id;
-    const qqs = _.pull(_.keys(cache), qq);
+    const qqs = _.keys(cache);
+    const others = _.without(qqs, qq);
 
     const lucky = _.random(1);
     const cd = _.random(10, 60);
@@ -76,6 +77,8 @@ export default class breadShop extends moraBase {
     } else if (['啃', '吃'].includes(_cm)) {
       refresh = this.refreshTime(cache[qq], 'eat', data.msg);
       if (refresh) return refresh;
+
+      refresh = _.random(1);
       if (!own) return `没有${this.stuff}了捏`;
 
       num = own >= num ? num : own;
@@ -93,13 +96,19 @@ export default class breadShop extends moraBase {
         own -= num;
         res = `你吃${this.stuff}被我发现了！我好饿，我帮你吃吧！吃了你${num}${this.unit}${this.stuff}！`;
         cache[qq].eat.cd = +moment().add(cd, 'm');
-      } else if (lucky) {
+      } else if (lucky && refresh) {
         res = `成功吃掉了${num}${this.unit}${this.stuff}！还是好饿，还可以继续吃`;
-      } else {
+      } else if (lucky && !refresh) {
         res = `成功吃掉了${num}${this.unit}${this.stuff}！现在你还剩${own}${this.unit}${this.stuff}！您目前的等级为Lv.${lv}`;
         cache[qq].eat.cd = +moment().add(cd, 'm');
+      } else if (!lucky && refresh) {
+        res = `成功吃掉了${num}${this.unit}${this.stuff}！让你充满了力量！刷新抢的冷却！`;
+        cache[qq].eat.cd = +moment().add(cd, 'm');
+        cache[qq].rob.cd = +moment();
+      } else {
+        res = `成功吃掉了${num}${this.unit}${this.stuff}！吃太多啦，撑死了！下次吃多等30分钟`;
+        cache[qq].eat.cd = +moment().add(cd + 30, 'm');
       }
-
       cache[qq].own = own;
       cache[qq].eaten = eaten;
       cache[qq].Lv = lv;
@@ -108,13 +117,18 @@ export default class breadShop extends moraBase {
       refresh = this.refreshTime(cache[qq], 'rob', data.msg);
       if (refresh) return refresh;
       
-      let at = data.at || _.sample(qqs);
-      if (!num || !cache[at].own) {
+      let at = data.at || _.sample(others);
+      if (!num && !cache[at].own) {
+        res = `太饿了！什么都没抢到，但是你想吃东西！吃${this.stuff}冷却刷新！`;
+        cache[qq].eat.cd = +moment();
+        cache[qq].rob.cd = +moment().add(cd, 'm');
+      } else if (!num) {
         res = `你抢${this.stuff}被警察抓住了！你真的太坏了！下次抢${this.stuff}时间多等40min！`;
         cache[qq].rob.cd = +moment().add(cd + 40, 'm');
       } else if (lucky) {
         num = cache[at].own >= num ? num : cache[at].own;
         own += num; 
+        cache[at].own -= num;
         res = `成功抢了${cache[at].name}${num}${this.unit}${this.stuff}，你现在拥有${own}${this.unit}${this.stuff}！${this.getRank(cache, qq)}`;
         cache[qq].rob.cd = +moment().add(cd, 'm');
       } else {
@@ -142,7 +156,7 @@ export default class breadShop extends moraBase {
         cache[qq].bet.cd = +moment().add(cd + 40, 'm');
       } else if ( bet_idx === guess ) {
         res = `${rps[guess]}！平局啦！${this.stuff}都还给你啦！还可以再来一次！`;
-      } else if ( bet_idx === guess+1 || (bet_idx === 2 &&  guess === 0)) {
+      } else if ( bet_idx === guess+1 || (bet_idx === 0 &&  guess === 2)) {
         num = own >= num ? num : own;
         own -= num;
         res = `${rps[guess]}！嘿嘿，我赢啦！你的${num}${num}${this.unit}${this.stuff}归我了！你现在拥有${own}${this.unit}${this.stuff}！`;
@@ -155,6 +169,33 @@ export default class breadShop extends moraBase {
 
       cache[qq].own = own;
       cache[qq].bet.record += 1;
+    } else if (_cm.includes('送')) {
+      refresh = this.refreshTime(cache[qq], 'give', data.msg);
+      if (refresh) return refresh;
+
+      if (!own) return `没有${this.stuff}了捏`;
+
+      let at = data.at || _.sample(others);
+      if (!num) {
+        res = `${this.stuff}送不出去捏`;
+      } else if (lucky) {
+        num = own >= num ? num : own;
+        own -= num;
+        cache[at].own += num;
+        res = `成功赠送了${num}${this.unit}${this.stuff}给${cache[at].name}，你现在${own}${this.unit}${this.stuff}！${cache[at].name}有${cache[at].own}${this.unit}${this.stuff}！`;
+        cache[qq].give.cd = +moment().add(cd, 'm');
+      } else {
+        num = own >= num ? num : own-1;
+        own -= num;
+        let num2 = _.random(1, 10);
+        num2 = own >= num2 ? num2 : own;
+        own -= num;
+        cache[at].own += num;
+        res = `哇！这么多${this.stuff}，你送了${num}${this.unit}给${cache[at].name}！再给我${num2}${this.unit}吧嘿嘿！你现在有${own}${this.unit}${this.stuff}！`;
+        cache[qq].give.cd = +moment().add(cd, 'm');
+      }
+      cache[qq].own = own;
+      cache[qq].give.record += 1;
     } else if (_cm.includes('记录')) {
       return `还没写`;
     } else if (_cm.includes('查看')) {
@@ -174,7 +215,7 @@ export default class breadShop extends moraBase {
       return `本群暂无排行，买点${this.stuff} 8`;
     }
     let _cache = _.map(data, v => v);
-    let ranks = _.orderBy(_cache, ['level', 'own'], ['desc', 'desc']);
+    let ranks = _.orderBy(_cache, ['Lv', 'own'], ['desc', 'desc']);
     let msg = '';
 
     if (qq) {
