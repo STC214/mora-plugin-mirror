@@ -24,12 +24,12 @@ export class breadShop extends plugin {
     })
     this.cfg = moraCfg.getSetYaml('breadShop', true);
     this.shop = this.cfg.shop;
+    this.stuff = this.cfg.stuff;
   }
 
   async breadShop () {
     if (!this.shop) return false;
-    let stuff = this.cfg.stuff;
-    if (!this.e.msg.includes(stuff)) return false;
+    if (!this.e.msg.includes(this.stuff)) return false;
 
     if (this.e.msg.includes('帮助')) {
       this.e.reply(this.breadShopHelp());
@@ -54,17 +54,17 @@ export class breadShop extends plugin {
 
   breadShopHelp () {
     return [
-      '商店使用说明', 
+      `\n🥑${this.stuff}商店使用说明🥑`, 
       '指令	        说明',
-      '买面包		购买随机面包', 
-      '啃面包		吃随机面包',
-      '抢面包+@	抢随机面包',
-      '送面包+@	送随机面包',
-      '赌面包+""	猜拳赌随机面包',
-      '面包记录+""　查看操作次数最多的人',
-      '面包记录+@　查看操作次数',
-      '查看面包+@　查看面包数据',
-      '面包排行+	本群排行榜top5',
+      `买${this.stuff}		购买随机${this.stuff}`, 
+      `啃${this.stuff}		吃随机${this.stuff}`,
+      `抢${this.stuff}+@	抢随机${this.stuff}`,
+      `送${this.stuff}+@	送随机${this.stuff}`,
+      `赌${this.stuff}+""	猜拳赌随机${this.stuff}`,
+      `${this.stuff}记录+""　查看操作次数最多的人`,
+      `${this.stuff}记录+@　查看操作次数`,
+      `查看${this.stuff}+@　查看面包数据`,
+      `${this.stuff}排行	本群排行榜top5`,
     ].join('\n');
   }
 }

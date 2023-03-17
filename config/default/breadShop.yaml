@@ -1,7 +1,7 @@
 # 面包店开关
 shop: true
 # 物品
-stuff: 面包
+stuff: 牛油果
 # 单位
 unit: 个
 # 自动开关店
