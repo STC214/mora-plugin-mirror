@@ -13,7 +13,8 @@ export default class breadShop extends moraBase {
   }
 
   async shop (data) {
-    let cache = JSON.parse(await redis.get(`${this.prefix}${data.group_id}`)) || {}
+    const getCache  = JSON.parse(await redis.get(`${this.prefix}${data.group_id}`)) || {}
+    let cache = getCache;
     const _cm = data.msg.replace(this.stuff, '');
     const qq = data.user_id;
     const qqs = _.pull(_.keys(cache), qq);
@@ -159,7 +160,7 @@ export default class breadShop extends moraBase {
     } else if (_cm.includes('查看')) {
       return `还没写`;
     } else if (_cm === '排行') {
-      return this.getRank(cache);
+      return this.getRank(getCache);
     } else {
       return false;
     }
@@ -168,10 +169,13 @@ export default class breadShop extends moraBase {
   }
 
   getRank (cache, qq = '') {
+    if (_.isEmpty(cache)) {
+      return `本群暂无排行，买点${this.stuff} 8`;
+    }
     let _cache = _.map(cache, v => v);
     let ranks = _.orderBy(_cache, ['level', 'own'], ['desc', 'desc']);
     let msg = '';
-    
+
     if (qq) {
       let rank = _.findIndex(ranks, (v) => _.isEqual(v.name, cache[qq].name));
       msg = `您在本群的排名为：${rank + 1}`;
