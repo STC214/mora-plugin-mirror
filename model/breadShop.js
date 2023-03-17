@@ -13,8 +13,8 @@ export default class breadShop extends moraBase {
   }
 
   async shop (data) {
-    const getCache  = JSON.parse(await redis.get(`${this.prefix}${data.group_id}`)) || {}
-    let cache = getCache;
+    const getCache  = JSON.parse(await redis.get(`${this.prefix}${data.group_id}`)) || {};
+    let cache = _.cloneDeep(getCache);  // 深拷贝以免影响源数据
     const _cm = data.msg.replace(this.stuff, '');
     const qq = data.user_id;
     const qqs = _.pull(_.keys(cache), qq);
@@ -164,20 +164,21 @@ export default class breadShop extends moraBase {
     } else {
       return false;
     }
+
     await redis.set(`${this.prefix}${data.group_id}`, JSON.stringify(cache));
     return res;
   }
 
-  getRank (cache, qq = '') {
-    if (_.isEmpty(cache)) {
+  getRank (data, qq = '') {
+    if (_.isEmpty(data)) {
       return `本群暂无排行，买点${this.stuff} 8`;
     }
-    let _cache = _.map(cache, v => v);
+    let _cache = _.map(data, v => v);
     let ranks = _.orderBy(_cache, ['level', 'own'], ['desc', 'desc']);
     let msg = '';
 
     if (qq) {
-      let rank = _.findIndex(ranks, (v) => _.isEqual(v.name, cache[qq].name));
+      let rank = _.findIndex(ranks, (v) => _.isEqual(v.name, data[qq].name));
       msg = `您在本群的排名为：${rank + 1}`;
     } else {
       let ranksInfo = _.map(ranks, (v, idx) => `top${idx+1}：${v.name} Lv.${v.Lv}，拥有${this.stuff}${v.own}${this.unit}`);
