@@ -42,7 +42,7 @@ export class breadShop extends plugin {
       name: this.e.sender.card,
       group_id: this.e.group_id,
     }
-    
+
     let res = await new Shop().shop(data);
     if (!res) return false;
 
