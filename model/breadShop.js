@@ -145,6 +145,8 @@ export default class breadShop extends moraBase {
       refresh = this.refreshTime(cache[qq], 'bet', data.msg);
       if (refresh) return refresh;
 
+      if (!own) return `没有${this.stuff}了捏`;
+
       let bet = _cm.replace(/赌| |"|“|”/g, '');
       let rps = ['石头', '剪刀', '布'];
       let bet_idx = _.findIndex(rps, v => v === bet);
@@ -157,10 +159,15 @@ export default class breadShop extends moraBase {
       } else if ( bet_idx === guess ) {
         res = `${rps[guess]}！平局啦！${this.stuff}都还给你啦！还可以再来一次！`;
       } else if ( bet_idx === guess+1 || (bet_idx === 0 &&  guess === 2)) {
-        num = own >= num ? num : own;
-        own -= num;
-        res = `${rps[guess]}！嘿嘿，我赢啦！你的${num}${num}${this.unit}${this.stuff}归我了！你现在拥有${own}${this.unit}${this.stuff}！`;
-        cache[qq].bet.cd = +moment().add(cd, 'm');
+        if (!own) {
+          res = `${rps[guess]}！嘿嘿，我赢啦！什么？没有${this.stuff}还敢来赌！留下来洗厕所！！！下次赌${this.stuff}冷却时间翻倍！`;
+          cache[qq].bet.cd = +moment().add(cd * 2, 'm');
+        } else {
+          num = own >= num ? num : own;
+          own -= num;
+          res = `${rps[guess]}！嘿嘿，我赢啦！你的${num}${this.unit}${this.stuff}归我了！你现在拥有${own}${this.unit}${this.stuff}！`;
+          cache[qq].bet.cd = +moment().add(cd, 'm');
+        }
       } else {
         own += num;
         res = `${rps[guess]}！呜呜，我输了，给你${num}${this.unit}${this.stuff}！你现在拥有${own}${this.unit}${this.stuff}！`;
@@ -192,7 +199,7 @@ export default class breadShop extends moraBase {
         let num2 = _.random(1, 10);
         num2 = own >= num2 ? num2 : own;
         own -= num2;
-        
+
         res = `哇！这么多${this.stuff}，你送了${num}${this.unit}给${cache[at].name}！再给我${num2}${this.unit}吧嘿嘿！你现在有${own}${this.unit}${this.stuff}！`;
         cache[qq].give.cd = +moment().add(cd, 'm');
       }
