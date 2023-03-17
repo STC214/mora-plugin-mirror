@@ -29,16 +29,21 @@ export class breadShop extends plugin {
 
   async breadShop () {
     if (!this.shop) return false;
-    if (!this.e.msg.includes(this.stuff)) return false;
+    let msg = this.e.msg;
+    if (!msg.includes(this.stuff) || !msg.includes('面包')) return false;
 
-    if (this.e.msg.includes('帮助')) {
+    if (msg.includes('面包') && this.stuff !== '面包') {
+      msg = msg.replace('面包', this.stuff);
+    }
+
+    if (msg.includes('帮助')) {
       this.e.reply(this.breadShopHelp());
       return true;
     }
     
-    this.e.msg = this.e.msg.replace(/#|＃/g, '');
+    msg = msg.replace(/#|＃/g, '');
     let data = {
-      msg: this.e.msg,
+      msg: msg,
       at: this.e.at,
       user_id: this.e.user_id,
       name: this.e.sender.card,
