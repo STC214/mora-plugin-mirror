@@ -189,7 +189,7 @@ export default class breadShop extends moraBase {
   }
 
   refreshTime(self, prop, msg) {
-    let cd = _.get(self, prop.cd, 0);
+    let cd = _.get(self, [prop, 'cd'], 0);;
     if (+moment() <= cd) {
       return `还有 ${moment(cd).diff(moment(), 'minutes')} 分钟才能${msg}！`;
     } else {
