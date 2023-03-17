@@ -35,7 +35,6 @@ export class breadShop extends plugin {
     if (!this.e.msg.includes(stuff)) return false;
     
     this.e.msg = this.e.msg.replace(/#|＃/g, '');
-    console.log(this.e);
     let data = {
       msg: this.e.msg,
       at: this.e.at,
@@ -43,7 +42,9 @@ export class breadShop extends plugin {
       name: this.e.sender.card,
       group_id: this.e.group_id,
     }
+    
     let res = await new Shop().shop(data);
+    if (!res) return false;
 
     this.e.reply(res, true, { recallMsg: 110, at: true });
     return true;
