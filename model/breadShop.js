@@ -155,11 +155,11 @@ export default class breadShop extends moraBase {
       cache[qq].own = own;
       cache[qq].bet.record += 1;
     } else if (_cm.includes('记录')) {
-      res = `还没写`;
+      return `还没写`;
     } else if (_cm.includes('查看')) {
-      res = `还没写`;
+      return `还没写`;
     } else if (_cm === '排行') {
-      res = this.getRank(cache);
+      return this.getRank(cache);
     } else {
       return false;
     }
