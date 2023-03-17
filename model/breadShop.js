@@ -85,9 +85,10 @@ export default class breadShop extends moraBase {
       own -= num;
       let lv = cache[qq].Lv;
       let eaten = cache[qq].eaten + num;
-      if (eaten >= 10) {
+      let upgrade = lv * 2 + 10;
+      if (eaten >= upgrade) {
         lv += 1;
-        eaten -= 10;
+        eaten -= upgrade;
       }
 
       if (!num) {
@@ -160,7 +161,7 @@ export default class breadShop extends moraBase {
         res = `${rps[guess]}！平局啦！${this.stuff}都还给你啦！还可以再来一次！`;
       } else if ( bet_idx === guess+1 || (bet_idx === 0 &&  guess === 2)) {
         if (!own) {
-          res = `${rps[guess]}！嘿嘿，我赢啦！什么？没有${this.stuff}还敢来赌！留下来洗厕所！！！下次赌${this.stuff}冷却时间翻倍！`;
+          res = `${rps[guess]}！嘿嘿，我赢啦！什么？没有${this.stuff}还敢来赌！留下来洗厕所还债！！！下次赌${this.stuff}冷却时间翻倍！`;
           cache[qq].bet.cd = +moment().add(cd * 2, 'm');
         } else {
           num = own >= num ? num : own;
