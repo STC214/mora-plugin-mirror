@@ -20,7 +20,7 @@ export class breadShop extends plugin {
           reg: '^#(.*?)$',
           fnc: 'breadShop'
         },{
-          reg: '^#商店使用说明$',
+          reg: '^#(面包)?商店使用说明$',
           fnc: 'breadShopHelp'
         }
       ]
@@ -46,7 +46,25 @@ export class breadShop extends plugin {
     let res = await new Shop().shop(data);
     if (!res) return false;
 
-    this.e.reply(res, true, { recallMsg: 110, at: true });
+    this.e.reply(res, false, { recallMsg: 110, at: true });
     return true;
+  }
+
+  async breadShopHelp() {
+    let msg = [
+      '商店使用说明', 
+      '指令	        说明',
+      '买面包		购买随机面包', 
+      '啃面包		吃随机面包',
+      '抢面包+@	抢随机面包',
+      '送面包+@	送随机面包',
+      '赌面包+""	猜拳赌随机面包',
+      '面包记录+""　查看操作次数最多的人',
+      '面包记录+@　查看操作次数',
+      '查看面包+@　查看面包数据',
+      '面包排行+	本群排行榜top5',
+    ]
+    
+    this.e.reply(msg.join('\n'));
   }
 }

@@ -60,6 +60,7 @@ export default class breadShop extends moraBase {
       if (!num) {
         res = `太倒霉了，${this.stuff}卖完了！`;
       } else if (lucky && own < 10) {
+        own += num * 2;
         res = `看你${this.stuff}太少了，送了你${num * 2}${this.unit}!`
       } else {
         own += num;
