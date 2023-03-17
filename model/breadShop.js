@@ -187,10 +187,12 @@ export default class breadShop extends moraBase {
       } else {
         num = own >= num ? num : own-1;
         own -= num;
+        cache[at].own += num;
+
         let num2 = _.random(1, 10);
         num2 = own >= num2 ? num2 : own;
-        own -= num;
-        cache[at].own += num;
+        own -= num2;
+        
         res = `哇！这么多${this.stuff}，你送了${num}${this.unit}给${cache[at].name}！再给我${num2}${this.unit}吧嘿嘿！你现在有${own}${this.unit}${this.stuff}！`;
         cache[qq].give.cd = +moment().add(cd, 'm');
       }
