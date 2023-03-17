@@ -131,9 +131,9 @@ export default class breadShop extends moraBase {
       refresh = this.refreshTime(cache[qq], 'bet', data.msg);
       if (refresh) return refresh;
 
-      let bet = _cm.replace(/赌| /g, '');
+      let bet = _cm.replace(/赌| |"|“|”/g, '');
       let rps = ['石头', '剪刀', '布'];
-      let bet_idx = _.findIndex(rps, bet);
+      let bet_idx = _.findIndex(rps, v => v === bet);
       if (!bet || bet_idx === -1) return false;
 
       let guess = _.random(2);
