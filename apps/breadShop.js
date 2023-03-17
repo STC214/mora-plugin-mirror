@@ -19,9 +19,6 @@ export class breadShop extends plugin {
         {
           reg: '^#(.*?)$',
           fnc: 'breadShop'
-        },{
-          reg: '^#(面包)?商店使用说明$',
-          fnc: 'breadShopHelp'
         }
       ]
     })
@@ -33,6 +30,11 @@ export class breadShop extends plugin {
     if (!this.shop) return false;
     let stuff = this.cfg.stuff;
     if (!this.e.msg.includes(stuff)) return false;
+
+    if (this.e.msg.includes('帮助')) {
+      this.e.reply(this.breadShopHelp());
+      return true;
+    }
     
     this.e.msg = this.e.msg.replace(/#|＃/g, '');
     let data = {
@@ -50,8 +52,8 @@ export class breadShop extends plugin {
     return true;
   }
 
-  async breadShopHelp() {
-    let msg = [
+  breadShopHelp () {
+    return [
       '商店使用说明', 
       '指令	        说明',
       '买面包		购买随机面包', 
@@ -63,8 +65,6 @@ export class breadShop extends plugin {
       '面包记录+@　查看操作次数',
       '查看面包+@　查看面包数据',
       '面包排行+	本群排行榜top5',
-    ]
-    
-    this.e.reply(msg.join('\n'));
+    ].join('\n');
   }
 }

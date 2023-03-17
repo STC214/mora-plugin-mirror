@@ -161,7 +161,7 @@ export default class breadShop extends moraBase {
     } else if (_cm === '排行') {
       res = this.getRank(cache);
     } else {
-      res = false;
+      return false;
     }
     await redis.set(`${this.prefix}${data.group_id}`, JSON.stringify(cache));
     return res;
