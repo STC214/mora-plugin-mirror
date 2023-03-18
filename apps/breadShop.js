@@ -30,7 +30,7 @@ export class breadShop extends plugin {
   async breadShop () {
     if (!this.shop) return false;
     let msg = this.e.msg;
-    if (!msg.includes(this.stuff) || !msg.includes('面包')) return false;
+    if (!msg.includes(this.stuff) && !msg.includes('面包')) return false;
 
     if (msg.includes('面包') && this.stuff !== '面包') {
       msg = msg.replace('面包', this.stuff);
