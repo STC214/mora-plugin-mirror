@@ -233,7 +233,7 @@ export default class breadShop extends moraBase {
       msg = `您在本群的排名为：${rank + 1}`;
     } else {
       let ranksInfo = _.map(ranks, (v, idx) => `top${idx+1}：${v.name} Lv.${v.Lv}，拥有${this.stuff}${v.own}${this.unit}`);
-      msg = [`本群${this.stuff}排行TOP5`, ..._.take(ranksInfo, 5), '大家继续加油！'].join('\n');
+      msg = [`\n本群${this.stuff}排行TOP5`, ..._.take(ranksInfo, 5), '大家继续加油！'].join('\n');
     }
 
     return msg;

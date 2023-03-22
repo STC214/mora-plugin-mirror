@@ -18,7 +18,8 @@ export class breadShop extends plugin {
       rule: [
         {
           reg: '^#(.*?)$',
-          fnc: 'breadShop'
+          fnc: 'breadShop',
+          log: false
         }
       ]
     })
@@ -59,7 +60,7 @@ export class breadShop extends plugin {
 
   breadShopHelp () {
     return [
-      `\n🥑${this.stuff}商店使用说明🥑`, 
+      `🥑${this.stuff}商店使用说明🥑`, 
       '指令	        说明',
       `买${this.stuff}		购买随机${this.stuff}`, 
       `啃${this.stuff}		吃随机${this.stuff}`,
