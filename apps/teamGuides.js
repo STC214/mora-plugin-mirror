@@ -23,15 +23,15 @@ export class teamGuides extends plugin {
   }
 
   async teamGuides () {
-    let query = /^#(\S+)配队$/.exec(this.e.msg)[1];
+    let query = /^#(\S+)配队$/.exec(this.e.msg)[1]
     if (_.includes(query, '深渊')) {
-      return false;
+      return false
     }
     
-    let msg = await new Team(this.e).guides(query);
-    if (!msg) return false;
+    let msg = await new Team(this.e).guides(query)
+    if (!msg) return false
 
-    await this.e.reply(msg);
-    return true;
+    await this.e.reply(msg)
+    return true
   } 
 }

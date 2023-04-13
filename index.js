@@ -8,6 +8,9 @@ import Data from './components/Data.js';
 import { isV3, moraVersion } from './components/Changelog.js';
 import fs from 'node:fs';
 
+if (!global.segment) {
+  global.segment = (await import('oicq')).segment
+}
 
 export * from './apps/index.js'
 

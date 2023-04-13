@@ -1,7 +1,7 @@
-import plugin from '../../../lib/plugins/plugin.js';
-import fs from 'node:fs';
-import moracfg from '../model/config.js';
-import RoleGuide from '../model/roleGuide.js';
+import plugin from '../../../lib/plugins/plugin.js'
+import fs from 'node:fs'
+import moracfg from '../model/config.js'
+import RoleGuide from '../model/roleGuide.js'
 
 /**
  * 借鉴原云崽攻略代码
@@ -36,47 +36,47 @@ export class roleGuides extends plugin{
 
   /**初始化 */
   async init () {
-    let path = moracfg.getMoraPath('data');
+    let path = moracfg.getMoraPath('data')
     if (!fs.existsSync(path)) {
-      fs.mkdirSync(path);
+      fs.mkdirSync(path)
     }
     if(!fs.existsSync(`${path}roleGuides`)){
-      fs.mkdirSync(`${path}roleGuides`);
+      fs.mkdirSync(`${path}roleGuides`)
     }
     if(!fs.existsSync(`${path}roleGuides/add_ons`)){
-      fs.mkdirSync(`${path}roleGuides/add_ons`);
+      fs.mkdirSync(`${path}roleGuides/add_ons`)
     }
   }
 
   /**角色一图流 */
   async roleGuide () {
-    let match = /^#?(更新)?(\S+)(攻略|一图流)$/.exec(this.e.msg);
-    let isUpdate = !!match[1];
-    let roleName = match[2];
+    let match = /^#?(更新)?(\S+)(攻略|一图流)$/.exec(this.e.msg)
+    let isUpdate = !!match[1]
+    let roleName = match[2]
 
-    let msg = await new RoleGuide(this.e).strategies(roleName, isUpdate);
-    if (!msg) return false;
+    let msg = await new RoleGuide(this.e).strategies(roleName, isUpdate)
+    if (!msg) return false
 
-    await this.e.reply(msg);
-    return true;
+    await this.e.reply(msg)
+    return true
   }
 
   async roleRef () {
-    let match = /^#?(\S+)(参考面板|收益曲线|进阶(攻略|参考)?)$/.exec(this.e.msg);
-    let roleName = match[1];
+    let match = /^#?(\S+)(参考面板|收益曲线|进阶(攻略|参考)?)$/.exec(this.e.msg)
+    let roleName = match[1]
 
-    let msg = await new RoleGuide(this.e).stat_curve(roleName);
-    if (!msg) return;
+    let msg = await new RoleGuide(this.e).stat_curve(roleName)
+    if (!msg) return
 
-    await this.e.reply(msg);
-    return true;
+    await this.e.reply(msg)
+    return true
   }
 
   async curveHelp () {
-    let msg = await new RoleGuide(this.e).getHelp();
-    if (!msg) return false;
+    let msg = await new RoleGuide(this.e).getHelp()
+    if (!msg) return false
 
-    await this.e.reply(msg);
-    return true;
+    await this.e.reply(msg)
+    return true
   }
 }
