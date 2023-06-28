@@ -3,7 +3,6 @@ import AkashaDB from '../model/AkashaDB.js';
 import puppeteer from '../../../lib/puppeteer/puppeteer.js';
 import fs from 'node:fs';
 import moracfg from '../model/config.js';
-import { segment } from 'oicq';
 
 export class AkashaAbyss extends plugin {
   constructor () {
