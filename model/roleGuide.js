@@ -144,6 +144,10 @@ export default class roleGuide extends moraBase {
   dirPath (name, res, add) {
     const _path = process.cwd()
     let defpath = `${_path}/data/strategy/`
+    // 适配miaoYZ
+    if (!fs.existsSync(defpath)) {
+      defpath = `${_path}/temp/strategy/`  
+    }
 
     let olds = _.map(this.uploader.olds, (v) => v.source)
     let news = _.map(this.uploader.news, (v) => v.source)
