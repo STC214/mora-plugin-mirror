@@ -77,7 +77,7 @@ class moracfg {
 		let path = this.getMoraPath('plus');
 		switch (name) {
 			case 'banner':
-				path += 'GenshinBanners'
+				path += 'Banners'
 				break;
 			case 'role':
 				path += 'Roles'

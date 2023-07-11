@@ -10,7 +10,7 @@ export class bannerSchedule extends plugin {
       priority: 5,
       rule: [
         {
-          reg:'^#?(角色|武器)?复刻表$',
+          reg:'^#?(原神|星铁)?(角色|武器|光锥)?复刻表$',
           fnc: 'bannerSchedule'
         },
         {
@@ -23,10 +23,8 @@ export class bannerSchedule extends plugin {
 
   /** 发送复刻表 */
   async bannerSchedule () {   
-    let match = /^#?(角色|武器)?复刻表$/.exec(this.e.msg)
-    let banner = !!match[1] ? [match[1]] : ['角色', '武器']
-
-    let msg = await new Banner(this.e).schedules(banner)
+    let match = /^#?(原神|星铁)?(角色|武器|光锥)?复刻表$/.exec(this.e.msg)
+    let msg = await new Banner(this.e).schedules(match[2])
     if (!msg) return false
 
     await this.e.reply(msg)

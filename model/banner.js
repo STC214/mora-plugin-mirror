@@ -18,9 +18,18 @@ export default class banner extends moraBase {
       return false
     }
 
+    let isSr = this.e?.isSr || false
+    let dir = fs.readdirSync(this.path)
+    if (isSr) {
+      dir = _.filter(dir, v.includes('星'))
+    }
+    if (type) {
+      dir = _.filter(dir, v.includes(type))
+    }
+    
     let msg = []
-    _.each(type, v => {
-      let imgPath = `${this.path}/${v}.png`
+    _.each(dir, v => {
+      let imgPath = `${this.path}/${v}`
       if (fs.existsSync(imgPath)) {
         msg.push(segment.image(`file://${imgPath}`))
       }
