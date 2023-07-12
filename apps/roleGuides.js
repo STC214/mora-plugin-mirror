@@ -23,11 +23,15 @@ export class roleGuides extends plugin{
           fnc: 'roleGuide'
         },
         {
-          reg: '^#?\\S+(参考面板|收益曲线|进阶(攻略|参考)?)$',
+          reg: '^#?(星铁)?\\S+(参考面板|收益曲线|进阶(攻略|参考)?)$',
           fnc: 'roleRef'
         },
         {
           reg: '^#?收益曲线帮助$',
+          fnc: 'curveHelp'
+        },
+        {
+          reg: '^#?(星铁)?参考面板帮助$',
           fnc: 'curveHelp'
         }
       ]
@@ -62,8 +66,8 @@ export class roleGuides extends plugin{
   }
 
   async roleRef () {
-    let match = /^#?(\S+)(参考面板|收益曲线|进阶(攻略|参考)?)$/.exec(this.e.msg)
-    let roleName = match[1]
+    let match = /^#?(星铁)?(\S+)(参考面板|收益曲线|进阶(攻略|参考)?)$/.exec(this.e.msg)
+    let roleName = match[2]
 
     let msg = await new RoleGuide(this.e).stat_curve(roleName)
     if (!msg) return

@@ -14,7 +14,7 @@ export default class roleGuide extends moraBase {
     this.resPath = moracfg.getMoraPlus('role')
     this.uploader = moracfg.getSetYaml('roleGuides', true)
     this.path = `${moracfg.getMoraPath('data')}roleGuides`
-
+    this.isSr = e?.isSr || false
   }
 
   async strategies (name, isUpdate) {
@@ -66,37 +66,57 @@ export default class roleGuide extends moraBase {
   }
 
   async getHelp () {
-    this.resPath += '/YieldCurve'
+    this.resPath += this.isSr ? '/StarRail/RefStat' : '/YieldCurve'
     if (!fs.existsSync(this.resPath)) {
-      await this.e.reply(`还没下载资源包，收益曲线功能用不了捏`)
+      await this.e.reply(`还没下载资源包，功能用不了捏`)
       return false
     }
 
-    let refUrl = '曲线详细帮助：\n收益曲线说明书：https://www.miyoushe.com/ys/article/28119112\n《属性收益论》：https://www.miyoushe.com/ys/article/34217426\n《属性收益论》附录：https://www.miyoushe.com/ys/article/35015246'
-    let msg = [segment.image(`file://${this.resPath}/帮助.png`), '角色默认配置：五星0命，四星满命，天赋满级', refUrl]
+    let msg = [segment.image(`file://${this.resPath}/帮助.png`)]
+    if (this.isSr) {
+      msg.push('请使用【*希儿参考面板】或【#星铁罗刹参考面板】进行使用')
+    } else {
+      msg.push('角色默认配置：五星0命，四星满命，天赋满级')
+      msg.push('曲线详细帮助：\n收益曲线说明书：https://www.miyoushe.com/ys/article/28119112\n《属性收益论》：https://www.miyoushe.com/ys/article/34217426\n《属性收益论》附录：https://www.miyoushe.com/ys/article/35015246')
+    }
 
-    return await common.makeForwardMsg(this.e, msg, '收益曲线帮助 @blue菌hehe')
+    return msg
   }
 
   async stat_curve (name) {
-    let refPath = `${this.resPath}/RefStat`
+    let refPath = this.isSr ? `${this.resPath}/StarRail/RefStat` : `${this.resPath}/RefStat`
     let curvePath = `${this.resPath}/YieldCurve`
+    
     if (!fs.existsSync(refPath) && !fs.existsSync(curvePath)) {
       await this.e.reply(`还没下载资源包，角色进阶参考功能用不了捏`)
       return false
     }
 
-    let role = gsCfg.getRole(name)
-    if(!role) return false
-
-    /** 主角特殊处理 */
-    if (commonTools.travelerID().includes(String(role.roleId))) {
-      let traveler = commonTools.traveler(role.alias, name, '进阶参考')
-      if (_.isEqual(role.alias, traveler)) {
-        role.name = traveler
-      } else {
-        await this.e.reply(traveler)
+    /** 星铁特殊处理 */
+    let role = {}
+    if (this.isSr) {
+      if (name.includes('开拓者') || name.includes('爷')) {
+        let trailblazer = ['物主', '火主']
+        await this.e.reply(`请选择${name}参考面板：${_.join(trailblazer, '、')}`)
         return
+      }
+      if (fs.existsSync(`${refPath}/${name}.png`)) {
+        role.name = name
+      } else {
+        return false
+      }
+    } else {
+      role = gsCfg.getRole(name)
+      if(!role) return false
+      /** 主角特殊处理 */
+      if (commonTools.travelerID().includes(String(role.roleId))) {
+        let traveler = commonTools.traveler(role.alias, name, '进阶参考')
+        if (_.isEqual(role.alias, traveler)) {
+          role.name = traveler
+        } else {
+          await this.e.reply(traveler)
+          return
+        }
       }
     }
 
