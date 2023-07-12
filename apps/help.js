@@ -54,10 +54,10 @@ export class moraHelp extends plugin {
     let command = ''
     
     if (fs.existsSync(this.resPath)) {
-      command = 'git pull --no-rebase'
+      command = manual ? 'git pull --no-rebase' : 'git pull'
       if (force) {
         command = 'git checkout . && git pull --no-rebase'
-        if (manual) e.reply('正在强制更新...')
+        e.reply('正在强制更新...')
       } else {
         logger.mark('摩拉资源检测中...')
         if (manual) e.reply('正在更新...')
