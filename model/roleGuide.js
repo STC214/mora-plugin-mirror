@@ -117,7 +117,7 @@ export default class roleGuide extends moraBase {
 
     let ref = fs.readdirSync(refPath)
     ref = _.filter(ref, v => _.includes(v, role.name))
-    let curve = fs.readdirSync(curvePath)
+    let curve = fs.existsSync(curvePath) ? fs.readdirSync(curvePath) : []
     curve = _.filter(curve, v => _.includes(v, role.name))
     if (_.isEmpty(ref) && _.isEmpty(curve)) {
       await this.e.reply(`暂无${role.name}进阶参考捏`)
