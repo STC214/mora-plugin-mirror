@@ -84,10 +84,10 @@ class moracfg {
         path += 'Banners'
         break
       case 'gs':
-        path += 'Genshin'
+        path += 'Genshin/'
         break
       case 'hsr':
-        path += 'StarRail'
+        path += 'StarRail/'
         break
     }
     return path
@@ -97,7 +97,7 @@ class moracfg {
     switch (name) {
       case 'role':
         path += 'Roles'
-        brea
+        break
       case 'team':
         path += 'TeamGuides'
         break

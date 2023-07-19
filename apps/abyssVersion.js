@@ -79,7 +79,7 @@ export class abyssVersion extends plugin {
     }
     
     if (msg.length > 1) {
-      msg = await common.makeForwardMsg(this.e, msg, `${isSr ? '原神' : '星铁'}${version}${isSr ? '深渊' : '混沌'}`)
+      msg = await common.makeForwardMsg(this.e, msg, `${isSr ? '星铁' : '原神'}${version}${isSr ? '混沌' : '深渊'}`)
     } else {
       msg = msg[0]
     }
