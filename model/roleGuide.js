@@ -11,10 +11,11 @@ export default class roleGuide extends moraBase {
     super(e)
     this.url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id='
     this.oss = '?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg'
-    this.resPath = moracfg.getMoraPlus('role')
-    this.uploader = moracfg.getSetYaml('roleGuides', true)
-    this.path = `${moracfg.getMoraPath('data')}roleGuides`
     this.isSr = e?.isSr || false
+    this.uploader = moracfg.getSetYaml('roleGuides', true)
+    this.gamePath = this.isSr ? moracfg.getGameRes('hsr') : moracfg.getGameRes('gs')
+    this.resPath = moracfg.getMoraPlus(this.gamePath, 'role')
+    this.path = `${moracfg.getMoraPath('data')}roleGuides`
   }
 
   async strategies (name, isUpdate) {
@@ -66,11 +67,8 @@ export default class roleGuide extends moraBase {
   }
 
   async getHelp () {
-    this.resPath += this.isSr ? '/StarRail/RefStat' : '/YieldCurve'
-    if (!fs.existsSync(this.resPath)) {
-      await this.e.reply(`还没下载资源包，功能用不了捏`)
-      return false
-    }
+    this.resPath += this.isSr ? '/RefStat' : '/YieldCurve'
+    this.checkPath(this.resPath)
 
     let msg = [segment.image(`file://${this.resPath}/帮助.png`)]
     if (this.isSr) {
@@ -84,13 +82,10 @@ export default class roleGuide extends moraBase {
   }
 
   async stat_curve (name) {
-    let refPath = this.isSr ? `${this.resPath}/StarRail/RefStat` : `${this.resPath}/RefStat`
+    this.checkPath(this.resPath)
+
+    let refPath = `${this.resPath}/RefStat`
     let curvePath = `${this.resPath}/YieldCurve`
-    
-    if (!fs.existsSync(refPath) && !fs.existsSync(curvePath)) {
-      await this.e.reply(`还没下载资源包，角色进阶参考功能用不了捏`)
-      return false
-    }
 
     /** 星铁特殊处理 */
     let role = {}
@@ -275,5 +270,13 @@ export default class roleGuide extends moraBase {
     logger.mark(`${this.e.logFnc} 下载${author.source}-${name}攻略成功`)
 
     return true
+  }
+
+  async checkPath (path) {
+    let check = moracfg.checkRes(path)
+    if (check) {
+      await this.e.reply(check)
+      return false
+    }
   }
 }

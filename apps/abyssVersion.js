@@ -1,8 +1,8 @@
-import plugin from '../../../lib/plugins/plugin.js';
-import common from '../../../lib/common/common.js';
-import moracfg from '../model/config.js';
-import _ from 'lodash';
-import fs from 'node:fs';
+import plugin from '../../../lib/plugins/plugin.js'
+import common from '../../../lib/common/common.js'
+import moracfg from '../model/config.js'
+import _ from 'lodash'
+import fs from 'node:fs'
 
 /**
  * 借鉴原云崽攻略代码
@@ -18,7 +18,7 @@ export class abyssVersion extends plugin {
       priority: 5,
       rule: [
         {
-          reg: '^#?[1-9]\.\\d深渊$',
+          reg: '^#?(原神|星铁)?[1-9]\.\\d(深渊|混沌)$',
           fnc: 'abyssVersion'
         },
         {
@@ -28,54 +28,73 @@ export class abyssVersion extends plugin {
         {
           reg: '^#?[1-9]\.\\d(深渊)?阵容(参考|推荐)?$',
           fnc: 'teamRefer'
-        }
+        },
       ]
     })
-    this.path = moracfg.getMoraPlus('abyss');
+    this.path = moracfg.getMoraPath('plus')
+  }
+
+  dirPath = (isSr) => {
+    this.path = moracfg.getGameRes('gs')
+    let dir = moracfg.getMoraPlus(this.path, 'abyss')
+    if (isSr) {
+      this.path = moracfg.getGameRes('hsr')
+      dir = moracfg.getMoraPlus(this.path, 'chaos')
+    }
+    return dir
   }
 
   /**深渊版本 */
   async abyssVersion () {
-    this.path += '/Version/';
-    if (!fs.existsSync(this.path)) {
-      await this.e.reply('还没下载资源包，深渊版本功能用不了捏');
-      return false;
+    let match = /^#?(原神|星铁)?([1-9]\.\d)(深渊|混沌)$/.exec(this.e.msg)
+    let version = match[2]
+    let game = match[3]
+    if(!version) return false
+
+    let isSr = this.e.isSr
+    if (game === '混沌') {
+      isSr = true
     }
 
-    let version = /^#?([1-9]\.\d)深渊$/.exec(this.e.msg)[1];
-    if(!version) return false;
+    this.path = `${this.dirPath(isSr)}/Version/`
+    let check = moracfg.checkRes(this.path)
+    if (check) {
+      await this.e.reply(check)
+      return false
+    }
 
     this.path += version;
     if (!fs.existsSync(this.path)) {
-      await this.e.reply('暂无此版本');
-      return false;
+      await this.e.reply('暂无此版本')
+      return false
     }
 
     let msg = [];
-    let pics = fs.readdirSync(this.path);
-    _.each(pics, (v) => msg.push(segment.image(`file://${this.path}/${v}`)));
+    let pics = fs.readdirSync(this.path)
+    _.each(pics, (v) => msg.push(segment.image(`file://${this.path}/${v}`)))
 
     if (_.isEmpty(msg)) {
-      logger.error('图片获取失败');
-      return false;
+      logger.error('图片获取失败')
+      return false
     }
     
     if (msg.length > 1) {
-      msg = await common.makeForwardMsg(this.e, msg, `${version}深渊`);
+      msg = await common.makeForwardMsg(this.e, msg, `${isSr ? '原神' : '星铁'}${version}${isSr ? '深渊' : '混沌'}`)
     } else {
-      msg = msg[0];
+      msg = msg[0]
     }
     
-    await this.e.reply(msg);
-    return true;
+    await this.e.reply(msg)
+    return true
   }
 
   /** 12层历史 */
   async history12 () {
-    this.path += '/Version/history12';
-    if (!fs.existsSync(this.path)) {
-      await this.e.reply('还没下载资源包，深渊版本功能用不了捏');
-      return false;
+    this.path = `${this.dirPath(this.e.isSr)}/Version/history12`
+    let check = moracfg.checkRes(this.path)
+    if (check) {
+      await this.e.reply(check)
+      return false
     }
 
     let room = /^#?历代12(层|-[1-3])?(最低输出量)?$/.exec(this.e.msg)[1];
@@ -97,10 +116,11 @@ export class abyssVersion extends plugin {
   }
 
   async teamRefer () {
-    this.path += '/Teams/';
-    if (!fs.existsSync(this.path)) {
-      await this.e.reply('还没下载资源包，深渊版本功能用不了捏');
-      return false;
+    this.path = `${this.dirPath(this.e.isSr)}/Teams/`
+    let check = moracfg.checkRes(path)
+    if (check) {
+      await this.e.reply(check)
+      return false
     }
 
     let ver = /^#?([1-9]\.\d)深渊?阵容(参考|推荐)?$/.exec(this.e.msg)[1];

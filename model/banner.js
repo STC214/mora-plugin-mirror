@@ -9,7 +9,7 @@ import common from '../../../lib/common/common.js'
 export default class banner extends moraBase {
   constructor (e) {
     super(e)
-    this.path = moracfg.getMoraPlus('banner') 
+    this.path = moracfg.getGameRes('banner') 
   }
 
   async schedules (type) {

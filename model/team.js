@@ -9,12 +9,15 @@ import common from '../../../lib/common/common.js'
 export default class team extends moraBase{
   constructor (e) {
     super(e)
-    this.path = moracfg.getMoraPlus('team')
+    this.isSr = e?.isSr || false
+    this.gamePath = this.isSr ? moracfg.getGameRes('hsr') : moracfg.getGameRes('gs')
+    this.path = moracfg.getMoraPlus(this.gamePath, 'team')
   }
 
   async guides (query) {
-    if (!fs.existsSync(this.path)) {
-      await this.e.reply('还没下载资源包，配队功能用不了捏')
+    let check = moracfg.checkRes(this.path)
+    if (check) {
+      await this.e.reply(check)
       return false
     }
 
