@@ -2,7 +2,7 @@ import YAML from 'yaml'
 import chokidar from 'chokidar'
 import fs from 'node:fs'
 import { promisify } from 'node:util'
-import lodash from 'lodash'
+import _ from 'lodash'
 import { Data, isV3, pluginPath } from '../components/index.js'
 
 /**
@@ -17,7 +17,8 @@ class moracfg {
 
   /** 通用yaml读取*/
   getfileYaml(path, name) {
-    return YAML.parse(fs.readFileSync(path + name + '.yaml', 'utf8'))
+    let file = `${path}${name}.yaml`
+    return fs.existsSync(file) ? YAML.parse(fs.readFileSync(file, 'utf8')) : {}
   }
 
   /** 设置读取 */
