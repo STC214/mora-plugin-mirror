@@ -21,10 +21,10 @@ export default class banner extends moraBase {
     let isSr = this.e?.isSr || false
     let dir = fs.readdirSync(this.path)
     if (isSr) {
-      dir = _.filter(dir, v.includes('星'))
+      dir = _.filter(dir, v => v.includes('星'))
     }
     if (type) {
-      dir = _.filter(dir, v.includes(type))
+      dir = _.filter(dir, v => v.includes(type))
     }
     
     let msg = []
