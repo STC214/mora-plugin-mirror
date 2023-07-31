@@ -117,7 +117,7 @@ export class abyssVersion extends plugin {
 
   async teamRefer () {
     this.path = `${this.dirPath(this.e.isSr)}/Teams/`
-    let check = moracfg.checkRes(path)
+    let check = moracfg.checkRes(this.path)
     if (check) {
       await this.e.reply(check)
       return false
