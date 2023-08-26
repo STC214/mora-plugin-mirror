@@ -135,6 +135,7 @@ export default class roleGuide extends moraBase {
       msg.push(`【蓝佬小课堂】：\n${notes.brief}`)
     }
     msg = _.compact(msg)
+    msg[0] = [msg[0], notes.url]
     
     return msg.length === 1 ? msg[0] : await common.makeForwardMsg(this.e, msg, `${role.name}进阶参考 @blue菌hehe`)
   }
@@ -196,6 +197,7 @@ export default class roleGuide extends moraBase {
 
   advancedInfo (name) {
     let artiRef = moracfg.getfileYaml(`${this.resPath}/YieldCurve/`, 'RefNotes')
+    let url = _.pick(artiRef, 'url')
     let arti = _.pick(artiRef, name)
     arti = arti[name]
     if (_.isEmpty(arti)) {
@@ -204,6 +206,7 @@ export default class roleGuide extends moraBase {
       return {
         arti: `主词条：${arti.mainProp}\n副词条：${arti.viceProp}`,
         brief: arti.brief,
+        url: url.url
       }
     }
   }
