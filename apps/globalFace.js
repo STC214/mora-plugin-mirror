@@ -120,8 +120,7 @@ export class globalFace extends plugin {
     }
 
     if (type == 'list' && count > 100) {
-      let end = `更多内容请翻页查看\n如：#表情列表${Number(page) + 1}`
-      msg.push(end)
+      msg.push(`更多内容请翻页查看\n如：#表情列表${Number(page) + 1}`)
     }
 
     let title = `表情列表，第${page}页，共${count}条`
