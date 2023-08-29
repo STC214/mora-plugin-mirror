@@ -50,13 +50,22 @@ body {
 
 }
 
-.container .con-left {
+.container .con-left-head {
   width: 60%;
   float: left;
-  padding-left: 2%;
+}
+.container .con-right-head {
+  width: 40%;
+  float: left;
+  padding-right: 3%;
+}
+
+.container .con-left {
+  width: 73%;
+  float: left;
 }
 .container .con-right {
-  width: 40%;
+  width: 27%;
   float: left;
   padding-right: 3%;
 }
@@ -79,12 +88,12 @@ body {
   font-weight: 600!important;
   font-size: 7.75rem; 
   color: #FFFFFF!important;
-  margin: 0 .75rem 0 0;
+  margin: 0;
   /* flex-wrap: wrap; */
   letter-spacing: 3px;
 }
 
-.container .con-right .card-header .time {
+.container .con-right-head .card-header .time {
   font-weight: 500!important;
   font-size: 2rem;
   font-style: italic;
@@ -99,11 +108,11 @@ body {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  padding-top: 10px;
+  padding-top: 7px;
 }
 
 .split {
-  padding-bottom: 10px;
+  padding-bottom: 7px;
 }
 
 .split-up img {
@@ -121,6 +130,11 @@ body {
 .card-right {
   width: 95%;
   margin: 0 5%;
+}
+
+.card-foot {
+  width: 97%;
+  margin-left: 3%;
 }
 
 .star-style{

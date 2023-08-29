@@ -7,7 +7,7 @@
   <body>
     <div class="container">
       <div class="con">
-        <div class="con-left">
+        <div class="con-left-head">
           <!-- 使用率75%+ -->
           <div class="card-body">
             <div class="card-right">
@@ -22,6 +22,18 @@
               {{ /each }}
             </div>
           </div>
+        </div>
+        <!-- 头部标题 -->
+        <div class="con-right-head">
+          <div class="card-header">
+            <!-- 水印 -->
+            <div class="footer">{{ watermark }} @容容容三岁 设计</div>
+            <div class="footer">数据来自 <span style="text-decoration: underline;">akashadata.com</span>  更新时间 {{ updateTime }}</div>            
+          </div>
+        </div>
+      </div>
+      <div class="con">
+        <div class="con-left">
           <!-- 使用率50%+ -->
           <div class="card-body">
             <div class="card-right">
@@ -50,37 +62,34 @@
               {{ /each }}
             </div>
           </div>
+          <!-- 使用率10%+ -->
+          <div class="card-body">
+            <div class="card-right">
+              <div class="split-down"><img src="{{pluResPath}}img/separator/split25.png"></div>
+              {{ each characterList character }}
+              {{ if character.value < 25 && character.value >= 10 }}
+              <div class="card">
+                <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name }}.png" />
+                <span>{{ character.value.toFixed(1) }}%</span>
+              </div>
+              {{ /if}}
+              {{ /each }}
+            </div>
+          </div>
         </div>
         <!-- 头部标题 -->
         <div class="con-right">
           <div class="card-header">
-            <!-- 水印 -->
-            <div class="footer">{{ watermark }} @容容容三岁 设计</div>
-            <div class="time">数据来自 <span style="text-decoration: underline;">akashadata.com</span>  更新时间 {{ updateTime }}</div>
             <div class="title">{{ abyssVersion }}</div>
             <div class="title">深渊<font color="red">12层</font></div>
             <div class="title">使用率</div>            
           </div>
         </div>
       </div>
-      <!-- 使用率10%+ -->
       <div class="card-left">
-        <div class="card-body">
-          <div class="card-right">
-            <div class="split-down"><img src="{{pluResPath}}img/separator/split25.png"></div>
-            {{ each characterList character }}
-            {{ if character.value < 25 && character.value >= 10 }}
-            <div class="card">
-              <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name }}.png" />
-              <span>{{ character.value.toFixed(1) }}%</span>
-            </div>
-            {{ /if}}
-            {{ /each }}
-          </div>
-        </div>
         <!-- 使用率10%- -->
         <div class="card-body">
-          <div class="card-right">
+          <div class="card-foot">
             <div class="split-down"><img src="{{pluResPath}}img/separator/split10.png"></div>
             {{ each characterList character }}
             {{ if character.value < 10 }}
