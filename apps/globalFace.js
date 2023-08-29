@@ -1,6 +1,7 @@
-import plugin from '../../../lib/plugins/plugin.js';
-import fs from 'node:fs';
-import lodash from 'lodash';
+import plugin from '../../../lib/plugins/plugin.js'
+import fs from 'node:fs'
+import lodash from 'lodash'
+import common from '../../../lib/common/common.js'
 
 let textArr = {}
 
@@ -118,9 +119,9 @@ export class globalFace extends plugin {
       num++
     }
 
-    let end = ''
     if (type == 'list' && count > 100) {
-      end = `更多内容请翻页查看\n如：#表情列表${Number(page) + 1}`
+      let end = `更多内容请翻页查看\n如：#表情列表${Number(page) + 1}`
+      msg.push(end)
     }
 
     let title = `表情列表，第${page}页，共${count}条`
@@ -128,9 +129,7 @@ export class globalFace extends plugin {
       title = `表情${search}，${count}条`
     }
 
-    let forwardMsg = await this.makeForwardMsg(Bot.uin, title, msg, end)
-
-    this.e.reply(forwardMsg)
+    this.e.reply(await common.makeForwardMsg(this.e, msg, title))
   }
 
   /** 群号key */
@@ -288,50 +287,6 @@ export class globalFace extends plugin {
       `${this.path}${Bot.uin}.json`,
       JSON.stringify(obj, "", "\t")
     );
-  }
-
-  async makeForwardMsg (qq, title, msg, end = '') {
-    let nickname = Bot.nickname
-    if (this.e.isGroup) {
-      let info = await Bot.getGroupMemberInfo(this.e.group_id, qq)
-      nickname = info.card ?? info.nickname
-    }
-    let userInfo = {
-      user_id: Bot.uin,
-      nickname
-    }
-
-    let forwardMsg = [
-      {
-        ...userInfo,
-        message: title
-      }
-    ]
-
-    let msgArr = lodash.chunk(msg, 40)
-    msgArr.forEach(v => {
-      v[v.length - 1] = lodash.trim(v[v.length - 1], '\n')
-      forwardMsg.push({ ...userInfo, message: v })
-    })
-
-    if (end) {
-      forwardMsg.push({ ...userInfo, message: end })
-    }
-
-    /** 制作转发内容 */
-    if (this.e.isGroup) {
-      forwardMsg = await this.e.group.makeForwardMsg(forwardMsg)
-    } else {
-      forwardMsg = await this.e.friend.makeForwardMsg(forwardMsg)
-    }
-
-    /** 处理描述 */
-    forwardMsg.data = forwardMsg.data
-      .replace(/\n/g, '')
-      .replace(/<title color="#777777" size="26">(.+?)<\/title>/g, '___')
-      .replace(/___+/, `<title color="#777777" size="26">${title}</title>`)
-
-    return forwardMsg
   }
 
   /** 分页 */
