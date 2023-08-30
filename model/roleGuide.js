@@ -134,8 +134,8 @@ export default class roleGuide extends moraBase {
     if (!_.isEmpty(notes?.brief)) {
       msg.push(`【蓝佬小课堂】：\n${notes.brief}`)
     }
+    msg[0] = _.compact([msg[0], notes.url])
     msg = _.compact(msg)
-    msg[0] = [msg[0], notes.url]
     
     return msg.length === 1 ? msg[0] : await common.makeForwardMsg(this.e, msg, `${role.name}进阶参考 @blue菌hehe`)
   }
