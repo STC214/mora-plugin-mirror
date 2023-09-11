@@ -1,12 +1,12 @@
-import fetch from "node-fetch";
-import common from '../../../lib/common/common.js';
-import { pluginPath, moraVersion, yunzaiVersion } from "../components/Changelog.js";
-import _ from 'lodash';
+import fetch from 'node-fetch'
+import common from '../../../lib/common/common.js'
+import { pluginPath, moraVersion, yunzaiVersion } from "../components/Changelog.js"
+import _ from 'lodash'
 
 class commonTools {
   constructor () {
-    this._path = process.cwd();
-    this.rolePicPath = `${pluginPath}/resources/img/role/`;
+    this._path = process.cwd()
+    this.rolePicPath = `${pluginPath}/resources/img/role/`
   }
 
   /**
@@ -15,12 +15,12 @@ class commonTools {
    * @returns 数据
    */
   async getFetchData (url) {
-    let response = await fetch(url, { method: 'get' });
+    let response = await fetch(url, { method: 'get' })
     if (!response.ok) {
-      return false;
+      return false
     }
     const res = await response.json();
-    return res;
+    return res
   }
 
   /**
@@ -39,31 +39,42 @@ class commonTools {
       quality: 100,
 			...data,
 		}
-		return render;
+		return render
 	}
   
   /** 下载文件 */
   async download (url, path) {
-    let res = await fetch(url);
+    let res = await fetch(url)
     if (res.ok) {
-      return await common.downFile(url, path);
+      return await common.downFile(url, path)
     }
   }
 
   travelerID () {
-    return ['10000005', '10000007', '20000000'];
+    return ['10000005', '10000007', '20000000']
   }
 
   /** 主角特殊处理 */
   traveler (alias, name, type) {
-    let travelers = ['风主', '岩主', '雷主', '草主'];
+    let travelers = ['风主', '岩主', '雷主', '草主']
     if (!travelers.includes(alias)) {
-      travelers = _.map(travelers, (v) => `${v}${type}`);
-      return `请选择${name}${type}：${_.join(travelers, '、')}`;
+      travelers = _.map(travelers, (v) => `${v}${type}`)
+      return `请选择${name}${type}：${_.join(travelers, '、')}`
     } else {
-      return alias;
+      return alias
     }
   }
+
+  trailblazer (name, type) {
+    let trailblazers = ['物主', '火主']
+      if (['主角', '爷', '主角'].includes(name)) {
+        trailblazers = _.map(trailblazers, (v) => `${v}${type}`)
+        return `请选择${name}${type}：${_.join(trailblazers, '、')}`
+      } else {
+        return trailblazers
+      }
+  }
+  
 }
 
 export default new commonTools();

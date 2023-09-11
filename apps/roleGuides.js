@@ -19,7 +19,7 @@ export class roleGuides extends plugin{
       priority: 5,
       rule: [
         {
-          reg: '^#?(更新)?\\S+(攻略|一图流)$',
+          reg: '^#?(星铁)?(更新)?\\S+(攻略|一图流)$',
           fnc: 'roleGuide'
         },
         {
@@ -54,11 +54,17 @@ export class roleGuides extends plugin{
 
   /**角色一图流 */
   async roleGuide () {
-    let match = /^#?(更新)?(\S+)(攻略|一图流)$/.exec(this.e.msg)
-    let isUpdate = !!match[1]
-    let roleName = match[2]
+    let match = /^#?(星铁)?(更新)?(\S+)(攻略|一图流)$/.exec(this.e.msg)
+    let isUpdate = !!match[2]
+    let roleName = match[3]
 
-    let msg = await new RoleGuide(this.e).strategies(roleName, isUpdate)
+    let msg = await new RoleGuide(this.e)
+    if (this.e.isSr) {
+      msg = msg.srStrategies(roleName, isUpdate)
+    } else {
+      msg = msg.strategies(roleName, isUpdate)
+    }
+    
     if (!msg) return false
 
     await this.e.reply(msg)

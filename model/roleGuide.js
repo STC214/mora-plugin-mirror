@@ -6,6 +6,7 @@ import common from '../../../lib/common/common.js'
 import _ from 'lodash'
 import fs from 'node:fs'
 
+const _path = process.cwd()
 export default class roleGuide extends moraBase {
   constructor (e) {
     super(e)
@@ -66,6 +67,42 @@ export default class roleGuide extends moraBase {
     return await common.makeForwardMsg(this.e, msg, `${role.name}攻略`)
   }
 
+  async srStrategies (name, isUpdate) {
+    let role = gsCfg.getRole(name, '', this.isSr)
+    if(!role) return false
+    /** 主角 */
+    // let trailblazer = commonTools.trailblazer(name, '攻略')
+    this.uploader = moracfg.getSetYaml('srRoleGuides', true)
+    let atlas = `${_path}/plugins/Atlas/star-rail-atlas/guide for role/${role.name}.png`
+
+    // let add_dir = this.findPack(`${this.path}/add_ons`, role.name, this.isSr)
+    let sources = _.map(this.uploader, 'source')
+    let dir = _.map(sources, (v) => `${this.path}/${v}/StarRail/${role.name}.jpg`)
+
+    let msg = []
+    if (fs.existsSync(atlas)) {
+      msg.push(atlas)
+      this.uploader = _.filter(this.uploader, (v) => v.source === '听语惊花')
+      dir = _.tail(dir)
+    }
+    for (let i in dir) {
+      let success = true
+      if (!fs.existsSync(dir[i]) || isUpdate) {
+        success = await this.getImg(role.name, this.uploader[i], dir[i])
+      }  
+      if (success) 
+        msg.push(dir[i])
+    }
+
+    msg = _.map(_.uniq(msg), v => segment.image(v))
+    if (_.isEmpty(msg)) {
+      await this.e.reply('暂无攻略数据，请稍后再试')
+      return false
+    }
+
+    return await common.makeForwardMsg(this.e, msg, `${role.name}攻略`)
+  }
+
   async getHelp () {
     this.resPath += this.isSr ? '/RefStat' : '/YieldCurve'
     this.checkPath(this.resPath)
@@ -87,31 +124,29 @@ export default class roleGuide extends moraBase {
     let refPath = `${this.resPath}/RefStat`
     let curvePath = `${this.resPath}/YieldCurve`
 
-    /** 星铁特殊处理 */
     let role = {}
+    /** 星铁主角特殊处理 */
     if (this.isSr) {
-      if (name.includes('开拓者') || name.includes('爷')) {
-        let trailblazer = ['物主', '火主']
-        await this.e.reply(`请选择${name}参考面板：${_.join(trailblazer, '、')}`)
+      let trailblazer = commonTools.trailblazer(name, '参考面板')
+      if (!_.isArray(trailblazer)) {
+        await this.e.reply(trailblazer)
         return
       }
-      if (fs.existsSync(`${refPath}/${name}.png`)) {
+      if (trailblazer.includes(name)) 
         role.name = name
+    }
+
+    if (_.isEmpty(role)) 
+      role = gsCfg.getRole(name, '', this.isSr)
+    if(!role) return false
+    /** 主角特殊处理 */
+    if (commonTools.travelerID().includes(String(role.roleId))) {
+      let traveler = commonTools.traveler(role.alias, name, '进阶参考')
+      if (_.isEqual(role.alias, traveler)) {
+        role.name = traveler
       } else {
-        return false
-      }
-    } else {
-      role = gsCfg.getRole(name)
-      if(!role) return false
-      /** 主角特殊处理 */
-      if (commonTools.travelerID().includes(String(role.roleId))) {
-        let traveler = commonTools.traveler(role.alias, name, '进阶参考')
-        if (_.isEqual(role.alias, traveler)) {
-          role.name = traveler
-        } else {
-          await this.e.reply(traveler)
-          return
-        }
+        await this.e.reply(traveler)
+        return
       }
     }
 
@@ -141,11 +176,12 @@ export default class roleGuide extends moraBase {
   }
   
   // 找本地图片
-  findPack (path, name) {
+  findPack (path, name, isSr = false) {
     let _sources = fs.readdirSync(path)
     let dir = []
     _.each(_sources, (author) => {
-      let _roles = fs.readdirSync(`${path}/${author}`)
+      let _author = isSr ? `${path}/${author}/StarRail` : `${path}/${author}`
+      let _roles = fs.readdirSync(_author)
       _roles = _.filter(_roles, (r) => _.includes(r, name))
       let au_path = _.isEmpty(_roles) ? false : `${path}/${author}/${_roles[0]}`
       dir.push(au_path)
@@ -157,7 +193,6 @@ export default class roleGuide extends moraBase {
 
   /** 路径处理 */
   dirPath (name, res, add) {
-    const _path = process.cwd()
     let defpath = `${_path}/data/strategy/`
     // 适配miaoYZ
     if (!fs.existsSync(defpath)) {
