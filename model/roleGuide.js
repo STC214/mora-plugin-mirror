@@ -82,7 +82,7 @@ export default class roleGuide extends moraBase {
     let msg = []
     if (fs.existsSync(atlas)) {
       msg.push(atlas)
-      this.uploader = _.filter(this.uploader, (v) => v.source === '听语惊花')
+      this.uploader = _.filter(this.uploader, (v) => v.source !== '听语惊花')
       dir = _.tail(dir)
     }
     for (let i in dir) {
