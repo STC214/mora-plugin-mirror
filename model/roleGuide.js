@@ -183,7 +183,7 @@ export default class roleGuide extends moraBase {
       let _author = isSr ? `${path}/${author}/StarRail` : `${path}/${author}`
       let _roles = fs.readdirSync(_author)
       _roles = _.filter(_roles, (r) => _.includes(r, name))
-      let au_path = _.isEmpty(_roles) ? false : `${path}/${author}/${_roles[0]}`
+      let au_path = _.isEmpty(_roles) ? false : `${_author}/${_roles[0]}`
       dir.push(au_path)
     })
 
@@ -206,13 +206,13 @@ export default class roleGuide extends moraBase {
     let _dir = []
     // news
     _.each(news, (n) => {
-      let _path = `${this.path}/${n}/${name}.jpg`
+      let npath = `${this.path}/${n}/${name}.jpg`
       _.each(res, (r) => {
         if (_.includes(r, n)) {
-          _path = r
+          npath = r
         }
       })
-      _dir.push(_path)
+      _dir.push(npath)
     })
     // olds
     _.each(olds, (o, idx) => {

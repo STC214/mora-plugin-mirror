@@ -58,13 +58,8 @@ export class roleGuides extends plugin{
     let isUpdate = !!match[2]
     let roleName = match[3]
 
-    let msg = await new RoleGuide(this.e)
-    if (this.e.isSr) {
-      msg = msg.srStrategies(roleName, isUpdate)
-    } else {
-      msg = msg.strategies(roleName, isUpdate)
-    }
-    
+    let msg = new RoleGuide(this.e)
+    msg = this.e.isSr ? await msg.srStrategies(roleName, isUpdate) : await msg.strategies(roleName, isUpdate)
     if (!msg) return false
 
     await this.e.reply(msg)
