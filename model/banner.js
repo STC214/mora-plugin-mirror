@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import gsCfg from "../../genshin/model/gsCfg.js"
+import gsCfg from '../../genshin/model/gsCfg.js'
 import moment from 'moment'
 import fs from 'node:fs'
 import moraBase from './moraBase.js'
@@ -9,7 +9,8 @@ import common from '../../../lib/common/common.js'
 export default class banner extends moraBase {
   constructor (e) {
     super(e)
-    this.path = moracfg.getGameRes('banner') 
+    this.path = moracfg.getGameRes('banner')
+    this.isSr = this.e?.isSr || false
   }
 
   async schedules (type) {
@@ -18,15 +19,10 @@ export default class banner extends moraBase {
       return false
     }
 
-    let isSr = this.e?.isSr || false
     let dir = fs.readdirSync(this.path)
-    if (isSr) {
-      dir = _.filter(dir, v => v.includes('星'))
-    }
-    if (type) {
-      dir = _.filter(dir, v => v.includes(type))
-    }
-    
+    if (this.isSr) dir = _.filter(dir, v => v.includes('星'))
+    if (type) dir = _.filter(dir, v => v.includes(type))
+
     let msg = []
     _.each(dir, v => {
       let imgPath = `${this.path}/${v}`
@@ -35,12 +31,10 @@ export default class banner extends moraBase {
       }
     })
 
-    if (_.isEmpty(msg)) {
-      return false
-    }
+    if (_.isEmpty(msg)) return false
 
     if (msg.length > 1) {
-      msg = await common.makeForwardMsg(this.e, msg, `复刻时间表`)
+      msg = await common.makeForwardMsg(this.e, msg, '复刻时间表')
     } else {
       msg = msg[0]
     }
@@ -51,13 +45,11 @@ export default class banner extends moraBase {
     let name = this.getBanner(query)
     if (!name) {
       await this.e.reply('常驻角色不支持查询')
-      return false      
+      return false
     }
 
     let pool = this.getPool(name.type, name.name)
-    if (!pool) {
-      return false
-    }
+    if (!pool) return false
 
     let msg = [`${name.name}卡池详情`, ...pool]
     return await common.makeForwardMsg(this.e, msg, msg[0])
@@ -70,25 +62,21 @@ export default class banner extends moraBase {
    */
   getBanner (query) {
     let name = query
-    let type = 301
-    let notUP = ['安柏', '凯亚', '丽莎', '刻晴', '莫娜', '七七', '迪卢克', '琴', '提纳里']
-    let role = gsCfg.getRole(name)
+    let type = this.isSr ? 11 : 301
+    let notUP = ['安柏', '凯亚', '丽莎', '刻晴', '莫娜', '七七', '迪卢克', '琴', '提纳里', '迪希雅']
+    let SRnotUP = ['姬子', '瓦尔特', '杰帕德', '布洛妮娅', '彦卿', '白露', '克拉拉']
+    let role = gsCfg.getRole(name, this.isSr)
     if (role) {
       // 角色
       name = role.name
-      if (notUP.includes(name)) {
-        return false
-      }
+      if (notUP.includes(name) || SRnotUP.includes(name)) return false
     } else {
       // 武器
-      type = 302
+      type = this.isSr ? 12 : 302
       name = this.getWeapon(name)
     }
 
-    return { 
-      type: type,
-      name: name
-    }
+    return { type, name }
   }
 
   /**
@@ -98,25 +86,23 @@ export default class banner extends moraBase {
    */
   getWeapon (name) {
     let weapon = name
-    let weapons = gsCfg.getdefSet('weapon','data').Name
+    let weapons = gsCfg.getdefSet('weapon', `${this.isSr ? 'sr_' : ''}data`).Name
     let names = _.values(weapons)
-    if (!_.includes(names, weapon)) {
-      weapon = this.getWeaponFullName(weapon)
-    }
+    if (!_.includes(names, weapon)) weapon = this.getWeaponFullName(weapon)
     return weapon
   }
 
-  /** 
+  /**
    * 武器全名
    * @param {String} weapon 武器名称
    * @returns 武器全名
    */
   getWeaponFullName (weapon) {
-    let shortName = gsCfg.getdefSet('weapon','other').sortName
+    let shortName = gsCfg.getdefSet('weapon', `${this.isSr ? 'sr_' : ''}other`).sortName
     weapon = _.findKey(shortName, v => _.isEqual(v, weapon))
     return weapon
   }
-  
+
   /**
    * 查询卡池
    * @param {Number} type 卡池类型
@@ -128,13 +114,9 @@ export default class banner extends moraBase {
     // 五星
     let rarity = _.filter(poolCfg, v => _.includes(v.five, name))
     // 四星
-    if (_.isEmpty(rarity)) {
-      rarity = _.filter(poolCfg, v => _.includes(v.four, name))
-    }
+    if (_.isEmpty(rarity)) rarity = _.filter(poolCfg, v => _.includes(v.four, name))
     // 找不到
-    if (_.isEmpty(rarity)) {
-      return false
-    }
+    if (_.isEmpty(rarity)) return false
 
     // 计算天数
     let latest = rarity[0]
@@ -146,17 +128,20 @@ export default class banner extends moraBase {
     } else {
       elapsed = `当期UP，${elapsed < 0 ? '还有' + Math.abs(elapsed) : '今'}天结束卡池`
     }
-    
+
     // 整合卡池内容
     let pool = []
     rarity.forEach(i => {
-      pool.push([
+      let _pool = []
+      if (i.version && i.half) _pool.push(`所属版本：${i.version} ${i.half}`)
+      _pool.concat([
         `卡池名称：${i.name.replace('|', '，')}`,
         `五星UP：${i.five.join('，')}`,
         `四星UP：${i.four.join('，')}`,
         `开始时间：${i.from}`,
         `结束时间：${i.to}`
-      ].join('\n'))
+      ])
+      pool.push(_pool.join('\n'))
     })
 
     return [elapsed, ...pool]

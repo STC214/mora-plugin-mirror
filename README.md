@@ -42,7 +42,6 @@ git clone --depth=1 https://gitee.com/Rrrrrrray/mora-plugin.git ./plugins/mora-p
 
 ## 赞助
 #### [动动手指给我发电](https://afdian.net/a/rrrrrrray):money_with_wings:
-#### [卷款跑路](https://qm.qq.com/cgi-bin/qm/qr?k=wL7u31xsWBvSHs7OzMIcYQ5QIvltoczL&authKey=42el3zOX4+Sz5mGjT+mJ0GKIh4jGYofG8SDO/uKQUPB3vT0D8dcEaAS5cjbSUHS1&noverify=0):penguin:
 
 ### 致谢
 | 来源授权 | 资源贡献  |
