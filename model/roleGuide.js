@@ -20,9 +20,8 @@ export default class roleGuide extends moraBase {
   }
 
   async strategies (name, isUpdate) {
-
     let role = gsCfg.getRole(name)
-    if(!role) return false
+    if (!role) return false
 
     /** 主角特殊处理 */
     if (commonTools.travelerID().includes(String(role.roleId))) {
@@ -46,7 +45,7 @@ export default class roleGuide extends moraBase {
       let success = true
       if (!fs.existsSync(dir[i]) || isUpdate) {
         success = await this.getImg(role.name, guide[i], dir[i])
-      }  
+      }
       if (success) {
         if (_.includes(dir[i], `/坤易/${role.name}`)) {
           xf = false
@@ -55,7 +54,7 @@ export default class roleGuide extends moraBase {
           continue
         }
         msg.push(dir[i])
-      } 
+      }
     }
 
     msg = _.map(_.uniq(msg), v => segment.image(v))
@@ -69,7 +68,7 @@ export default class roleGuide extends moraBase {
 
   async srStrategies (name, isUpdate) {
     let role = gsCfg.getRole(name, '', this.isSr)
-    if(!role) return false
+    if (!role) return false
     /** 主角 */
     // let trailblazer = commonTools.trailblazer(name, '攻略')
     this.uploader = moracfg.getSetYaml('srRoleGuides', true)
@@ -89,9 +88,8 @@ export default class roleGuide extends moraBase {
       let success = true
       if (!fs.existsSync(dir[i]) || isUpdate) {
         success = await this.getImg(role.name, this.uploader[i], dir[i])
-      }  
-      if (success) 
-        msg.push(dir[i])
+      }
+      if (success) msg.push(dir[i])
     }
 
     msg = _.map(_.uniq(msg), v => segment.image(v))
@@ -132,13 +130,11 @@ export default class roleGuide extends moraBase {
         await this.e.reply(trailblazer)
         return
       }
-      if (trailblazer.includes(name)) 
-        role.name = name
+      if (trailblazer.includes(name)) role.name = name
     }
 
-    if (_.isEmpty(role)) 
-      role = gsCfg.getRole(name, '', this.isSr)
-    if(!role) return false
+    if (_.isEmpty(role)) role = gsCfg.getRole(name, '', this.isSr)
+    if (!role) return false
     /** 主角特殊处理 */
     if (commonTools.travelerID().includes(String(role.roleId))) {
       let traveler = commonTools.traveler(role.alias, name, '进阶参考')
@@ -165,16 +161,14 @@ export default class roleGuide extends moraBase {
 
     let notes = this.advancedInfo(role.name)
     let idx = _.findIndex(msg, i => _.isEqual(i, 'arti'))
-    msg[idx] = notes ? `圣遗物思路推荐：\n${notes.arti}` : ''
-    if (!_.isEmpty(notes?.brief)) {
-      msg.push(`【蓝佬小课堂】：\n${notes.brief}`)
-    }
+    msg[idx] = notes.arti ? `圣遗物思路推荐：\n${notes.arti}` : ''
+    if (!_.isEmpty(notes?.brief)) msg.push(`【蓝佬小课堂】：\n${notes.brief}`)
     msg[0] = _.compact([msg[0], notes.url])
     msg = _.compact(msg)
-    
+
     return msg.length === 1 ? msg[0] : await common.makeForwardMsg(this.e, msg, `${role.name}进阶参考 @blue菌hehe`)
   }
-  
+
   // 找本地图片
   findPack (path, name, isSr = false) {
     let _sources = fs.readdirSync(path)
@@ -196,7 +190,7 @@ export default class roleGuide extends moraBase {
     let defpath = `${_path}/data/strategy/`
     // 适配miaoYZ
     if (!fs.existsSync(defpath)) {
-      defpath = `${_path}/temp/strategy/`  
+      defpath = `${_path}/temp/strategy/`
     }
 
     let olds = _.map(this.uploader.olds, (v) => v.source)
@@ -224,7 +218,7 @@ export default class roleGuide extends moraBase {
       })
       _dir.push(_def)
     })
-    
+
     dir = _.concat(_dir, add)
     dir = _.uniq(dir)
     return dir
@@ -236,7 +230,10 @@ export default class roleGuide extends moraBase {
     let arti = _.pick(artiRef, name)
     arti = arti[name]
     if (_.isEmpty(arti)) {
-      return false
+      return {
+        arti: false,
+        url: url.url
+      }
     } else {
       return {
         arti: `主词条：${arti.mainProp}\n副词条：${arti.viceProp}`,
@@ -256,7 +253,7 @@ export default class roleGuide extends moraBase {
     for (const i of author.collection_id) {
       msyRes.push(await commonTools.getFetchData(this.url + i))
     }
-    
+
     try {
       msyRes = await Promise.all(msyRes)
     } catch (error) {

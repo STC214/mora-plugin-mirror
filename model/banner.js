@@ -65,7 +65,7 @@ export default class banner extends moraBase {
     let type = this.isSr ? 11 : 301
     let notUP = ['安柏', '凯亚', '丽莎', '刻晴', '莫娜', '七七', '迪卢克', '琴', '提纳里', '迪希雅']
     let SRnotUP = ['姬子', '瓦尔特', '杰帕德', '布洛妮娅', '彦卿', '白露', '克拉拉']
-    let role = gsCfg.getRole(name, this.isSr)
+    let role = gsCfg.getRole(name, '', this.isSr)
     if (role) {
       // 角色
       name = role.name

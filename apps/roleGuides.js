@@ -10,7 +10,7 @@ import RoleGuide from '../model/roleGuide.js'
  * @author Rrrrrrray
  * !!!禁止倒卖
  */
-export class roleGuides extends plugin{
+export class roleGuides extends plugin {
   constructor () {
     super({
       name: '米游社角色攻略',
@@ -35,24 +35,20 @@ export class roleGuides extends plugin{
           fnc: 'curveHelp'
         }
       ]
-    }) 
+    })
   }
 
-  /**初始化 */
+  /** 初始化 */
   async init () {
     let path = moracfg.getMoraPath('data')
-    if (!fs.existsSync(path)) {
-      fs.mkdirSync(path)
-    }
-    if(!fs.existsSync(`${path}roleGuides`)){
-      fs.mkdirSync(`${path}roleGuides`)
-    }
-    if(!fs.existsSync(`${path}roleGuides/add_ons`)){
-      fs.mkdirSync(`${path}roleGuides/add_ons`)
-    }
+    if (!fs.existsSync(path)) fs.mkdirSync(path)
+
+    if (!fs.existsSync(`${path}roleGuides`)) fs.mkdirSync(`${path}roleGuides`)
+
+    if (!fs.existsSync(`${path}roleGuides/add_ons`)) fs.mkdirSync(`${path}roleGuides/add_ons`)
   }
 
-  /**角色一图流 */
+  /** 角色一图流 */
   async roleGuide () {
     let match = /^#?(星铁)?(更新)?(\S+)(攻略|一图流)$/.exec(this.e.msg)
     let isUpdate = !!match[2]
