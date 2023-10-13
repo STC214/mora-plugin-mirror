@@ -134,7 +134,7 @@ export default class banner extends moraBase {
     rarity.forEach(i => {
       let _pool = []
       if (i.version && i.half) _pool.push(`所属版本：${i.version} ${i.half}`)
-      _pool.concat([
+      _pool = _.concat(_pool, [
         `卡池名称：${i.name.replace('|', '，')}`,
         `五星UP：${i.five.join('，')}`,
         `四星UP：${i.four.join('，')}`,
