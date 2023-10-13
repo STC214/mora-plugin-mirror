@@ -53,11 +53,13 @@ body {
 .container .con-left-head {
   width: 60%;
   float: left;
+  padding-top: 10px;
 }
 .container .con-right-head {
   width: 40%;
   float: left;
   padding-right: 3%;
+  padding-top: 10px;
 }
 
 .container .con-left {
@@ -128,8 +130,8 @@ body {
 }
 
 .card-right {
-  width: 95%;
-  margin: 0 5%;
+  width: 96%;
+  margin: 0 4%;
 }
 
 .card-foot {
@@ -152,8 +154,8 @@ body {
   position: relative;
   display: inline-block;
   vertical-align: middle;
-  width: 150px;
-  height: 175px;
+  width: 140px;
+  height: 168px;
   background-size: cover;
   background-color: transparent;
   /* border-radius: 3px; */
@@ -167,8 +169,8 @@ body {
 }
 
 .container .card-body .card img {
-  width: 140px;
-  height: 150px;
+  width: 130px;
+  height: 140px;
   margin: 0 4px;
   vertical-align: 0;
   /* float: left; */
@@ -179,18 +181,18 @@ body {
 }
 
 .container .card-body .card span {
-  top: 132px;
+  top: 125px;
   /* bottom: -5px; */
-  right: 5px;
-  width: 140px;
-  height: 42px;
+  right: 4px;
+  width: 130px;
+  height: 38px;
   font-weight: bolder;
   background-color:transparent;
   letter-spacing: 1px;
   /* color: #f0e0b9; */
   color:#ffffff;
-  line-height: 42px;
-  font-size: 40px;
+  line-height: 38px;
+  font-size: 36px;
   border-radius: 3px;
   text-align: right;
   position: absolute;
