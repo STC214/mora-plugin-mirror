@@ -47,7 +47,7 @@ export default class roleGuide extends moraBase {
         success = await this.getImg(role.name, guide[i], dir[i])
       }
       if (success) {
-        if (_.includes(dir[i], `/坤易/${role.name}`)) {
+        if (_.includes(dir[i], `${this.resPath}/Guides`) && _.includes(dir[i], role.name)) {
           xf = false
         }
         if (!xf && _.includes(dir[i], `/1/${role.name}`)) {
@@ -74,7 +74,7 @@ export default class roleGuide extends moraBase {
     this.uploader = moracfg.getSetYaml('srRoleGuides', true)
     let atlas = `${_path}/plugins/Atlas/star-rail-atlas/guide for role/${role.name}.png`
 
-    // let add_dir = this.findPack(`${this.path}/add_ons`, role.name, this.isSr)
+    let add_dir = this.findPack(`${this.path}/add_ons`, role.name, this.isSr)
     let sources = _.map(this.uploader, 'source')
     let dir = _.map(sources, (v) => `${this.path}/${v}/StarRail/${role.name}.jpg`)
 
@@ -84,6 +84,7 @@ export default class roleGuide extends moraBase {
       this.uploader = _.filter(this.uploader, (v) => v.source !== '听语惊花')
       dir = _.tail(dir)
     }
+    dir = _.concat(dir, add_dir)
     for (let i in dir) {
       let success = true
       if (!fs.existsSync(dir[i]) || isUpdate) {
