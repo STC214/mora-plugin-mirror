@@ -4,15 +4,13 @@
 // 适配参考zhi-plugin，miao-plugin，兼容V2以及V3云崽，谢谢喵喵插件和白纸插件的贡献 ^_^
 // ======================================================================
 
-import Data from './components/Data.js';
-import { isV3, moraVersion } from './components/Changelog.js';
-import fs from 'node:fs';
+import Data from './components/Data.js'
+import { isV3, moraVersion } from './components/Changelog.js'
+import fs from 'node:fs'
 
-if (!global.segment) {
-  global.segment = (await import('oicq')).segment
-}
+if (!global.segment) global.segment = (await import('oicq')).segment
 
-export * from './apps/index.js'
+// export * from './apps/index.js'
 
 let index = { mora: {} }
 if (isV3) {
@@ -21,14 +19,10 @@ if (isV3) {
 
 export const mora = index.mora || {}
 
-if (Bot?.logger?.info) {
-  Bot.logger.info(`摩拉插件${moraVersion}初始化~`)
-} else {
-  console.log(`摩拉插件${moraVersion}初始化~`)
-}
+logger.info(`摩拉插件${moraVersion}初始化~`)
 
-/**V3导入插件 */
-const files = fs.readdirSync('./plugins/mora-plugin/apps').filter(file => file.endsWith('.js'));
+/** V3导入插件 */
+const files = fs.readdirSync('./plugins/mora-plugin/apps').filter(file => file.endsWith('.js'))
 let ret = []
 
 files.forEach((file) => {
