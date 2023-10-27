@@ -64,7 +64,7 @@ export class moraHelp extends plugin {
         if (manual) e.reply('正在更新...')
       }
 
-      common.sleep(_.random(3600000))
+      if (!manual) await common.sleep(_.random(3600000))
       exec(command, { cwd: this.resPath }, (error, stdout, stderr) => {
         if (/Already up to date/.test(stdout) || stdout.includes('最新')) {
           if (manual) e.reply('资源包已经是最新了~')
