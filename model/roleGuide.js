@@ -75,6 +75,7 @@ export default class roleGuide extends moraBase {
     let atlas = `${_path}/plugins/Atlas/star-rail-atlas/guide for role/${role.name}.png`
 
     let add_dir = this.findPack(`${this.path}/add_ons`, role.name, this.isSr)
+    let res_dir = this.findPack(`${this.resPath}/Guides`, role.name, this.isSr)
     let sources = _.map(this.uploader, 'source')
     let dir = _.map(sources, (v) => `${this.path}/${v}/StarRail/${role.name}.jpg`)
 
@@ -176,13 +177,13 @@ export default class roleGuide extends moraBase {
     let dir = []
     _.each(_sources, (author) => {
       let _author = isSr ? `${path}/${author}/StarRail` : `${path}/${author}`
-      let _roles = fs.readdirSync(_author)
+      let _roles = fs.existsSync(_author) ? fs.readdirSync(_author) : []
       _roles = _.filter(_roles, (r) => _.includes(r, name))
       let au_path = _.isEmpty(_roles) ? false : `${_author}/${_roles[0]}`
       dir.push(au_path)
     })
 
-    dir = _.filter(dir, (v) => !!v)
+    dir = _.compact(dir)
     return dir
   }
 
@@ -281,7 +282,7 @@ export default class roleGuide extends moraBase {
           break
         }
       } else {
-        if (val.post.subject.includes(name)) {
+        if (val.post.subject.includes(name) || _.map(val.topics, 'name').includes(name)) {
           let max = 0
           val.image_list.forEach((v, i) => {
             if (Number(v.size) >= Number(val.image_list[max].size)) max = i
