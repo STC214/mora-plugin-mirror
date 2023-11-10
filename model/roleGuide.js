@@ -12,9 +12,10 @@ export default class roleGuide extends moraBase {
     super(e)
     this.url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id='
     this.oss = '?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg'
-    this.isSr = e?.isSr || false
+    this.game = this.e.game
+    this.isSr = this.game === 'sr'
     this.uploader = moracfg.getSetYaml('roleGuides', true)
-    this.gamePath = this.isSr ? moracfg.getGameRes('hsr') : moracfg.getGameRes('gs')
+    this.gamePath = moracfg.getGameRes(this.game)
     this.resPath = moracfg.getMoraPlus(this.gamePath, 'role')
     this.path = `${moracfg.getMoraPath('data')}roleGuides`
   }
