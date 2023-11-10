@@ -10,19 +10,19 @@ import { Data, isV3, pluginPath } from '../components/index.js'
  * 借鉴逍遥插件
  */
 class moracfg {
-  constructor() {
+  constructor () {
     this.def = `${pluginPath}/config/default/`
     this.user = `${pluginPath}/config/user/`
   }
 
-  /** 通用yaml读取*/
-  getfileYaml(path, name) {
+  /** 通用yaml读取 */
+  getfileYaml (path, name) {
     let file = `${path}${name}.yaml`
     return fs.existsSync(file) ? YAML.parse(fs.readFileSync(file, 'utf8')) : {}
   }
 
   /** 设置读取 */
-  getSetYaml(name, isCopy = false) {
+  getSetYaml (name, isCopy = false) {
     if (isCopy) {
       this.defSetCopy(name)
     }
@@ -38,7 +38,7 @@ class moracfg {
   }
 
   /** 配置拷贝 */
-  defSetCopy(name) {
+  defSetCopy (name) {
     name += '.yaml'
     if (!fs.existsSync(this.user)) {
       fs.mkdirSync(this.user)
@@ -56,7 +56,7 @@ class moracfg {
     return msg
   }
 
-  getMoraPath(name) {
+  getMoraPath (name) {
     let path = pluginPath
     switch (name) {
       case 'def':
@@ -78,7 +78,7 @@ class moracfg {
     return path
   }
 
-  getGameRes(name) {
+  getGameRes (name) {
     let path = this.getMoraPath('plus')
     switch (name) {
       case 'banner':
@@ -87,14 +87,14 @@ class moracfg {
       case 'gs':
         path += 'Genshin/'
         break
-      case 'hsr':
+      case 'sr':
         path += 'StarRail/'
         break
     }
     return path
   }
 
-  getMoraPlus(path, name) {
+  getMoraPlus (path, name) {
     switch (name) {
       case 'role':
         path += 'Roles'

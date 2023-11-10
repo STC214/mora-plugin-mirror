@@ -55,7 +55,7 @@ export class roleGuides extends plugin {
     let roleName = match[3]
 
     let msg = new RoleGuide(this.e)
-    msg = this.e.isSr ? await msg.srStrategies(roleName, isUpdate) : await msg.strategies(roleName, isUpdate)
+    msg = this.e.game === 'sr' ? await msg.srStrategies(roleName, isUpdate) : await msg.strategies(roleName, isUpdate)
     if (!msg) return false
 
     await this.e.reply(msg)

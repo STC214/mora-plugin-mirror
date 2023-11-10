@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 import common from '../../../lib/common/common.js'
-import { pluginPath, moraVersion, yunzaiVersion } from "../components/Changelog.js"
+import { pluginPath, moraVersion, yunzaiVersion } from '../components/Changelog.js'
 import _ from 'lodash'
 
 class commonTools {
@@ -19,7 +19,7 @@ class commonTools {
     if (!response.ok) {
       return false
     }
-    const res = await response.json();
+    const res = await response.json()
     return res
   }
 
@@ -31,17 +31,17 @@ class commonTools {
    * @returns 数据渲染模板
    */
   async getRenderData (parent, model, data) {
-		let render = {
-			tplFile: `${pluginPath}/resources/html/${parent}/${model}.html`,
+    let render = {
+      tplFile: `${pluginPath}/resources/html/${parent}/${model}.html`,
       pluResPath: `${pluginPath}/resources/`,
       profilePic: this.rolePicPath,
       watermark: `Created By Yunzai-Bot ${yunzaiVersion} & Mora-Plugin ${moraVersion}`,
       quality: 100,
-			...data,
-		}
-		return render
-	}
-  
+      ...data
+    }
+    return render
+  }
+
   /** 下载文件 */
   async download (url, path) {
     let res = await fetch(url)
@@ -56,7 +56,7 @@ class commonTools {
 
   /** 主角特殊处理 */
   traveler (alias, name, type) {
-    let travelers = ['风主', '岩主', '雷主', '草主']
+    let travelers = ['风主', '岩主', '雷主', '草主', '水主']
     if (!travelers.includes(alias)) {
       travelers = _.map(travelers, (v) => `${v}${type}`)
       return `请选择${name}${type}：${_.join(travelers, '、')}`
@@ -67,14 +67,13 @@ class commonTools {
 
   trailblazer (name, type) {
     let trailblazers = ['物主', '火主']
-      if (['主角', '爷', '主角'].includes(name)) {
-        trailblazers = _.map(trailblazers, (v) => `${v}${type}`)
-        return `请选择${name}${type}：${_.join(trailblazers, '、')}`
-      } else {
-        return trailblazers
-      }
+    if (['主角', '爷', '主角'].includes(name)) {
+      trailblazers = _.map(trailblazers, (v) => `${v}${type}`)
+      return `请选择${name}${type}：${_.join(trailblazers, '、')}`
+    } else {
+      return trailblazers
+    }
   }
-  
 }
 
-export default new commonTools();
+export default new commonTools()

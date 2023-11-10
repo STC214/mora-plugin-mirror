@@ -10,7 +10,8 @@ export default class banner extends moraBase {
   constructor (e) {
     super(e)
     this.path = moracfg.getGameRes('banner')
-    this.isSr = this.e?.isSr || false
+    this.game = this.e.game
+    this.isSr = this.game === 'sr'
   }
 
   async schedules (type) {

@@ -1,4 +1,4 @@
-import moraBase from "./moraBase.js"
+import moraBase from './moraBase.js'
 import commonTools from './commonTools.js'
 import gsCfg from '../../genshin/model/gsCfg.js'
 import _ from 'lodash'
@@ -6,11 +6,12 @@ import fs from 'node:fs'
 import moracfg from './config.js'
 import common from '../../../lib/common/common.js'
 
-export default class team extends moraBase{
+export default class team extends moraBase {
   constructor (e) {
     super(e)
-    this.isSr = e?.isSr || false
-    this.gamePath = this.isSr ? moracfg.getGameRes('hsr') : moracfg.getGameRes('gs')
+    this.game = this.e.game
+    this.isSr = this.game === 'sr'
+    this.gamePath = moracfg.getGameRes(this.game)
     this.path = moracfg.getMoraPlus(this.gamePath, 'team')
   }
 
@@ -35,8 +36,8 @@ export default class team extends moraBase{
 
     teams = _.filter(teams.find, v => fs.existsSync(`${this.path}/${v}`))
     if (_.isEmpty(teams)) {
-      logger.error(`图片获取失败`)
-      await this.e.reply(`没找到捏，是不是没更新资源包捏捏捏捏捏？`)
+      logger.error('图片获取失败')
+      await this.e.reply('没找到捏，是不是没更新资源包捏捏捏捏捏？')
       return false
     }
 
@@ -68,7 +69,7 @@ export default class team extends moraBase{
     let role = gsCfg.getRole(query)
     let find_rname = []
     let team2 = []
-    if (role){
+    if (role) {
       /** 主角特殊处理 */
       if (_.includes(commonTools.travelerID(), String(role.roleId))) {
         traveler = commonTools.traveler(role.alias, query, '配队')
@@ -84,7 +85,7 @@ export default class team extends moraBase{
       team2 = _.pickBy(teams['卡玛sei亚'], v => v.includes(role.name))
       team2 = _.keys(team2)
     }
-    
+
     let team1 = _.uniq(_.concat(find_tname, find_alias, find_rname))
     team1 = _.map(team1, v => `茗血茶/${v}.png`)
     team2 = _.map(team2, v => `卡玛sei亚/${v}.png`)
@@ -92,7 +93,7 @@ export default class team extends moraBase{
 
     return {
       find: _.isEmpty(names) ? false : names,
-      traveler: traveler
+      traveler
     }
   }
 }
