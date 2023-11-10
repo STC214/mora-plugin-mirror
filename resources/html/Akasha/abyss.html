@@ -53,7 +53,7 @@
             <div class="card-right">
               <div class="split-up"><img src="{{pluResPath}}img/separator/split50.png"></div>
               {{ each characterList character }}
-              {{ if character.value < 25 && character.value >= 5 }}
+              {{ if character.value < 25 && character.value >= 6 }}
               <div class="card">
                 <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name }}.png" />
                 <div><span>{{ character.value.toFixed(1) }}%</span></div>
@@ -78,7 +78,7 @@
           <div class="card-foot">
             <div class="split-down"><img src="{{pluResPath}}img/separator/split10.png"></div>
             {{ each characterList character }}
-            {{ if character.value < 5 }}
+            {{ if character.value < 6 }}
             <div class="card">
               <img class="bg{{ character.rarity }}" src="{{ profilePic}}{{ character.name }}.png" />
               <span>{{ character.value.toFixed(1) }}%</span>
