@@ -9,7 +9,7 @@ import common from '../../../lib/common/common.js'
 export default class team extends moraBase {
   constructor (e) {
     super(e)
-    this.game = this.e.game
+    this.game = this.e.game || 'gs'
     this.isSr = this.game === 'sr'
     this.gamePath = moracfg.getGameRes(this.game)
     this.path = moracfg.getMoraPlus(this.gamePath, 'team')
