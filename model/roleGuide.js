@@ -44,7 +44,7 @@ export default class roleGuide extends moraBase {
     let xf = true
     for (let i in dir) {
       let success = true
-      if (!fs.existsSync(dir[i]) || isUpdate) {
+      if (!fs.existsSync(dir[i]) || (isUpdate && !dir[i].includes('/add_ons/'))) {
         success = await this.getImg(role.name, guide[i], dir[i])
       }
       if (success) {
@@ -80,13 +80,13 @@ export default class roleGuide extends moraBase {
     let sources = _.map(this.uploader, 'source')
     let dir = _.map(sources, (v) => `${this.path}/${v}/StarRail/${role.name}.jpg`)
 
-    let msg = []
+    let msg = [...res_dir]
     if (fs.existsSync(atlas)) {
       msg.push(atlas)
       this.uploader = _.filter(this.uploader, (v) => v.source !== '听语惊花')
       dir = _.tail(dir)
     }
-    dir = _.concat(dir, add_dir)
+
     for (let i in dir) {
       let success = true
       if (!fs.existsSync(dir[i]) || isUpdate) {
@@ -95,7 +95,7 @@ export default class roleGuide extends moraBase {
       if (success) msg.push(dir[i])
     }
 
-    msg = _.map(_.uniq(msg), v => segment.image(v))
+    msg = _.map(_.uniq(_.concat(msg, add_dir)), v => segment.image(v))
     if (_.isEmpty(msg)) {
       await this.e.reply('暂无攻略数据，请稍后再试')
       return false
