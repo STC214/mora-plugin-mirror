@@ -173,6 +173,7 @@ export default class roleGuide extends moraBase {
 
   // 找本地图片
   findPack (path, name, isSr = false) {
+    if (!fs.existsSync(path)) return []
     let _sources = fs.readdirSync(path)
     let dir = []
     _.each(_sources, (author) => {
