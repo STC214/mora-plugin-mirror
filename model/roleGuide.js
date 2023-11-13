@@ -105,7 +105,7 @@ export default class roleGuide extends moraBase {
 
   async getHelp () {
     this.resPath += this.isSr ? '/RefStat' : '/YieldCurve'
-    this.checkPath(this.resPath)
+    await this.checkPath(this.resPath)
 
     let msg = [segment.image(`file://${this.resPath}/帮助.png`)]
     if (this.isSr) {
@@ -119,7 +119,7 @@ export default class roleGuide extends moraBase {
   }
 
   async stat_curve (name) {
-    this.checkPath(this.resPath)
+    await this.checkPath(this.resPath)
 
     let refPath = `${this.resPath}/RefStat`
     let curvePath = `${this.resPath}/YieldCurve`
@@ -319,7 +319,7 @@ export default class roleGuide extends moraBase {
   }
 
   async checkPath (path) {
-    if (fs.existsSync(path)) {
+    if (!fs.existsSync(path)) {
       await this.e.reply(moracfg.resNotFound, true)
       return false
     }

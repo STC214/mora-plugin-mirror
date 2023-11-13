@@ -15,7 +15,7 @@ export default class team extends moraBase {
   }
 
   async guides (query) {
-    if (fs.existsSync(this.path)) {
+    if (!fs.existsSync(this.path)) {
       await this.e.reply(moracfg.resNotFound, true)
       return false
     }

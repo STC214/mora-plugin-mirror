@@ -114,7 +114,7 @@ export class abyssVersion extends plugin {
   }
 
   async checkRes (path) {
-    if (fs.existsSync(path)) {
+    if (!fs.existsSync(path)) {
       await this.e.reply(moracfg.resNotFound, true)
       return false
     }
