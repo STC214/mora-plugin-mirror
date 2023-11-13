@@ -15,6 +15,10 @@ class moracfg {
     this.user = `${pluginPath}/config/user/`
   }
 
+  get resNotFound () {
+    return '还没下载/更新资源包，该功能用不了捏\n请发送【#更新摩拉资源】以进行更新'
+  }
+
   /** 通用yaml读取 */
   getfileYaml (path, name) {
     let file = `${path}${name}.yaml`
@@ -23,37 +27,18 @@ class moracfg {
 
   /** 设置读取 */
   getSetYaml (name, isCopy = false) {
-    if (isCopy) {
-      this.defSetCopy(name)
-    }
+    if (isCopy) this.defSetCopy(name)
 
-    let setYaml = {}
-    if (!fs.existsSync(`${this.user + name}.yaml`)) {
-      setYaml = this.getfileYaml(this.def, name)
-    } else {
-      setYaml = this.getfileYaml(this.user, name)
-    }
-
-    return setYaml
+    let setPath = fs.existsSync(`${this.user + name}.yaml`) ? this.user : this.def
+    return this.getfileYaml(setPath, name)
   }
 
   /** 配置拷贝 */
   defSetCopy (name) {
     name += '.yaml'
-    if (!fs.existsSync(this.user)) {
-      fs.mkdirSync(this.user)
-    }
-    if (!fs.existsSync(this.user + name)) {
-      fs.copyFileSync(this.def + name, this.user + name)
-    }
-  }
+    if (!fs.existsSync(this.user)) fs.mkdirSync(this.user)
 
-  checkRes (path) {
-    let msg = false
-    if (!fs.existsSync(path)) {
-      msg = '还没下载/更新资源包，该功能用不了捏'
-    }
-    return msg
+    if (!fs.existsSync(this.user + name)) fs.copyFileSync(this.def + name, this.user + name)
   }
 
   getMoraPath (name) {
@@ -94,7 +79,8 @@ class moracfg {
     return path
   }
 
-  getMoraPlus (path, name) {
+  getMoraPlus (model, name) {
+    let path = this.getGameRes(model)
     switch (name) {
       case 'role':
         path += 'Roles'

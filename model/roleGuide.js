@@ -15,8 +15,7 @@ export default class roleGuide extends moraBase {
     this.game = this.e.game || 'gs'
     this.isSr = this.game === 'sr'
     this.uploader = moracfg.getSetYaml('roleGuides', true)
-    this.gamePath = moracfg.getGameRes(this.game)
-    this.resPath = moracfg.getMoraPlus(this.gamePath, 'role')
+    this.resPath = moracfg.getMoraPlus(this.game, 'role')
     this.path = `${moracfg.getMoraPath('data')}roleGuides`
   }
 
@@ -177,7 +176,7 @@ export default class roleGuide extends moraBase {
     let _sources = fs.readdirSync(path)
     let dir = []
     _.each(_sources, (author) => {
-      let _author = isSr ? `${path}/${author}/StarRail` : `${path}/${author}`
+      let _author = isSr && path.includes('add_ons') ? `${path}/${author}/StarRail` : `${path}/${author}`
       let _roles = fs.existsSync(_author) ? fs.readdirSync(_author) : []
       _roles = _.filter(_roles, (r) => _.includes(r, name))
       let au_path = _.isEmpty(_roles) ? false : `${_author}/${_roles[0]}`
@@ -266,6 +265,7 @@ export default class roleGuide extends moraBase {
 
     let posts = _.flatten(_.map(msyRes, (item) => item.data.posts))
     let url
+    let _post = []
     for (let val of posts) {
       /** 攻略图个别来源特殊处理 */
       if (author.collection_id.includes(341523)) {
@@ -283,20 +283,20 @@ export default class roleGuide extends moraBase {
           break
         }
       } else {
-        if (val.post.subject.includes(name) || _.map(val.topics, 'name').includes(name)) {
-          let max = 0
-          val.image_list.forEach((v, i) => {
-            if (Number(v.size) >= Number(val.image_list[max].size)) max = i
-          })
-          url = val.image_list[max].url
+        if (val.post.subject.includes(name)) {
+          url = this.getMax(val)
           break
+        } else if (_.map(val.topics, 'name').includes(name)) {
+          _post.push(this.getMax(val))
         }
       }
     }
 
     if (!url) {
-      logger.mark(`暂无${name}攻略（${author.source}）`)
-      return false
+      if (_.isEmpty(_post)) {
+        logger.mark(`暂无${name}攻略（${author.source}）`)
+        return false
+      } else url = _post[0]
     }
 
     logger.mark(`${this.e.logFnc} 下载${author.source}-${name}攻略图`)
@@ -310,10 +310,17 @@ export default class roleGuide extends moraBase {
     return true
   }
 
+  getMax (val) {
+    let max = 0
+    val.image_list.forEach((v, i) => {
+      if (Number(v.size) >= Number(val.image_list[max].size)) max = i
+    })
+    return val.image_list[max].url
+  }
+
   async checkPath (path) {
-    let check = moracfg.checkRes(path)
-    if (check) {
-      await this.e.reply(check)
+    if (fs.existsSync(path)) {
+      await this.e.reply(moracfg.resNotFound, true)
       return false
     }
   }

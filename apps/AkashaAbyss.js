@@ -68,9 +68,7 @@ export class AkashaAbyss extends plugin {
 
   async akashaHelp () {
     let path = `${moracfg.getMoraPath('res')}img/AkashaHelp.png`
-    if (!fs.existsSync(path)) {
-      return false
-    }
+    if (!fs.existsSync(path)) return false
     await this.e.reply(segment.image(path))
     return true
   }

@@ -11,14 +11,12 @@ export default class team extends moraBase {
     super(e)
     this.game = this.e.game || 'gs'
     this.isSr = this.game === 'sr'
-    this.gamePath = moracfg.getGameRes(this.game)
-    this.path = moracfg.getMoraPlus(this.gamePath, 'team')
+    this.path = moracfg.getMoraPlus(this.game, 'team')
   }
 
   async guides (query) {
-    let check = moracfg.checkRes(this.path)
-    if (check) {
-      await this.e.reply(check)
+    if (fs.existsSync(this.path)) {
+      await this.e.reply(moracfg.resNotFound, true)
       return false
     }
 

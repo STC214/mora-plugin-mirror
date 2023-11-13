@@ -31,13 +31,11 @@ export class abyssVersion extends plugin {
         }
       ]
     })
-    this.path = moracfg.getMoraPath('plus')
   }
 
   dirPath = (game = 'gs') => {
-    this.path = moracfg.getGameRes(game)
     let dir = { gs: 'abyss', sr: 'chaos' }
-    return moracfg.getMoraPlus(this.path, dir[game])
+    return moracfg.getMoraPlus(game, dir[game])
   }
 
   /** 深渊版本 */
@@ -51,11 +49,7 @@ export class abyssVersion extends plugin {
     if (abyss === '混沌') game = 'sr'
 
     this.path = `${this.dirPath(game)}/Version/`
-    let check = moracfg.checkRes(this.path)
-    if (check) {
-      await this.e.reply(check)
-      return false
-    }
+    await this.checkRes(this.path)
 
     this.path += version
     if (!fs.existsSync(this.path)) {
@@ -85,11 +79,7 @@ export class abyssVersion extends plugin {
   /** 12层历史 */
   async history12 () {
     this.path = `${this.dirPath(this.e.game)}/Version/history12`
-    let check = moracfg.checkRes(this.path)
-    if (check) {
-      await this.e.reply(check)
-      return false
-    }
+    await this.checkRes(this.path)
 
     let room = /^#?历代12(层|-[1-3])?(最低输出量)?$/.exec(this.e.msg)[1]
     if (!room) return false
@@ -102,20 +92,14 @@ export class abyssVersion extends plugin {
       await this.e.reply(await common.makeForwardMsg(this.e, msg, '历代深渊12层最低输出量'))
     } else {
       let img = `${this.path}/历代12${room}最低输出量.png`
-      if (fs.existsSync(img)) {
-        await this.e.reply(segment.image(`file://${img}`))
-      }
+      if (fs.existsSync(img)) await this.e.reply(segment.image(`file://${img}`))
     }
     return true
   }
 
   async teamRefer () {
     this.path = `${this.dirPath(this.e.game)}/Teams/`
-    let check = moracfg.checkRes(this.path)
-    if (check) {
-      await this.e.reply(check)
-      return false
-    }
+    await this.checkRes(this.path)
 
     let ver = /^#?([1-9]\.\d)深渊?阵容(参考|推荐)?$/.exec(this.e.msg)[1]
     if (!ver) return false
@@ -127,5 +111,12 @@ export class abyssVersion extends plugin {
     }
     await this.e.reply(segment.image(`file://${img}`))
     return true
+  }
+
+  async checkRes (path) {
+    if (fs.existsSync(path)) {
+      await this.e.reply(moracfg.resNotFound, true)
+      return false
+    }
   }
 }
