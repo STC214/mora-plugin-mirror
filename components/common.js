@@ -1,5 +1,5 @@
 import fs from 'node:fs'
-import { isV3 } from './index.js'
+import { isV3 } from './Changelog.js'
 
 const _path = process.cwd()
 
