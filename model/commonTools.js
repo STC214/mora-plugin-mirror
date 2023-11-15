@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 import common from '../../../lib/common/common.js'
-import { pluginPath, moraVersion, yunzaiVersion } from '../components/Changelog.js'
+import { pluginPath, moraVer, yzInfo } from '../components/index.js'
 import _ from 'lodash'
 
 class commonTools {
@@ -35,7 +35,7 @@ class commonTools {
       tplFile: `${pluginPath}/resources/html/${parent}/${model}.html`,
       pluResPath: `${pluginPath}/resources/`,
       profilePic: this.rolePicPath,
-      watermark: `Created By Yunzai-Bot ${yunzaiVersion} & Mora-Plugin ${moraVersion}`,
+      watermark: `Created By Yunzai-Bot ${yzInfo.version} & Mora-Plugin ${moraVer}`,
       quality: 100,
       ...data
     }

@@ -1,50 +1,46 @@
-import fs from "fs";
-import lodash from "lodash";
+import fs from 'node:fs'
+import _ from 'lodash'
 
-const _path = process.cwd();
-const plugin = 'mora-plugin';
+const _path = process.cwd()
+const plugin = 'mora-plugin'
 const pluginPath = `${_path}/plugins/${plugin}`
-const _logPath = `${pluginPath}/CHANGELOG.md`;
+const _logPath = `${pluginPath}/CHANGELOG.md`
 
-let logs = {};
-let changelogs = [];
-let moraVersion;
-let versionCount = 4;
+let logs = {}
+let changelogs = []
+let moraVer
+let versionCount = 4
 
-let packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
+let packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'))
 
 const getLine = function (line) {
-  line = line.replace(/(^\s*\*|\r)/g, '');
-  line = line.replace(/\s*`([^`]+`)/g, '<span class="cmd">$1');
-  line = line.replace(/`\s*/g, '</span>');
+  line = line.replace(/(^\s*\*|\r)/g, '')
+  line = line.replace(/\s*`([^`]+`)/g, '<span class="cmd">$1')
+  line = line.replace(/`\s*/g, '</span>')
   line = line.replace(/\s*\*\*([^\*]+\*\*)/g, '<span class="strong">$1')
-  line = line.replace(/\*\*\s*/g, '</span>');
-  line = line.replace(/ⁿᵉʷ/g, '<span class="new"></span>');
-  return line;
+  line = line.replace(/\*\*\s*/g, '</span>')
+  line = line.replace(/ⁿᵉʷ/g, '<span class="new"></span>')
+  return line
 }
 
 try {
   if (fs.existsSync(_logPath)) {
-    logs = fs.readFileSync(_logPath, "utf8") || "";
-    logs = logs.split("\n");
+    logs = fs.readFileSync(_logPath, 'utf8') || ''
+    logs = logs.split('\n')
 
-    let temp = {}, lastLine = {};
-    lodash.forEach(logs, (line) => {
-      if (versionCount <= -1) {
-        return false;
-      }
-      let versionRet = /^#\s*([0-9\\.~\s]+?)\s*$/.exec(line);
+    let temp = {}
+    let lastLine = {}
+    _.forEach(logs, (line) => {
+      if (versionCount <= -1) return false
+
+      let versionRet = /^#\s*([0-9\\.~\s]+?)\s*$/.exec(line)
       if (versionRet && versionRet[1]) {
-        let v = versionRet[1].trim();
-        if (!moraVersion) {
-            moraVersion = v;
-        } else {
-          changelogs.push(temp);
-          if (/0\s*$/.test(v) && versionCount > 0) {
-            versionCount = 0;
-          } else {
-            versionCount--;
-          }
+        let v = versionRet[1].trim()
+        if (!moraVer) moraVer = v
+        else {
+          changelogs.push(temp)
+          if (/0\s*$/.test(v) && versionCount > 0) versionCount = 0
+          else versionCount--
         }
 
         temp = {
@@ -52,26 +48,27 @@ try {
           logs: []
         }
       } else {
-        if (!line.trim()) {
-          return;
-        }
+        if (!line.trim()) return
         if (/^\*/.test(line)) {
           lastLine = {
             title: getLine(line),
             logs: []
           }
-          temp.logs.push(lastLine);
-        } else if (/^\s{3,}\*/.test(line)) {
-          lastLine.logs.push(getLine(line));
-        }
+          temp.logs.push(lastLine)
+        } else if (/^\s{3,}\*/.test(line)) lastLine.logs.push(getLine(line))
       }
-    });
+    })
   }
 } catch (e) {
   // do nth
 }
 
-const yunzaiVersion = packageJson.version;
-const isV3 = yunzaiVersion[0] === '3';
+const yzInfo = {
+  name: packageJson.name,
+  version: packageJson.version,
+  isTRSS: _.includes(packageJson.name, 'trss'),
+  isMiao: _.includes(packageJson.name, 'miao')
+}
+const isV3 = yzInfo.version[0] === '3'
 
-export { moraVersion, yunzaiVersion, isV3, changelogs, pluginPath };
+export { moraVer, yzInfo, isV3, changelogs, pluginPath }
