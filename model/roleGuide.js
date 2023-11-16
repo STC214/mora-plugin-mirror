@@ -228,22 +228,14 @@ export default class roleGuide extends moraBase {
   }
 
   advancedInfo (name) {
-    let artiRef = moracfg.getfileYaml(`${this.resPath}/YieldCurve/`, 'RefNotes')
-    let url = _.pick(artiRef, 'url')
-    let arti = _.pick(artiRef, name)
-    arti = arti[name]
-    if (_.isEmpty(arti)) {
-      return {
-        arti: false,
-        url: url.url
-      }
-    } else {
-      return {
-        arti: `主词条：${arti.mainProp}\n副词条：${arti.viceProp}`,
-        brief: arti.brief,
-        url: url.url
-      }
+    let artiRef = moracfg.getfileYaml(`${this.resPath}/RefStat/`, 'RefNotes')
+    let arti = artiRef[name] || {}
+    let notes = { url: artiRef.url, arti: false }
+    if (!_.isEmpty(arti)) {
+      notes.arti = `主词条：${arti.mainProp}\n副词条：${arti.viceProp}`
+      notes.brief = arti.brief
     }
+    return notes
   }
 
   /**
