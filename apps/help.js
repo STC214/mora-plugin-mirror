@@ -20,7 +20,7 @@ export class moraHelp extends plugin {
       priority: 5,
       rule: [
         {
-          reg: '^#摩拉帮助$',
+          reg: '^#?摩拉帮助$',
           fnc: 'moraHelp'
         },
         {
