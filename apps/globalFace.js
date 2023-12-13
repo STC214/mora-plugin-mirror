@@ -1,11 +1,10 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import fs from 'node:fs'
-import lodash from 'lodash'
+import _ from 'lodash'
 import common from '../../../lib/common/common.js'
 import { yzInfo } from '../components/index.js'
 
 let textArr = {}
-
 /**
  * Original from 云崽表情功能
  * Modify by Rrrrrrray
@@ -26,8 +25,7 @@ export class globalFace extends plugin {
         {
           reg: '^#(全局)?(添加|删除)(.*)',
           fnc: 'globalFace'
-        },
-        {
+        }, {
           reg: '#(全局)?(表情|词条)(.*)',
           fnc: 'listMeme'
         }
@@ -40,9 +38,8 @@ export class globalFace extends plugin {
 
   async globalFace () {
     this.isGlobal = this.e?.msg.includes('全局')
-    this.isMaster = this.e?.isMaster
 
-    if (this.isMaster || !this.isGlobal) return false
+    if (this.e?.isMaster || !this.isGlobal) return false
     else {
       this.e.reply('暂无权限，只有主人才能操作')
       return true
@@ -50,11 +47,16 @@ export class globalFace extends plugin {
   }
 
   async listMeme () {
+    if (this.e.msg.includes('全局')) {
+      this.e.msg = this.e.msg.replace(/表情|词条/, '词条')
+      return false
+    }
+
     if (yzInfo.isTRSS) {
-      this.path = './data/messageJson'
+      this.path = './data/messageJson/'
       this.facePath = this.path
     }
-    this.isGlobal = this.e?.msg.includes('全局')
+
     let page = 1
     let pageSize = 100
     let type = 'list'
@@ -62,19 +64,17 @@ export class globalFace extends plugin {
     await this.getGroupId()
     if (!this.group_id) return false
 
-    this.initTextArr()
-    this.initGlobalTextArr()
+    this.textArr()
+    this.globalTextArr()
 
-    let search = this.e.msg.replace(/#|＃|表情|词条|全局/g, '')
+    let search = this.e.msg.replace(/#|＃|表情|词条/g, '')
 
     if (search.includes('列表')) page = search.replace(/列表/g, '') || 1
     else type = 'search'
 
-    let global_list = textArr[Bot.uin]
-    let normal_list = textArr[this.group_id]
-    let list = this.isGlobal ? global_list : new Map([...global_list, ...normal_list])
+    let list = new Map([...textArr[this.global_id], ...textArr[this.group_id]])
 
-    if (lodash.isEmpty(list)) {
+    if (_.isEmpty(list)) {
       await this.e.reply('暂无表情')
       return
     }
@@ -90,7 +90,7 @@ export class globalFace extends plugin {
 
     if (type == 'list') arr = this.pagination(page, pageSize, arr)
 
-    if (lodash.isEmpty(arr)) return
+    if (_.isEmpty(arr)) return
 
     let msg = []
     let num = 0
@@ -115,7 +115,7 @@ export class globalFace extends plugin {
     let title = `表情列表，第${page}页，共${count}条`
     if (type == 'search') title = `表情${search}，${count}条`
 
-    this.e.reply(await common.makeForwardMsg(this.e, msg, title))
+    this.e.reply(await common.makeForwardMsg(this.e, _.chunk(msg, 10), title))
   }
 
   /** 群号key */
@@ -125,12 +125,6 @@ export class globalFace extends plugin {
 
   /** 获取群号 */
   async getGroupId () {
-    /** 添加全局表情，存入到机器人qq文件中 */
-    if (this.isGlobal) {
-      this.group_id = Bot.uin
-      return Bot.uin
-    }
-
     if (this.e.isGroup) {
       this.group_id = this.e.group_id
       redis.setEx(this.grpKey, 3600 * 24 * 30, String(this.group_id))
@@ -147,16 +141,12 @@ export class globalFace extends plugin {
     return false
   }
 
-  /** 初始化已添加内容 */
-  initTextArr () {
-    if (textArr[this.group_id]) return
-
+  /** 获取已添加内容 */
+  textArr () {
     textArr[this.group_id] = new Map()
 
     let path = `${this.path}${this.group_id}.json`
-    if (!fs.existsSync(path)) {
-      return
-    }
+    if (!fs.existsSync(path)) return
 
     try {
       let text = JSON.parse(fs.readFileSync(path, 'utf8'))
@@ -190,18 +180,15 @@ export class globalFace extends plugin {
           asface: true
         }]])
       }
-
-      this.saveJson()
-    } else fs.mkdirSync(facePath)
+    }
   }
 
   /** 初始化全局已添加内容 */
-  initGlobalTextArr () {
-    if (textArr[Bot.uin]) return
+  globalTextArr () {
+    this.global_id = yzInfo.isTRSS ? 'global' : this.e.bot.uin
+    textArr[this.global_id] = new Map()
 
-    textArr[Bot.uin] = new Map()
-
-    let globalPath = `${this.path}${Bot.uin}.json`
+    let globalPath = `${this.path}${this.global_id}.json`
     if (!fs.existsSync(globalPath)) return
 
     try {
@@ -211,20 +198,20 @@ export class globalFace extends plugin {
         if (text[i][0] && !Array.isArray(text[i][0])) {
           text[i] = [text[i]]
         }
-        textArr[Bot.uin].set(String(i), text[i])
+        textArr[this.global_id].set(String(i), text[i])
       }
     } catch (error) {
       logger.error(`json格式错误：${globalPath}`)
-      delete textArr[Bot.uin]
+      delete textArr[this.global_id]
       return false
     }
 
     /** 加载表情 */
-    let globalFacePath = `${this.facePath}${Bot.uin}`
+    let globalFacePath = `${this.facePath}${this.global_id}`
 
     if (fs.existsSync(globalFacePath)) {
       const files = fs
-        .readdirSync(`${this.facePath}${Bot.uin}`)
+        .readdirSync(`${this.facePath}${this.global_id}`)
         .filter((file) => /\.(jpeg|jpg|png|gif)$/g.test(file))
 
       for (let val of files) {
@@ -232,9 +219,9 @@ export class globalFace extends plugin {
         tmp[0] = tmp[0].replace(/_[0-9]{10}$/, '')
         if (/at|image/g.test(val)) continue
 
-        if (textArr[Bot.uin].has(tmp[0])) continue
+        if (textArr[this.global_id].has(tmp[0])) continue
 
-        textArr[Bot.uin].set(tmp[0], [
+        textArr[this.global_id].set(tmp[0], [
           [
             {
               local: `${globalFacePath}/${val}`,
@@ -243,30 +230,7 @@ export class globalFace extends plugin {
           ]
         ])
       }
-
-      this.saveGlobalJson()
-    } else fs.mkdirSync(globalFacePath)
-  }
-
-  saveJson () {
-    let obj = {}
-    for (let [k, v] of textArr[this.group_id]) {
-      obj[k] = v
     }
-
-    fs.writeFileSync(`${this.path}${this.group_id}.json`, JSON.stringify(obj, '', '\t'))
-  }
-
-  saveGlobalJson () {
-    let obj = {}
-    for (let [k, v] of textArr[Bot.uin]) {
-      obj[k] = v
-    }
-
-    fs.writeFileSync(
-      `${this.path}${Bot.uin}.json`,
-      JSON.stringify(obj, '', '\t')
-    )
   }
 
   /** 分页 */
@@ -291,7 +255,7 @@ export class globalFace extends plugin {
 
       for (let qq of tmp) {
         qq = qq.match(/[1-9][0-9]{4,14}/g)[0]
-        let member = await await Bot.getGroupMemberInfo(this.group_id, Number(qq)).catch(() => { })
+        let member = await await this.e.bot.getGroupMemberInfo(this.group_id, Number(qq)).catch(() => { })
         let name = member?.card ?? member?.nickname
         if (!name) continue
         msg = msg.replace(`{at:${qq}}`, `@${name}`)
