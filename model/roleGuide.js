@@ -72,7 +72,11 @@ export default class roleGuide extends moraBase {
     /** 主角 */
     // let trailblazer = commonTools.trailblazer(name, '攻略')
     this.uploader = moracfg.getSetYaml('srRoleGuides', true)
-    let atlas = `${_path}/plugins/Atlas/star-rail-atlas/guide for role/${role.name}.png`
+
+    let atlas = `${_path}/plugins/Atlas/star-rail-atlas/guide for role/${role.roleId}.png`
+    if (!fs.existsSync(atlas)) {
+      atlas = `${_path}/plugins/Atlas/star-rail-atlas/guide for role/${role.name}.png`
+    }
 
     let add_dir = this.findPack(`${this.path}/add_ons`, role.name, this.isSr)
     let res_dir = this.findPack(`${this.resPath}/Guides`, role.name, this.isSr)
