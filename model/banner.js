@@ -4,7 +4,7 @@ import moment from 'moment'
 import fs from 'node:fs'
 import moraBase from './moraBase.js'
 import moracfg from './config.js'
-import common from '../../../lib/common/common.js'
+import commonTools from './commonTools.js'
 
 export default class banner extends moraBase {
   constructor (e) {
@@ -33,13 +33,7 @@ export default class banner extends moraBase {
     })
 
     if (_.isEmpty(msg)) return false
-
-    if (msg.length > 1) {
-      msg = await common.makeForwardMsg(this.e, msg, '复刻时间表')
-    } else {
-      msg = msg[0]
-    }
-    return msg
+    return await commonTools.makeMsg(this.e, msg, '复刻时间表')
   }
 
   async searchBanners (query) {
@@ -52,8 +46,7 @@ export default class banner extends moraBase {
     let pool = this.getPool(name.type, name.name)
     if (!pool) return false
 
-    let msg = [`${name.name}卡池详情`, ...pool]
-    return await common.makeForwardMsg(this.e, msg, msg[0])
+    return await commonTools.makeMsg(this.e, pool, `${name.name}卡池详情`, true)
   }
 
   /**

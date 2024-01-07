@@ -2,6 +2,7 @@ import fetch from 'node-fetch'
 import common from '../../../lib/common/common.js'
 import { pluginPath, moraVer, yzInfo } from '../components/index.js'
 import _ from 'lodash'
+import moracfg from './config.js'
 
 class commonTools {
   constructor () {
@@ -73,6 +74,13 @@ class commonTools {
     } else {
       return trailblazers
     }
+  }
+
+  async makeMsg (e, data = [], title = '', force = false) {
+    const forwardMsg = moracfg.getSetYaml('config', true).forwardMsg
+    if (data.length === 1) return data[0]
+    else if (forwardMsg || force) return await common.makeForwardMsg(e, data, title)
+    else return [title, ...data]
   }
 }
 

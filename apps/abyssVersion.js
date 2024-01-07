@@ -1,5 +1,5 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import common from '../../../lib/common/common.js'
+import commonTools from '../model/commonTools.js'
 import moracfg from '../model/config.js'
 import _ from 'lodash'
 import fs from 'node:fs'
@@ -66,12 +66,7 @@ export class abyssVersion extends plugin {
       return false
     }
 
-    if (msg.length > 1) {
-      msg = await common.makeForwardMsg(this.e, msg, `${game === 'sr' ? '星铁' : '原神'}${version}${game === 'sr' ? '混沌' : '深渊'}`)
-    } else {
-      msg = msg[0]
-    }
-
+    msg = await commonTools.makeMsg(this.e, msg, `${game === 'sr' ? '星铁' : '原神'}${version}${game === 'sr' ? '混沌' : '深渊'}`)
     await this.e.reply(msg)
     return true
   }
@@ -89,7 +84,7 @@ export class abyssVersion extends plugin {
     if (room === '层') {
       let pics = fs.readdirSync(this.path)
       _.each(pics, (v) => msg.push(segment.image(`file://${this.path}/${v}`)))
-      await this.e.reply(await common.makeForwardMsg(this.e, msg, '历代深渊12层最低输出量'))
+      await this.e.reply(await commonTools.makeMsg(this.e, msg, '历代深渊12层最低输出量'))
     } else {
       let img = `${this.path}/历代12${room}最低输出量.png`
       if (fs.existsSync(img)) await this.e.reply(segment.image(`file://${img}`))

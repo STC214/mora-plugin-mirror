@@ -2,7 +2,6 @@ import moraBase from './moraBase.js'
 import commonTools from './commonTools.js'
 import moracfg from './config.js'
 import gsCfg from '../../genshin/model/gsCfg.js'
-import common from '../../../lib/common/common.js'
 import _ from 'lodash'
 import fs from 'node:fs'
 
@@ -63,7 +62,7 @@ export default class roleGuide extends moraBase {
       return false
     }
 
-    return await common.makeForwardMsg(this.e, msg, `${role.name}攻略`)
+    return await commonTools.makeMsg(this.e, msg, `${role.name}攻略`)
   }
 
   async srStrategies (name, isUpdate) {
@@ -104,7 +103,7 @@ export default class roleGuide extends moraBase {
       return false
     }
 
-    return await common.makeForwardMsg(this.e, msg, `${role.name}攻略`)
+    return await commonTools.makeMsg(this.e, msg, `${role.name}攻略`)
   }
 
   async getHelp () {
@@ -172,7 +171,7 @@ export default class roleGuide extends moraBase {
     msg[0] = _.compact([msg[0], notes.url])
     msg = _.compact(msg)
 
-    return msg.length === 1 ? msg[0] : await common.makeForwardMsg(this.e, msg, `${role.name}进阶参考 @blue菌hehe`)
+    return await commonTools.makeMsg(this.e, msg, `${role.name}进阶参考 @blue菌hehe`)
   }
 
   // 找本地图片
@@ -298,7 +297,7 @@ export default class roleGuide extends moraBase {
 
     logger.mark(`${this.e.logFnc} 下载${author.source}-${name}攻略图`)
 
-    if (!await common.downFile(url + this.oss, sfPath)) {
+    if (!await commonTools.download(url + this.oss, sfPath)) {
       return false
     }
 

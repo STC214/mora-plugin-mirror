@@ -4,7 +4,6 @@ import gsCfg from '../../genshin/model/gsCfg.js'
 import _ from 'lodash'
 import fs from 'node:fs'
 import moracfg from './config.js'
-import common from '../../../lib/common/common.js'
 
 export default class team extends moraBase {
   constructor (e) {
@@ -40,13 +39,7 @@ export default class team extends moraBase {
     }
 
     let msg = _.map(teams, v => segment.image(`file://${this.path}/${v}`))
-    if (msg.length > 1) {
-      msg = await common.makeForwardMsg(this.e, msg, `${query}配队详情`)
-    } else {
-      msg = msg[0]
-    }
-
-    return msg
+    return await commonTools.makeMsg(this.e, msg, `${query}配队详情`)
   }
 
   searchTeams (teams, query) {
