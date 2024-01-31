@@ -66,7 +66,7 @@ export default class banner extends moraBase {
     if (role) {
       // 角色
       name = role.name
-      if (notUP.some(v => v.includes(name))) return false
+      if (_.some(notUP, v => v.includes(name))) return false
     } else {
       // 武器
       type = this.isSr ? 12 : 302
@@ -119,11 +119,8 @@ export default class banner extends moraBase {
     let today = moment().format('YYYY-MM-DD')
     let end = moment(latest.to).format('YYYY-MM-DD')
     let elapsed = moment(today).diff(end, 'days')
-    if (elapsed > 0) {
-      elapsed = `${elapsed}天未复刻`
-    } else {
-      elapsed = `当期UP，${elapsed < 0 ? '还有' + Math.abs(elapsed) : '今'}天结束卡池`
-    }
+    if (elapsed > 0) elapsed = `${elapsed}天未复刻`
+    else elapsed = `当期UP，${elapsed < 0 ? '还有' + Math.abs(elapsed) : '今'}天结束卡池`
 
     // 整合卡池内容
     let pool = []
