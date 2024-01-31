@@ -82,9 +82,10 @@ export default class banner extends moraBase {
    * @returns 武器
    */
   getWeapon (name) {
-    let weapon = Weapon.get(name)
+    let weapon = name
+    weapon = Weapon.get(name)
     if (weapon) weapon = weapon.name
-    else weapon = this.getWeaponFullName(weapon)
+    else weapon = this.getWeaponFullName(name)
     return weapon
   }
 
