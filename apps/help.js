@@ -22,10 +22,13 @@ export class moraHelp extends plugin {
         {
           reg: '^#?摩拉帮助$',
           fnc: 'moraHelp'
-        },
-        {
+        }, {
           reg: '^#(强制)?更新摩拉资源$',
           fnc: 'updateMoraRes',
+          permission: 'master'
+        }, {
+          reg: '^#摩拉(强制)?更新$',
+          fnc: 'updateMoraPlugin',
           permission: 'master'
         }
       ]
@@ -48,8 +51,8 @@ export class moraHelp extends plugin {
     if (img) await this.reply(img)
   }
 
-  async updateMoraRes (e) {
-    let msg = e?.msg || ''
+  async updateMoraRes () {
+    let msg = this.e?.msg || ''
     let manual = !!msg
     let force = _.includes(msg, '强制')
     let command = ''
@@ -58,32 +61,32 @@ export class moraHelp extends plugin {
       command = 'git pull --no-rebase'
       if (force) {
         command = `git checkout . && ${command}`
-        e.reply('正在强制更新...')
+        this.e.reply('正在强制更新...')
       } else {
         logger.mark('摩拉资源检测中...')
-        if (manual) e.reply('正在更新...')
+        if (manual) this.e.reply('正在更新...')
       }
 
       if (!manual) await common.sleep(_.random(3600000))
       exec(command, { cwd: this.resPath }, (error, stdout, stderr) => {
         if (/Already up to date/.test(stdout) || stdout.includes('最新')) {
-          if (manual) e.reply('资源包已经是最新了~')
+          if (manual) this.e.reply('资源包已经是最新了~')
           return true
         }
         let changed = /(\d*) files changed,/.exec(stdout)
         if (changed && changed[1]) {
-          if (manual) e.reply(`资源包更新成功，此次更新了${changed[1]}个~`)
+          if (manual) this.e.reply(`资源包更新成功，此次更新了${changed[1]}个~`)
           else logger.mark(`摩拉资源成功更新${changed[1]}个`)
           return true
         }
         if (error) {
           if (manual) {
-            e.reply(`更新失败！\nError code: ${error.code}\n${error.stack}\n 请稍后重试。`)
+            this.e.reply(`更新失败！\nError code: ${error.code}\n${error.stack}\n 请稍后重试。`)
           } else {
             logger.error(`更新失败！\nError code: ${error.code}\n${error.stack}`)
           }
         } else {
-          if (manual) e.reply('摩拉资源包更新成功~')
+          if (manual) this.e.reply('摩拉资源包更新成功~')
           else logger.mark('摩拉资源更新成功~')
         }
       })
@@ -91,14 +94,19 @@ export class moraHelp extends plugin {
       command = `git clone --depth=1 https://gitee.com/Rrrrrrray/mora-plugin-res.git "${this.resPath}"`
       exec(command, (error, stdout, stderr) => {
         if (error) {
-          e.reply(`资源包安装失败！\nError code: ${error.code}\n${error.stack}\n 请稍后重试。`)
+          this.e.reply(`资源包安装失败！\nError code: ${error.code}\n${error.stack}\n 请稍后重试。`)
         } else {
-          e.reply('摩拉资源包更新成功！后续也可以通过【#更新摩拉资源】更新资源包')
+          this.e.reply('摩拉资源包更新成功！后续也可以通过【#更新摩拉资源】更新资源包')
         }
       })
     } else {
       return true
     }
     return true
+  }
+
+  async updateMoraPlugin () {
+    this.e.msg = _.includes(this.e.msg, '强制') ? '#强制更新mora-plugin' : '#更新mora-plugin'
+    return false
   }
 }
