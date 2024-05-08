@@ -23,7 +23,7 @@ export default class roleGuide extends moraBase {
     if (!role) return false
 
     /** 主角特殊处理 */
-    if (commonTools.travelerID().includes(String(role.roleId))) {
+    if (commonTools.travelerID.includes(String(role.roleId))) {
       let traveler = commonTools.traveler(role.alias, name, '攻略')
       if (_.isEqual(role.alias, traveler)) {
         role.name = traveler
@@ -58,7 +58,7 @@ export default class roleGuide extends moraBase {
 
     msg = _.map(_.uniq(msg), v => segment.image(v))
     if (_.isEmpty(msg)) {
-      await this.e.reply('暂无攻略数据，请稍后再试')
+      await this.e.reply('暂无此角色原神攻略数据，请稍后再试')
       return false
     }
 
@@ -69,7 +69,12 @@ export default class roleGuide extends moraBase {
     let role = gsCfg.getRole(name, '', this.isSr)
     if (!role) return false
     /** 主角 */
-    // let trailblazer = commonTools.trailblazer(name, '攻略')
+    let trailblazer = commonTools.trailblazer(name, '攻略')
+    if (!trailblazer.name) {
+      await this.e.reply(trailblazer)
+      return
+    } else role = trailblazer
+
     this.uploader = moracfg.getSetYaml('srRoleGuides', true)
 
     let atlas = `${_path}/plugins/Atlas/star-rail-atlas/guide for role/${role.roleId}.png`
@@ -80,26 +85,26 @@ export default class roleGuide extends moraBase {
     let add_dir = this.findPack(`${this.path}/add_ons`, role.name, this.isSr)
     let res_dir = this.findPack(`${this.resPath}/Guides`, role.name, this.isSr)
     let sources = _.map(this.uploader, 'source')
-    let dir = _.map(sources, (v) => `${this.path}/${v}/StarRail/${role.name}.jpg`)
+    let dir = _.map(sources, v => `${this.path}/${v}/StarRail/${role.name}.jpg`)
 
     let msg = [...res_dir]
     if (fs.existsSync(atlas)) {
       msg.push(atlas)
-      this.uploader = _.filter(this.uploader, (v) => v.source !== '听语惊花')
+      this.uploader = _.filter(this.uploader, v => v.source !== '听语惊花')
       dir = _.tail(dir)
     }
 
     for (let i in dir) {
       let success = true
       if (!fs.existsSync(dir[i]) || isUpdate) {
-        success = await this.getImg(role.name, this.uploader[i], dir[i])
+        success = await this.getImg(role.name, this.uploader[i], dir[i], (role.reg || ''))
       }
       if (success) msg.push(dir[i])
     }
 
-    msg = _.map(_.uniq(_.concat(msg, add_dir)), v => segment.image(v))
+    msg = _(msg).concat(add_dir).uniq().map(v => segment.image(v)).value()
     if (_.isEmpty(msg)) {
-      await this.e.reply('暂无攻略数据，请稍后再试')
+      await this.e.reply('暂无此角色原神攻略数据，请稍后再试')
       return false
     }
 
@@ -131,17 +136,16 @@ export default class roleGuide extends moraBase {
     /** 星铁主角特殊处理 */
     if (this.isSr) {
       let trailblazer = commonTools.trailblazer(name, '参考面板')
-      if (!_.isArray(trailblazer)) {
+      if (!trailblazer.name) {
         await this.e.reply(trailblazer)
         return
-      }
-      if (trailblazer.includes(name)) role.name = name
+      } else role = trailblazer
     }
 
     if (_.isEmpty(role)) role = gsCfg.getRole(name, '', this.isSr)
     if (!role) return false
     /** 主角特殊处理 */
-    if (commonTools.travelerID().includes(String(role.roleId))) {
+    if (commonTools.travelerID.includes(Number(role.roleId))) {
       let traveler = commonTools.traveler(role.alias, name, '进阶参考')
       if (_.isEqual(role.alias, traveler)) {
         role.name = traveler
@@ -246,7 +250,7 @@ export default class roleGuide extends moraBase {
    * @param {String} name 角色名
    * @param {Object} author 作者
    */
-  async getImg (name, author, sfPath) {
+  async getImg (name, author, sfPath, filter = '') {
     let msyRes = []
     for (const i of author.collection_id) {
       msyRes.push(await commonTools.getFetchData(this.url + i))
@@ -259,7 +263,7 @@ export default class roleGuide extends moraBase {
       return false
     }
 
-    let posts = _.flatten(_.map(msyRes, (item) => item.data.posts))
+    let posts = _.flatten(_.map(msyRes, item => item.data.posts))
     let url
     let _post = []
     for (let val of posts) {
@@ -270,18 +274,19 @@ export default class roleGuide extends moraBase {
           // 常驻角色特殊处理
           let pattern = new RegExp(name + '】.*?image\\\\?":\\\\?"(.*?)\\\\?"')
           let imgId = pattern.exec(content)[1]
-          for (let image of val.image_list) {
-            if (image.image_id == imgId) {
-              url = image.url
-              break
-            }
-          }
+          url = _.find(val.image_list, v => v.image_id === imgId).url
           break
         }
       } else {
         if (val.post.subject.includes(name)) {
           url = this.getMax(val)
           break
+        } else if (filter) {
+          filter = new RegExp(filter)
+          if (filter.test(val.post.subject)) {
+            url = this.getMax(val)
+            break
+          }
         } else if (_.map(val.topics, 'name').includes(name)) {
           _post.push(this.getMax(val))
         }
@@ -297,9 +302,7 @@ export default class roleGuide extends moraBase {
 
     logger.mark(`${this.e.logFnc} 下载${author.source}-${name}攻略图`)
 
-    if (!await commonTools.download(url + this.oss, sfPath)) {
-      return false
-    }
+    if (!await commonTools.download(url + this.oss, sfPath)) return false
 
     logger.mark(`${this.e.logFnc} 下载${author.source}-${name}攻略成功`)
 
@@ -307,11 +310,8 @@ export default class roleGuide extends moraBase {
   }
 
   getMax (val) {
-    let max = 0
-    val.image_list.forEach((v, i) => {
-      if (Number(v.size) >= Number(val.image_list[max].size)) max = i
-    })
-    return val.image_list[max].url
+    let max = _.maxBy(val.image_list, 'size')
+    return _.find(val.image_list, v => v.size === max).url
   }
 
   async checkPath (path) {

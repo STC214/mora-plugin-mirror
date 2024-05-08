@@ -17,9 +17,8 @@ class commonTools {
    */
   async getFetchData (url) {
     let response = await fetch(url, { method: 'get' })
-    if (!response.ok) {
-      return false
-    }
+    if (!response.ok) return false
+
     const res = await response.json()
     return res
   }
@@ -32,7 +31,7 @@ class commonTools {
    * @returns 数据渲染模板
    */
   async getRenderData (parent, model, data) {
-    let render = {
+    return {
       tplFile: `${pluginPath}/resources/html/${parent}/${model}.html`,
       pluResPath: `${pluginPath}/resources/`,
       profilePic: this.rolePicPath,
@@ -40,39 +39,49 @@ class commonTools {
       quality: 100,
       ...data
     }
-    return render
   }
 
   /** 下载文件 */
   async download (url, path) {
     let res = await fetch(url)
-    if (res.ok) {
-      return await common.downFile(url, path)
-    }
+    if (res.ok) return await common.downFile(url, path)
   }
 
-  travelerID () {
-    return ['10000005', '10000007', '20000000']
+  get travelerID () {
+    return [10000005, 10000007, 20000000]
   }
 
   /** 主角特殊处理 */
   traveler (alias, name, type) {
     let travelers = ['风主', '岩主', '雷主', '草主', '水主']
     if (!travelers.includes(alias)) {
-      travelers = _.map(travelers, (v) => `${v}${type}`)
+      travelers = _.map(travelers, v => `${v}${type}`)
       return `请选择${name}${type}：${_.join(travelers, '、')}`
-    } else {
-      return alias
-    }
+    } else return alias
   }
 
   trailblazer (name, type) {
-    let trailblazers = ['物主', '火主']
-    if (['主角', '爷', '主角'].includes(name)) {
-      trailblazers = _.map(trailblazers, (v) => `${v}${type}`)
+    let trailblazers = {
+      物主: { ids: [8001, 8002], alias: ['物', '物理', '毁灭'] },
+      火主: { ids: [8003, 8004], alias: ['火', '存护'] },
+      虚数主: { ids: [8005, 8006], alias: ['虚数', '同谐', '同协', '虚'] }
+    }
+
+    let alias = ['主', '主角', '爷', '开拓者', '星', '穹']
+
+    if (_.tail(alias).includes(name)) {
+      trailblazers = _.map(_.keys(trailblazers), v => `${v}${type}`)
       return `请选择${name}${type}：${_.join(trailblazers, '、')}`
     } else {
-      return trailblazers
+      alias = alias.join('|')
+      let find = _.find(trailblazers, v => new RegExp(`(${v.alias.join('|')})(${alias})`).test(name))
+      if (find) {
+        return {
+          name: `${find.alias[0]}主`,
+          roldId: find.ids[0],
+          reg: `(${find.alias.join('|')})(${_.take(alias, 4)})`
+        }
+      }
     }
   }
 
