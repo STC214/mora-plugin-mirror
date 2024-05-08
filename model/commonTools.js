@@ -67,14 +67,13 @@ class commonTools {
       虚数主: { ids: [8005, 8006], alias: ['虚数', '同谐', '同协', '虚'] }
     }
 
-    let alias = ['主', '主角', '爷', '开拓者', '星', '穹']
+    const alias = ['主', '主角', '爷', '开拓者', '星', '穹']
 
     if (_.tail(alias).includes(name)) {
       trailblazers = _.map(_.keys(trailblazers), v => `${v}${type}`)
       return `请选择${name}${type}：${_.join(trailblazers, '、')}`
     } else {
-      alias = alias.join('|')
-      let find = _.find(trailblazers, v => new RegExp(`(${v.alias.join('|')})(${alias})`).test(name))
+      let find = _.find(trailblazers, v => new RegExp(`(${v.alias.join('|')})(${alias.join('|')})`).test(name))
       if (find) {
         return {
           name: `${find.alias[0]}主`,

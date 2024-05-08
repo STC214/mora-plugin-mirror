@@ -66,14 +66,19 @@ export default class roleGuide extends moraBase {
   }
 
   async srStrategies (name, isUpdate) {
-    let role = gsCfg.getRole(name, '', this.isSr)
-    if (!role) return false
+    let role = {}
+
     /** 主角 */
     let trailblazer = commonTools.trailblazer(name, '攻略')
-    if (!trailblazer.name) {
-      await this.e.reply(trailblazer)
-      return
-    } else role = trailblazer
+    if (trailblazer) {
+      if (!trailblazer.name) {
+        await this.e.reply(trailblazer)
+        return
+      } else role = trailblazer
+    }
+
+    if (_.isEmpty(role)) role = gsCfg.getRole(name, '', this.isSr)
+    if (!role) return false
 
     this.uploader = moracfg.getSetYaml('srRoleGuides', true)
 
