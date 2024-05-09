@@ -77,8 +77,8 @@ class commonTools {
       if (find) {
         return {
           name: `${find.alias[0]}主`,
-          roldId: find.ids[0],
-          reg: `(${find.alias.join('|')})(${_.take(alias, 4)})`
+          roleId: find.ids[0],
+          reg: `(${find.alias.join('|')})(${_.take(alias, 4).join('|')})`
         }
       }
     }

@@ -109,7 +109,7 @@ export default class roleGuide extends moraBase {
 
     msg = _(msg).concat(add_dir).uniq().map(v => segment.image(v)).value()
     if (_.isEmpty(msg)) {
-      await this.e.reply('暂无此角色原神攻略数据，请稍后再试')
+      await this.e.reply('暂无此角色星铁攻略数据，请稍后再试')
       return false
     }
 
@@ -284,16 +284,16 @@ export default class roleGuide extends moraBase {
         }
       } else {
         if (val.post.subject.includes(name)) {
-          url = this.getMax(val)
+          url = this.getMax(val.image_list)
           break
         } else if (filter) {
           filter = new RegExp(filter)
           if (filter.test(val.post.subject)) {
-            url = this.getMax(val)
+            url = this.getMax(val.image_list)
             break
           }
         } else if (_.map(val.topics, 'name').includes(name)) {
-          _post.push(this.getMax(val))
+          _post.push(this.getMax(val.image_list))
         }
       }
     }
@@ -314,9 +314,8 @@ export default class roleGuide extends moraBase {
     return true
   }
 
-  getMax (val) {
-    let max = _.maxBy(val.image_list, 'size')
-    return _.find(val.image_list, v => v.size === max).url
+  getMax (imgs) {
+    return _.maxBy(imgs, 'size').url
   }
 
   async checkPath (path) {
