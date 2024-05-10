@@ -62,7 +62,7 @@ export default class team extends moraBase {
     let team2 = []
     if (role) {
       /** 主角特殊处理 */
-      if (_.includes(commonTools.travelerID(), String(role.roleId))) {
+      if (_.includes(commonTools.travelerID, String(role.roleId))) {
         traveler = commonTools.traveler(role.alias, query, '配队')
         if (_.isEqual(role.alias, traveler)) {
           role.name = traveler

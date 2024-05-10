@@ -141,10 +141,12 @@ export default class roleGuide extends moraBase {
     /** 星铁主角特殊处理 */
     if (this.isSr) {
       let trailblazer = commonTools.trailblazer(name, '参考面板')
-      if (!trailblazer.name) {
-        await this.e.reply(trailblazer)
-        return
-      } else role = trailblazer
+      if (trailblazer) {
+        if (!trailblazer.name) {
+          await this.e.reply(trailblazer)
+          return
+        } else role = trailblazer
+      }
     }
 
     if (_.isEmpty(role)) role = gsCfg.getRole(name, '', this.isSr)
