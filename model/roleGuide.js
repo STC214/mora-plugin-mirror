@@ -317,7 +317,7 @@ export default class roleGuide extends moraBase {
   }
 
   getMax (imgs) {
-    return _.maxBy(imgs, 'size').url
+    return _.maxBy(imgs, v => Number(v.size)).url
   }
 
   async checkPath (path) {
