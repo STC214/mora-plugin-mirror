@@ -118,8 +118,8 @@ export default class roleGuide extends moraBase {
   async zzzStrategies (name, isUpdate) {
     let role = {}
 
-    if (_.isEmpty(role)) role = gsCfg.getRole(name, '', this.isSr, this.game)
-    if (!role || role.name === '绮良良') role.name = name
+    if (_.isEmpty(role)) role = gsCfg.getRole(name, '', this.isSr, this.game) || {}
+    if (_.isEmpty(role) || role?.name === '绮良良') role.name = name
 
     let add_dir = this.findPack(`${this.path}/add_ons`, role.name, this.game)
     let res_dir = this.findPack(`${this.resPath}/Guides`, role.name, this.game)
