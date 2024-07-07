@@ -19,7 +19,7 @@ export class roleGuides extends plugin {
       priority: 5,
       rule: [
         {
-          reg: '^#?(星铁)?(更新)?\\S+(攻略|一图流)$',
+          reg: '^#?(星铁|绝区零)?(更新)?\\S+(攻略|一图流)$',
           fnc: 'roleGuide'
         },
         {
@@ -50,12 +50,16 @@ export class roleGuides extends plugin {
 
   /** 角色一图流 */
   async roleGuide () {
-    let match = /^#?(星铁)?(更新)?(\S+)(攻略|一图流)$/.exec(this.e.msg)
+    let match = /^#?(星铁|绝区零)?(更新)?(\S+)(攻略|一图流)$/.exec(this.e.msg)
     let isUpdate = !!match[2]
     let roleName = match[3]
 
     let msg = new RoleGuide(this.e)
-    msg = this.e.game === 'sr' ? await msg.srStrategies(roleName, isUpdate) : await msg.strategies(roleName, isUpdate)
+    if (this.e.game === 'sr') msg = await msg.srStrategies(roleName, isUpdate)
+    else if (this.e.game === 'zzz' || this.e.msg.includes('绝区零')) {
+      if (this.e.game !== 'zzz') this.e.game = 'zzz'
+      msg = await msg.zzzStrategies(roleName, isUpdate)
+    } else msg = await msg.strategies(roleName, isUpdate)
     if (!msg) return false
 
     await this.e.reply(msg)

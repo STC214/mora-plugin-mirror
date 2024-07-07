@@ -12,8 +12,9 @@ export default class roleGuide extends moraBase {
     this.url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id='
     this.oss = '?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg'
     this.game = this.e.game || 'gs'
+
     this.isSr = this.game === 'sr'
-    this.uploader = moracfg.getSetYaml('roleGuides', true)
+    this.uploader = moracfg.getSetYaml(`${this.game === 'gs' ? '' : this.game}roleGuides`, true)
     this.resPath = moracfg.getMoraPlus(this.game, 'role')
     this.path = `${moracfg.getMoraPath('data')}roleGuides`
   }
@@ -80,15 +81,13 @@ export default class roleGuide extends moraBase {
     if (_.isEmpty(role)) role = gsCfg.getRole(name, '', this.isSr)
     if (!role) return false
 
-    this.uploader = moracfg.getSetYaml('srRoleGuides', true)
-
     let atlas = `${_path}/plugins/Atlas/star-rail-atlas/guide for role/${role.roleId}.png`
     if (!fs.existsSync(atlas)) {
       atlas = `${_path}/plugins/Atlas/star-rail-atlas/guide for role/${role.name}.png`
     }
 
-    let add_dir = this.findPack(`${this.path}/add_ons`, role.name, this.isSr)
-    let res_dir = this.findPack(`${this.resPath}/Guides`, role.name, this.isSr)
+    let add_dir = this.findPack(`${this.path}/add_ons`, role.name, this.game)
+    let res_dir = this.findPack(`${this.resPath}/Guides`, role.name, this.game)
     let sources = _.map(this.uploader, 'source')
     let dir = _.map(sources, v => `${this.path}/${v}/StarRail/${role.name}.jpg`)
 
@@ -110,6 +109,38 @@ export default class roleGuide extends moraBase {
     msg = _(msg).concat(add_dir).uniq().map(v => segment.image(v)).value()
     if (_.isEmpty(msg)) {
       await this.e.reply('暂无此角色星铁攻略数据，请稍后再试')
+      return false
+    }
+
+    return await commonTools.makeMsg(this.e, msg, `${role.name}攻略`)
+  }
+
+  async zzzStrategies (name, isUpdate) {
+    let role = {}
+
+    if (_.isEmpty(role)) role = gsCfg.getRole(name, '', this.isSr, this.game)
+    if (!role || role.name === '绮良良') role.name = name
+
+    let add_dir = this.findPack(`${this.path}/add_ons`, role.name, this.game)
+    let res_dir = this.findPack(`${this.resPath}/Guides`, role.name, this.game)
+
+    this.uploader = this.uploader.filter(v => !res_dir.find(r => r.includes(v.source)))
+    let sources = _.map(this.uploader, 'source')
+    let dir = _.map(sources, v => `${this.path}/${v}/ZenlessZoneZero/${role.name}.jpg`)
+
+    let msg = [...res_dir]
+
+    for (let i in dir) {
+      let success = true
+      if (!fs.existsSync(dir[i]) || isUpdate) {
+        success = await this.getImg(role.name, this.uploader[i], dir[i], (role.reg || ''))
+      }
+      if (success) msg.push(dir[i])
+    }
+
+    msg = _(msg).concat(add_dir).uniq().map(v => segment.image(v)).value()
+    if (_.isEmpty(msg)) {
+      await this.e.reply('暂无此角色绝区零攻略数据，请稍后再试')
       return false
     }
 
@@ -186,14 +217,19 @@ export default class roleGuide extends moraBase {
   }
 
   // 找本地图片
-  findPack (path, name, isSr = false) {
+  findPack (path, name, game = 'gs') {
+    const gameDir = {
+      gs: '',
+      sr: '/StarRail',
+      zzz: '/ZenlessZoneZero'
+    }
     if (!fs.existsSync(path)) return []
     let _sources = fs.readdirSync(path)
     let dir = []
-    _.each(_sources, (author) => {
-      let _author = isSr && path.includes('add_ons') ? `${path}/${author}/StarRail` : `${path}/${author}`
+    _.each(_sources, author => {
+      let _author = path.includes('add_ons') ? `${path}/${author}${gameDir[game]}` : `${path}/${author}`
       let _roles = fs.existsSync(_author) ? fs.readdirSync(_author) : []
-      _roles = _.filter(_roles, (r) => _.includes(r, name))
+      _roles = _.filter(_roles, r => _.includes(r, name))
       let au_path = _.isEmpty(_roles) ? false : `${_author}/${_roles[0]}`
       dir.push(au_path)
     })

@@ -75,6 +75,9 @@ class moracfg {
       case 'sr':
         path += 'StarRail/'
         break
+      case 'zzz':
+        path += 'ZenlessZoneZero/'
+        break
     }
     return path
   }
