@@ -6,6 +6,7 @@ import _ from 'lodash'
 import fs from 'node:fs'
 
 const _path = process.cwd()
+
 export default class roleGuide extends moraBase {
   constructor (e) {
     super(e)
@@ -14,7 +15,7 @@ export default class roleGuide extends moraBase {
     this.game = this.e.game || 'gs'
 
     this.isSr = this.game === 'sr'
-    this.uploader = moracfg.getSetYaml(`${this.game === 'gs' ? '' : this.game}roleGuides`, true)
+    this.uploader = moracfg.getSetYaml(`${this.game === 'gs' ? 'r' : `${this.game}R`}oleGuides`, true)
     this.resPath = moracfg.getMoraPlus(this.game, 'role')
     this.path = `${moracfg.getMoraPath('data')}roleGuides`
   }
@@ -88,15 +89,15 @@ export default class roleGuide extends moraBase {
 
     let add_dir = this.findPack(`${this.path}/add_ons`, role.name, this.game)
     let res_dir = this.findPack(`${this.resPath}/Guides`, role.name, this.game)
-    let sources = _.map(this.uploader, 'source')
-    let dir = _.map(sources, v => `${this.path}/${v}/StarRail/${role.name}.jpg`)
 
     let msg = [...res_dir]
     if (fs.existsSync(atlas)) {
       msg.push(atlas)
       this.uploader = _.filter(this.uploader, v => v.source !== '听语惊花')
-      dir = _.tail(dir)
     }
+
+    let sources = _.map(this.uploader, 'source')
+    let dir = _.map(sources, v => `${this.path}/${v}/StarRail/${role.name}.jpg`)
 
     for (let i in dir) {
       let success = true
@@ -125,10 +126,17 @@ export default class roleGuide extends moraBase {
     let res_dir = this.findPack(`${this.resPath}/Guides`, role.name, this.game)
 
     this.uploader = this.uploader.filter(v => !res_dir.find(r => r.includes(v.source)))
-    let sources = _.map(this.uploader, 'source')
-    let dir = _.map(sources, v => `${this.path}/${v}/ZenlessZoneZero/${role.name}.jpg`)
 
     let msg = [...res_dir]
+    let atlas = `${_path}/plugins/Atlas/zzz-atlas/角色攻略/${role.name}.png`
+    let remove = '新艾利都快讯'
+    if (fs.existsSync(atlas) && !res_dir.find(r => r.includes(remove))) {
+      msg.push(atlas)
+      this.uploader = _.filter(this.uploader, v => v.source !== remove)
+    }
+
+    let sources = _.map(this.uploader, 'source')
+    let dir = _.map(sources, v => `${this.path}/${v}/ZenlessZoneZero/${role.name}.jpg`)
 
     for (let i in dir) {
       let success = true
