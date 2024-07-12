@@ -81,9 +81,9 @@ export class moraHelp extends plugin {
         }
         if (error) {
           if (manual) {
-            this.e.reply(`更新失败！\nError code: ${error.code}\n${error.stack}\n 请稍后重试。`)
+            this.e.reply(`更新失败！\n请手动删除插件下【mora-plugin/resources/mora-plugin-res】文件夹，然后重新发送【#更新摩拉资源】命令\n\nError code: ${error.code}\n${error.stack}\n 请稍后重试。`)
           } else {
-            logger.error(`更新失败！\nError code: ${error.code}\n${error.stack}`)
+            logger.error(`更新失败！\n请手动删除插件下【mora-plugin/resources/mora-plugin-res】文件夹，然后重新发送【#更新摩拉资源】命令\n\nError code: ${error.code}\n${error.stack}`)
           }
         } else {
           if (manual) this.e.reply('摩拉资源包更新成功~')
