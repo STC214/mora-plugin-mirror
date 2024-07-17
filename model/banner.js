@@ -11,8 +11,7 @@ export default class banner extends moraBase {
   constructor (e) {
     super(e)
     this.path = moracfg.getGameRes('banner')
-    this.game = this.e.game
-    this.isSr = this.game === 'sr'
+    this.game = this.e.game || 'gs'
   }
 
   async schedules (type) {
@@ -22,7 +21,7 @@ export default class banner extends moraBase {
     }
 
     let dir = fs.readdirSync(this.path)
-    if (this.isSr) dir = _.filter(dir, v => v.includes('星'))
+    if (this.game === 'sr') dir = _.filter(dir, v => v.includes('星'))
     if (type) dir = _.filter(dir, v => v.includes(type))
 
     let msg = []
@@ -57,19 +56,26 @@ export default class banner extends moraBase {
    */
   getBanner (query) {
     let name = query
-    let type = this.isSr ? 11 : 301
+    let pool = {
+      gs: [301, 302],
+      sr: [11, 12],
+      zzz: [2001, 3001]
+    }
+    let type = pool[this.game][0]
     let notUP = {
       gs: ['安柏', '凯亚', '丽莎', '刻晴', '莫娜', '七七', '迪卢克', '琴', '提纳里', '迪希雅'],
-      sr: ['姬子', '瓦尔特', '杰帕德', '布洛妮娅', '彦卿', '白露', '克拉拉']
+      sr: ['姬子', '瓦尔特', '杰帕德', '布洛妮娅', '彦卿', '白露', '克拉拉'],
+      zzz: ['猫又', '莱卡恩', '「11号」', '格莉丝', '珂蕾妲', '丽娜']
     }
-    let role = gsCfg.getRole(name, '', this.isSr)
+
+    let role = gsCfg.getRole(name, '', false, this.game)
     if (role) {
       // 角色
       name = role.name
       if (_.some(notUP, v => v.includes(name))) return false
     } else {
       // 武器
-      type = this.isSr ? 12 : 302
+      type = pool[this.game][1]
       name = this.getWeapon(name)
     }
 
@@ -95,9 +101,10 @@ export default class banner extends moraBase {
    * @returns 武器全名
    */
   getWeaponFullName (weapon) {
-    let shortName = gsCfg.getdefSet('weapon', `${this.isSr ? 'sr_' : ''}other`).sortName
-    weapon = _.findKey(shortName, v => _.isEqual(v, weapon))
-    return weapon
+    let find = gsCfg.getdefSet('weapon', this.game === 'gs' ? 'other' : `${this.game}_other`).sortName
+    find = _.findKey(find, v => _.isEqual(v, weapon))
+
+    return find || weapon
   }
 
   /**

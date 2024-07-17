@@ -14,7 +14,7 @@ export class bannerSchedule extends plugin {
           fnc: 'bannerSchedule'
         },
         {
-          reg: '^#(原神|星铁)?\\S+(复刻|卡池)$',
+          reg: '^#(原神|星铁|绝区零)?\\S+(复刻|卡池)$',
           fnc: 'bannerCount'
         }
       ]
@@ -33,7 +33,7 @@ export class bannerSchedule extends plugin {
 
   /** 复刻详情 */
   async bannerCount () {
-    let name = /^#(原神|星铁)?(\S+)(复刻|卡池)$/.exec(this.e.msg)[2]
+    let name = /^#(原神|星铁|绝区零)?(\S+)(复刻|卡池)$/.exec(this.e.msg)[2]
 
     let msg = await new Banner(this.e).searchBanners(name)
     if (!msg) return false
