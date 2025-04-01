@@ -53,7 +53,7 @@ class commonTools {
 
   /** 主角特殊处理 */
   traveler (alias, name, type) {
-    let travelers = ['风主', '岩主', '雷主', '草主', '水主']
+    let travelers = ['风主', '岩主', '雷主', '草主', '水主', '火主']
     if (!travelers.includes(alias)) {
       travelers = _.map(travelers, v => `${v}${type}`)
       return `请选择${name}${type}：${_.join(travelers, '、')}`
@@ -64,7 +64,8 @@ class commonTools {
     let trailblazers = {
       物主: { ids: [8001, 8002], alias: ['物', '物理', '毁灭'] },
       火主: { ids: [8003, 8004], alias: ['火', '存护'] },
-      虚数主: { ids: [8005, 8006], alias: ['虚数', '同谐', '同协', '虚'] }
+      虚数主: { ids: [8005, 8006], alias: ['虚数', '同谐', '同协', '虚'] },
+      冰主: { ids: [8007, 8008], alias: ['冰', '记忆'] },
     }
 
     const alias = ['主', '主角', '爷', '开拓者', '星', '穹']

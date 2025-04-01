@@ -6,6 +6,8 @@ import moraBase from './moraBase.js'
 import moracfg from './config.js'
 import commonTools from './commonTools.js'
 import { Weapon } from '#miao.models'
+import { poolDetail, mixPoolDetail } from '../../miao-plugin/resources/meta-gs/info/index.js'
+import { poolDetailSr } from '../../miao-plugin/resources/meta-sr/info/index.js'
 
 export default class banner extends moraBase {
   constructor (e) {
@@ -43,7 +45,7 @@ export default class banner extends moraBase {
       return false
     }
 
-    let pool = this.getPool(name.type, name.name)
+    let pool = this.getPool(name)
     if (!pool) return false
 
     return await commonTools.makeMsg(this.e, pool, `${name.name}卡池详情`, true)
@@ -56,14 +58,15 @@ export default class banner extends moraBase {
    */
   getBanner (query) {
     let name = query
-    let pool = {
+    const pool = {
       gs: [301, 302],
       sr: [11, 12],
       zzz: [2001, 3001]
     }
     let type = pool[this.game][0]
-    let notUP = {
-      gs: ['安柏', '凯亚', '丽莎', '刻晴', '莫娜', '七七', '迪卢克', '琴', '提纳里', '迪希雅'],
+    let typeName = 'char'
+    const notUP = {
+      gs: ['安柏', '凯亚', '丽莎', '刻晴', '莫娜', '七七', '迪卢克', '琴', '提纳里', '迪希雅', '梦见月瑞希'],
       sr: ['姬子', '瓦尔特', '杰帕德', '布洛妮娅', '彦卿', '白露', '克拉拉'],
       zzz: ['猫又', '莱卡恩', '「11号」', '格莉丝', '珂蕾妲', '丽娜']
     }
@@ -77,9 +80,10 @@ export default class banner extends moraBase {
       // 武器
       type = pool[this.game][1]
       name = this.getWeapon(name)
+      typeName = 'weapon'
     }
 
-    return { type, name }
+    return { type, name, typeName }
   }
 
   /**
@@ -109,26 +113,44 @@ export default class banner extends moraBase {
 
   /**
    * 查询卡池
-   * @param {Number} type 卡池类型
-   * @param {String} name 卡池名字
+   * @param {object} banner 卡池
    * @returns 卡池
    */
-  getPool (type, name) {
-    let poolCfg = gsCfg.getdefSet('pool', type)
-    // 五星
-    let rarity = _.filter(poolCfg, v => _.includes(v.five, name))
-    // 四星
-    if (_.isEmpty(rarity)) rarity = _.filter(poolCfg, v => _.includes(v.four, name))
-    // 找不到
-    if (_.isEmpty(rarity)) return false
+  getPool (banner) {
+    const { type, name, typeName } = banner
+
+    let miaoPool = []
+    if (this.game === 'gs') miaoPool = poolDetail
+    else if (this.game === 'sr') miaoPool = poolDetailSr
+
+    const poolCfg = gsCfg.getdefSet('pool', type)
+
+    miaoPool = _(miaoPool).unionBy(poolCfg, 'to').uniqBy('from').orderBy(['from', 'to'], ['desc', 'asc']).value()
+
+    const rarity = _.filter(miaoPool, v => {
+      if (_.includes(v.five || v[`${typeName}5`], name)) return true
+      else if (_.includes(v.four || v[`${typeName}4`], name)) return true
+      else return false
+    })
+
+    if (!rarity.length) return false
 
     // 计算天数
-    let latest = rarity[0]
-    let today = moment().format('YYYY-MM-DD')
-    let end = moment(latest.to).format('YYYY-MM-DD')
-    let elapsed = moment(today).diff(end, 'days')
-    if (elapsed > 0) elapsed = `${elapsed}天未复刻`
-    else elapsed = `当期UP，${elapsed < 0 ? '还有' + Math.abs(elapsed) : '今'}天结束卡池`
+    let { from, to } = rarity[0]
+    from = moment(from).startOf('d')
+    to = moment(to).startOf('d')
+
+    const today = moment().startOf('d')
+    let elapsed = today.diff(to, 'd')
+
+    let tips = `${elapsed}天未复刻`
+    if (elapsed <= 0) {
+      let next = today.diff(from, 'd')
+      next = Math.min(next, 0)
+
+      elapsed = elapsed ? `还有${Math.abs(next || elapsed)}` : '今'
+      tips = `${next ? '下' : '当'}期UP，${elapsed}天${next ? '开启' : '结束'}卡池`
+    }
 
     // 整合卡池内容
     let pool = []
@@ -137,14 +159,14 @@ export default class banner extends moraBase {
       if (i.version && i.half) _pool.push(`所属版本：${i.version} ${i.half}`)
       if (i.name) _pool.push(`卡池名称：${i.name.replace('|', '，')}`)
       _pool = _.concat(_pool, [
-        `五星UP：${i.five.join('，')}`,
-        `四星UP：${i.four.join('，')}`,
+        `五星UP：${(i.five || i[`${typeName}5`]).join('，')}`,
+        `四星UP：${(i.four || i[`${typeName}4`]).join('，')}`,
         `开始时间：${i.from}`,
         `结束时间：${i.to}`
       ])
       pool.push(_pool.join('\n'))
     })
 
-    return [elapsed, ...pool]
+    return [tips, ...pool]
   }
 }

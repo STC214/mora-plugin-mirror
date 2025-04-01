@@ -24,24 +24,14 @@ export class AkashaAbyss extends plugin {
         }
       ]
     })
-    this.task = {
-      name: '虚空数据库',
-      fnc: () => this.akashaData(),
-      cron: '0 0 */2 * * ?'
-    }
   }
 
-  /**
-   * 使用率
-   */
+  /** 使用率 */
   async akashaUsageRate () {
     // 稀有度
     let rarity = /^#?虚空(深渊)?(五星|四星)?使用率$/.exec(this.e.msg)[2]
-    if (rarity === '五星') {
-      rarity = 5
-    } else if (rarity === '四星') {
-      rarity = 4
-    }
+    if (rarity === '五星') rarity = 5
+    else if (rarity === '四星') rarity = 4
 
     let data = await new AkashaDB(this.e).getUsageRate(rarity)
     if (!data) return false
