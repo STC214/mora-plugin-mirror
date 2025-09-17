@@ -8,16 +8,11 @@ import moracfg from './config.js'
 export default class team extends moraBase {
   constructor (e) {
     super(e)
-    this.game = this.e.game || 'gs'
-    this.isSr = this.game === 'sr'
     this.path = moracfg.getMoraPlus(this.game, 'team')
   }
 
   async guides (query) {
-    if (!fs.existsSync(this.path)) {
-      await this.e.reply(moracfg.resNotFound, true)
-      return false
-    }
+    if (!this.checkPlus(this.path)) return false
 
     let teams = moracfg.getfileYaml(`${this.path}/`, 'teamGuides')
     teams = this.searchTeams(teams, query)

@@ -12,7 +12,6 @@ export default class roleGuide extends moraBase {
     super(e)
     this.url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id='
     this.oss = '?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg'
-    this.game = this.e.game || 'gs'
 
     this.isSr = this.game === 'sr'
     this.uploader = moracfg.getSetYaml(`${this.game === 'gs' ? 'r' : `${this.game}R`}oleGuides`, true)
@@ -354,8 +353,6 @@ export default class roleGuide extends moraBase {
     logger.mark(`${this.e.logFnc} 下载${author.source}-${name}攻略图`)
 
     if (!await commonTools.download(url + this.oss, sfPath)) return false
-
-    logger.mark(`${this.e.logFnc} 下载${author.source}-${name}攻略成功`)
 
     return true
   }

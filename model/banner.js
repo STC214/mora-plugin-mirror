@@ -17,10 +17,7 @@ export default class banner extends moraBase {
   }
 
   async schedules (type) {
-    if (!fs.existsSync(this.path)) {
-      await this.e.reply('还没下载资源包，复刻表功能用不了捏')
-      return false
-    }
+    if (!this.checkPlus(this.path)) return false
 
     let dir = fs.readdirSync(this.path)
     if (this.game === 'sr') dir = _.filter(dir, v => v.includes('星'))

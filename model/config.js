@@ -1,7 +1,6 @@
 import YAML from 'yaml'
 import chokidar from 'chokidar'
 import fs from 'node:fs'
-import { promisify } from 'node:util'
 import _ from 'lodash'
 import { Data, isV3, pluginPath } from '../components/index.js'
 
@@ -13,10 +12,6 @@ class moracfg {
   constructor () {
     this.def = `${pluginPath}/config/default/`
     this.user = `${pluginPath}/config/user/`
-  }
-
-  get resNotFound () {
-    return '还没下载/更新资源包，该功能用不了捏\n请发送【#更新摩拉资源】以进行更新'
   }
 
   /** 通用yaml读取 */
@@ -77,6 +72,12 @@ class moracfg {
         break
       case 'zzz':
         path += 'ZenlessZoneZero/'
+        break
+      case 'enemy':
+        path += '/resources/mora-plugin-res/Enemy/'
+        break
+      case 'cha':
+        path += 'Challenges'
         break
     }
     return path

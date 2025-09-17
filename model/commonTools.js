@@ -1,8 +1,8 @@
-import fetch from 'node-fetch'
 import common from '../../../lib/common/common.js'
 import { pluginPath, moraVer, yzInfo } from '../components/index.js'
 import _ from 'lodash'
 import moracfg from './config.js'
+import fs from 'node:fs'
 
 class commonTools {
   constructor () {
@@ -42,9 +42,14 @@ class commonTools {
   }
 
   /** 下载文件 */
-  async download (url, path) {
-    let res = await fetch(url)
-    if (res.ok) return await common.downFile(url, path)
+  async download (url, path, opts = {}) {
+    let res = await fetch(url, opts)
+    if (!res.ok) return false
+
+    res = Buffer.from(await res.arrayBuffer())
+    fs.writeFileSync(path, res)
+    logger.info('[Mora]下载成功')
+    return true
   }
 
   get travelerID () {

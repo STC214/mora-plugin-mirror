@@ -3,6 +3,7 @@ import commonTools from '../model/commonTools.js'
 import moracfg from '../model/config.js'
 import _ from 'lodash'
 import fs from 'node:fs'
+import Challenge from '../model/challenge.js'
 
 /**
  * 借鉴原云崽攻略代码
@@ -45,28 +46,9 @@ export class abyssVersion extends plugin {
     let abyss = match[3]
     if (!version) return false
 
-    let game = this.e.game
-    if (abyss === '混沌') game = 'sr'
+    const msg = await new Challenge(this.e).challenges(abyss, version)
+    if (!msg) return false
 
-    this.path = `${this.dirPath(game)}/Version/`
-    await this.checkRes(this.path)
-
-    this.path += version
-    if (!fs.existsSync(this.path)) {
-      await this.e.reply('暂无此版本')
-      return false
-    }
-
-    let msg = []
-    let pics = fs.readdirSync(this.path)
-    _.each(pics, (v) => msg.push(segment.image(`file://${this.path}/${v}`)))
-
-    if (_.isEmpty(msg)) {
-      logger.error('图片获取失败')
-      return false
-    }
-
-    msg = await commonTools.makeMsg(this.e, msg, `${game === 'sr' ? '星铁' : '原神'}${version}${game === 'sr' ? '混沌' : '深渊'}`)
     await this.e.reply(msg)
     return true
   }
@@ -110,7 +92,7 @@ export class abyssVersion extends plugin {
 
   async checkRes (path) {
     if (!fs.existsSync(path)) {
-      await this.e.reply(moracfg.resNotFound, true)
+      await this.e.reply('还没下载/更新资源包，该功能用不了捏\n请发送【#更新摩拉资源】以进行更新', true)
       return false
     }
   }
