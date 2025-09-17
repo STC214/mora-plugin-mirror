@@ -3,6 +3,7 @@ import moracfg from './config.js'
 import fs from 'node:fs'
 import _ from 'lodash'
 import commonTools from './commonTools.js'
+import path from 'node:path'
 
 export default class challenge extends moraBase {
   constructor (e) {
@@ -44,8 +45,6 @@ export default class challenge extends moraBase {
     else resPath = `${moracfg.getMoraPath('data')}Challenges/${this.game}/${abyss}/`
 
     if (!pics.length) {
-      if (!fs.existsSync(resPath)) fs.mkdirSync(resPath, { recursive: true })
-
       const infos = moracfg.getfileYaml(`${this.path}/`, abyss)
       const versions = _.keys(infos).filter(v => v.includes(version))
       if (versions.length) {
@@ -55,6 +54,7 @@ export default class challenge extends moraBase {
           const file = `${ver}v${infos[ver].version}.png`
           const sfPath = `${resPath}/${file}`
           if (!fs.existsSync(sfPath)) {
+            fs.mkdirSync(resPath, { recursive: true })
             logger.mark(`${this.e.logFnc} 下载${this.game}-${ver}`)
             const img = await commonTools.download(`https://homdgcat.wiki/Abyss/CH/${ver}.png`, sfPath)
             if (!img) continue
