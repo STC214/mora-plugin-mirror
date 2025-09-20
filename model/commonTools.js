@@ -3,6 +3,7 @@ import { pluginPath, moraVer, yzInfo } from '../components/index.js'
 import _ from 'lodash'
 import moracfg from './config.js'
 import fs from 'node:fs'
+import { dirname } from 'node:path'
 
 class commonTools {
   constructor () {
@@ -42,12 +43,16 @@ class commonTools {
   }
 
   /** 下载文件 */
-  async download (url, path, opts = {}) {
+  async download (url, spath, opts = {}) {
+    const dir = dirname(spath)
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+
     let res = await fetch(url, opts)
     if (!res.ok) return false
 
     res = Buffer.from(await res.arrayBuffer())
-    fs.writeFileSync(path, res)
+
+    fs.writeFileSync(spath, res)
     logger.info('[Mora]下载成功')
     return true
   }

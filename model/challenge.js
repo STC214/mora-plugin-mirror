@@ -54,7 +54,6 @@ export default class challenge extends moraBase {
           const file = `${ver}v${infos[ver].version}.png`
           const sfPath = `${resPath}/${file}`
           if (!fs.existsSync(sfPath)) {
-            fs.mkdirSync(resPath, { recursive: true })
             logger.mark(`${this.e.logFnc} 下载${this.game}-${ver}`)
             const img = await commonTools.download(`https://homdgcat.wiki/Abyss/CH/${ver}.png`, sfPath)
             if (!img) continue
