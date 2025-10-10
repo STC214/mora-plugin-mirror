@@ -58,12 +58,7 @@ export default class roleGuide extends moraBase {
     }
 
     msg = _.map(_.uniq(msg), v => segment.image(v))
-    if (_.isEmpty(msg)) {
-      await this.e.reply('暂无此角色原神攻略数据，请稍后再试')
-      return false
-    }
-
-    return await commonTools.makeMsg(this.e, msg, `${role.name}攻略`)
+    return await this.replyStrategies(msg, role.name)
   }
 
   async srStrategies (name, isUpdate) {
@@ -107,12 +102,7 @@ export default class roleGuide extends moraBase {
     }
 
     msg = _(msg).concat(add_dir).uniq().map(v => segment.image(v)).value()
-    if (_.isEmpty(msg)) {
-      await this.e.reply('暂无此角色星铁攻略数据，请稍后再试')
-      return false
-    }
-
-    return await commonTools.makeMsg(this.e, msg, `${role.name}攻略`)
+    return await this.replyStrategies(msg, role.name)
   }
 
   async zzzStrategies (name, isUpdate) {
@@ -146,12 +136,22 @@ export default class roleGuide extends moraBase {
     }
 
     msg = _(msg).concat(add_dir).uniq().map(v => segment.image(v)).value()
+    return await this.replyStrategies(msg, role.name)
+  }
+
+  async replyStrategies (msg, name) {
+    const zones = {
+      gs: '原神',
+      sr: '星铁',
+      zzz: '绝区零'
+    }
+
     if (_.isEmpty(msg)) {
-      await this.e.reply('暂无此角色绝区零攻略数据，请稍后再试')
+      await this.e.reply(`暂无此角色${zones[this.game]}攻略数据\n前缀符号加了吗？正确吗？角色名正确吗？\n原神攻略发送【#钟离攻略】\n星铁攻略发送【*丹恒攻略】\n绝区零攻略发送【%雨果攻略】`)
       return false
     }
 
-    return await commonTools.makeMsg(this.e, msg, `${role.name}攻略`)
+    return await commonTools.makeMsg(this.e, msg, `${name}攻略~`)
   }
 
   async getHelp () {
