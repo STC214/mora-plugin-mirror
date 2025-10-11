@@ -46,7 +46,7 @@ export class moraHelp extends plugin {
     let help = moracfg.getfileYaml(this.helpPath, 'help')
     help.isMaster = this.e.isMaster
     help.iconPath = `${moracfg.getMoraPath('res')}img/icons/`
-    let render = await commonTools.getRenderData('Help', 'help', help)
+    let render = commonTools.getRenderData('Help', 'help', help)
     let img = await puppeteer.screenshot('moraHelp', render)
     if (img) await this.reply(img)
   }

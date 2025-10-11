@@ -3,7 +3,6 @@ import moracfg from './config.js'
 import fs from 'node:fs'
 import _ from 'lodash'
 import commonTools from './commonTools.js'
-import path from 'node:path'
 
 export default class challenge extends moraBase {
   constructor (e) {
@@ -25,7 +24,7 @@ export default class challenge extends moraBase {
       hard: { reg: /(幽(境|镜)|危战)$/, name: '幽境' },
       chaos: { reg: /(忘却(之庭)?|混沌(回忆)?)$/, name: '混沌' },
       story: { reg: /(构事|虚构|叙事)$/, name: '虚构' },
-      boss: { reg: /(末日幻影|幻影)$/, name: '末日' }
+      boss: { reg: /(末日|幻影)$/, name: '末日' }
     }
 
     if (abyss === '深渊' && this.game === 'sr') abyss = '混沌'

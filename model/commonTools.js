@@ -31,7 +31,7 @@ class commonTools {
    * @param {Object} data 数据
    * @returns 数据渲染模板
    */
-  async getRenderData (parent, model, data) {
+  getRenderData (parent, model, data) {
     return {
       tplFile: `${pluginPath}/resources/html/${parent}/${model}.html`,
       pluResPath: `${pluginPath}/resources/`,
