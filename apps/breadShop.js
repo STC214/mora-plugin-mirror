@@ -6,30 +6,30 @@ import Shop from '../model/breadShop.js'
  * 改自 https://github.com/Mai-icy/nonebot-plugin-bread-shop
  * @author Rrrrrrray
  */
+
+const Cfg = moraCfg.getSetYaml('breadShop', true)
+
 export class breadShop extends plugin {
   constructor () {
     super({
       name: '面包商店',
       dsc: '面包商店云崽版',
       event: 'message.group',
-      priority: 5,
+      priority: 5000,
       rule: [
         {
-          reg: '^#(.*?)$',
+          reg: `^#\\S+(面包|${Cfg.stuff})(帮助|记录|排行)?$`,
           fnc: 'breadShop',
           log: false
         }
       ]
     })
-    this.cfg = moraCfg.getSetYaml('breadShop', true)
-    this.shop = this.cfg.shop
-    this.stuff = this.cfg.stuff
+    this.stuff = Cfg.stuff
   }
 
   async breadShop () {
-    if (!this.shop) return false
+    if (!Cfg.shop) return false
     let msg = this.e.msg
-    if (!msg.includes(this.stuff) && !msg.includes('面包')) return false
 
     if (msg.includes('面包') && this.stuff !== '面包') msg = msg.replace('面包', this.stuff)
 
@@ -65,7 +65,7 @@ export class breadShop extends plugin {
       `赌${this.stuff}+""	猜拳赌随机${this.stuff}`,
       `${this.stuff}记录+""　查看操作次数最多的人`,
       `${this.stuff}记录+@　查看操作次数`,
-      `查看${this.stuff}+@　查看面包数据`,
+      `查看${this.stuff}+@　查看${this.stuff}数据`,
       `${this.stuff}排行	本群排行榜top5`
     ].join('\n')
   }
