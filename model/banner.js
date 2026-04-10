@@ -120,9 +120,19 @@ export default class banner extends moraBase {
     if (this.game === 'gs') miaoPool = poolDetail
     else if (this.game === 'sr') miaoPool = poolDetailSr
 
-    const poolCfg = gsCfg.getdefSet('pool', type)
+    let poolCfg = gsCfg.getdefSet('pool', type)
+    miaoPool = mergePool(miaoPool, poolCfg)
 
-    miaoPool = _(miaoPool).unionBy(poolCfg, 'to').uniqBy('from').orderBy(['from', 'to'], ['desc', 'asc']).value()
+    if (this.game === 'gs') {
+      let miaoMix = mixPoolDetail
+
+      poolCfg = gsCfg.getdefSet('pool', 500)
+      if (poolCfg) miaoMix = mergePool(poolCfg, miaoMix)
+
+      miaoPool.push(...miaoMix)
+    }
+
+    miaoPool = _.orderBy(miaoPool, ['from', 'to'], ['desc', 'asc'])
 
     const rarity = _.filter(miaoPool, v => {
       if (_.includes(v.five || v[`${typeName}5`], name)) return true
@@ -131,8 +141,16 @@ export default class banner extends moraBase {
     })
 
     if (!rarity.length) return false
+    const { tips, pool } = this.makeInfo(rarity, typeName)
 
-    // 计算天数
+    return [tips, ...pool]
+
+    function mergePool (main, sub) {
+      return _(main).unionBy(sub, 'to').uniqBy('from').value()
+    }
+  }
+
+  makeInfo (rarity, typeName) {
     let { from, to } = rarity[0]
     from = moment(from).startOf('d')
     to = moment(to).startOf('d')
@@ -157,13 +175,12 @@ export default class banner extends moraBase {
       if (i.name) _pool.push(`卡池名称：${i.name.replace('|', '，')}`)
       _pool = _.concat(_pool, [
         `五星UP：${(i.five || i[`${typeName}5`]).join('，')}`,
-        `四星UP：${(i.four || i[`${typeName}4`]).join('，')}`,
+        i.four || i[`${typeName}4`] ? `四星UP：${(i.four || i[`${typeName}4`]).join('，')}` : '',
         `开始时间：${i.from}`,
         `结束时间：${i.to}`
       ])
       pool.push(_pool.join('\n'))
     })
-
-    return [tips, ...pool]
+    return { tips, pool }
   }
 }
