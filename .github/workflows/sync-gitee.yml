@@ -37,3 +37,22 @@ jobs:
           target="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git --git-dir=upstream.git push --force "$target"             refs/heads/master:refs/heads/master
           git --git-dir=upstream.git push --force --tags "$target"
+
+      - name: Keep scheduled workflow active
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          target="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git clone --branch main --single-branch "$target" control
+          cd control
+          last_commit="$(git log -1 --format=%ct)"
+          now="$(date +%s)"
+          if [ "$((now - last_commit))" -ge 2592000 ]; then
+            date -u +'%Y-%m-%dT%H:%M:%SZ' > .mirror-heartbeat
+            git config user.name github-actions[bot]
+            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+            git add .mirror-heartbeat
+            git commit -m 'chore: keep mirror workflow active'
+            git push "$target" HEAD:main
+          fi
