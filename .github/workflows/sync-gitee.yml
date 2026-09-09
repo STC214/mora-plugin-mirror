@@ -1,0 +1,39 @@
+name: Sync from Gitee
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 */6 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gitee-mirror-sync
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Gitee and update GitHub master
+        env:
+          SOURCE: https://gitee.com/Rrrrrrray/mora-plugin.git
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          for attempt in 1 2 3; do
+            rm -rf upstream.git
+            if git clone --mirror "$SOURCE" upstream.git; then
+              break
+            fi
+            if [ "$attempt" = "3" ]; then
+              exit 1
+            fi
+            sleep 60
+          done
+
+          target="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git --git-dir=upstream.git push --force "$target"             refs/heads/master:refs/heads/master
+          git --git-dir=upstream.git push --force --tags "$target"
