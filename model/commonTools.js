@@ -63,7 +63,7 @@ class commonTools {
 
   /** 主角特殊处理 */
   traveler (alias, name, type) {
-    let travelers = ['风主', '岩主', '雷主', '草主', '水主', '火主']
+    let travelers = ['风主', '岩主', '雷主', '草主', '水主', '火主', '冰主']
     if (!travelers.includes(alias)) {
       travelers = _.map(travelers, v => `${v}${type}`)
       return `请选择${name}${type}：${_.join(travelers, '、')}`

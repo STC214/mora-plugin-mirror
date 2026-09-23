@@ -1,9 +1,9 @@
-import moraBase from './moraBase.js'
+import fs from 'node:fs'
+import _ from 'lodash'
+import gsCfg from '../../genshin/model/gsCfg.js'
 import commonTools from './commonTools.js'
 import moracfg from './config.js'
-import gsCfg from '../../genshin/model/gsCfg.js'
-import _ from 'lodash'
-import fs from 'node:fs'
+import moraBase from './moraBase.js'
 
 const _path = process.cwd()
 
@@ -20,28 +20,28 @@ export default class roleGuide extends moraBase {
   }
 
   async strategies (name, isUpdate) {
-    let role = gsCfg.getRole(name)
+    const role = gsCfg.getRole(name)
     if (!role) return false
 
     /** 主角特殊处理 */
     if (commonTools.travelerID.includes(String(role.roleId))) {
-      let traveler = commonTools.traveler(role.alias, name, '攻略')
-      if (_.isEqual(role.alias, traveler)) {
-        role.name = traveler
-      } else {
+      const traveler = commonTools.traveler(role.alias, name, '攻略')
+
+      if (_.isEqual(role.alias, traveler)) role.name = traveler
+      else {
         await this.e.reply(traveler)
         return
       }
     }
 
-    let guide = _.concat(this.uploader.news, this.uploader.olds)
-    let res_dir = this.findPack(`${this.resPath}/Guides`, role.name)
-    let add_dir = this.findPack(`${this.path}/add_ons`, role.name)
-    let dir = this.dirPath(role.name, res_dir, add_dir)
+    const guide = _.concat(this.uploader.news, this.uploader.olds)
+    const res_dir = this.findPack(`${this.resPath}/Guides`, role.name)
+    const add_dir = this.findPack(`${this.path}/add_ons`, role.name)
+    const dir = this.dirPath(role.name, res_dir, add_dir)
 
     let msg = [...res_dir]
     let xf = true
-    for (let i in dir) {
+    for (const i in dir) {
       let success = true
       if (!fs.existsSync(dir[i]) || (isUpdate && !dir[i].includes('/add_ons/'))) {
         success = await this.getImg(role.name, guide[i], dir[i])
@@ -65,7 +65,7 @@ export default class roleGuide extends moraBase {
     let role = {}
 
     /** 主角 */
-    let trailblazer = commonTools.trailblazer(name, '攻略')
+    const trailblazer = commonTools.trailblazer(name, '攻略')
     if (trailblazer) {
       if (!trailblazer.name) {
         await this.e.reply(trailblazer)
@@ -81,8 +81,8 @@ export default class roleGuide extends moraBase {
       atlas = `${_path}/plugins/Atlas/star-rail-atlas/guide for role/${role.name}.png`
     }
 
-    let add_dir = this.findPack(`${this.path}/add_ons`, role.name, this.game)
-    let res_dir = this.findPack(`${this.resPath}/Guides`, role.name, this.game)
+    const add_dir = this.findPack(`${this.path}/add_ons`, role.name, this.game)
+    const res_dir = this.findPack(`${this.resPath}/Guides`, role.name, this.game)
 
     let msg = [...res_dir]
     if (fs.existsSync(atlas)) {
@@ -90,10 +90,10 @@ export default class roleGuide extends moraBase {
       this.uploader = _.filter(this.uploader, v => v.source !== '听语惊花')
     }
 
-    let sources = _.map(this.uploader, 'source')
-    let dir = _.map(sources, v => `${this.path}/${v}/StarRail/${role.name}.jpg`)
+    const sources = _.map(this.uploader, 'source')
+    const dir = _.map(sources, v => `${this.path}/${v}/StarRail/${role.name}.jpg`)
 
-    for (let i in dir) {
+    for (const i in dir) {
       let success = true
       if (!fs.existsSync(dir[i]) || isUpdate) {
         success = await this.getImg(role.name, this.uploader[i], dir[i], (role.reg || ''))
@@ -111,23 +111,23 @@ export default class roleGuide extends moraBase {
     if (_.isEmpty(role)) role = gsCfg.getRole(name, '', this.isSr, this.game) || {}
     if (_.isEmpty(role) || role?.name === '绮良良') role.name = name
 
-    let add_dir = this.findPack(`${this.path}/add_ons`, role.name, this.game)
-    let res_dir = this.findPack(`${this.resPath}/Guides`, role.name, this.game)
+    const add_dir = this.findPack(`${this.path}/add_ons`, role.name, this.game)
+    const res_dir = this.findPack(`${this.resPath}/Guides`, role.name, this.game)
 
     this.uploader = this.uploader.filter(v => !res_dir.find(r => r.includes(v.source)))
 
     let msg = [...res_dir]
-    let atlas = `${_path}/plugins/Atlas/zzz-atlas/角色攻略/${role.name}.png`
-    let remove = '新艾利都快讯'
+    const atlas = `${_path}/plugins/Atlas/zzz-atlas/角色攻略/${role.name}.png`
+    const remove = '新艾利都快讯'
     if (fs.existsSync(atlas) && !res_dir.find(r => r.includes(remove))) {
       msg.push(atlas)
       this.uploader = _.filter(this.uploader, v => v.source !== remove)
     }
 
-    let sources = _.map(this.uploader, 'source')
-    let dir = _.map(sources, v => `${this.path}/${v}/ZenlessZoneZero/${role.name}.jpg`)
+    const sources = _.map(this.uploader, 'source')
+    const dir = _.map(sources, v => `${this.path}/${v}/ZenlessZoneZero/${role.name}.jpg`)
 
-    for (let i in dir) {
+    for (const i in dir) {
       let success = true
       if (!fs.existsSync(dir[i]) || isUpdate) {
         success = await this.getImg(role.name, this.uploader[i], dir[i], (role.reg || ''))
@@ -158,7 +158,7 @@ export default class roleGuide extends moraBase {
     this.resPath += this.isSr ? '/RefStat' : '/YieldCurve'
     await this.checkPath(this.resPath)
 
-    let msg = [segment.image(`file://${this.resPath}/帮助.png`)]
+    const msg = [segment.image(`file://${this.resPath}/帮助.png`)]
     if (this.isSr) {
       msg.push('请使用【*希儿参考面板】或【#星铁罗刹参考面板】进行使用')
     } else {
@@ -172,13 +172,13 @@ export default class roleGuide extends moraBase {
   async stat_curve (name) {
     await this.checkPath(this.resPath)
 
-    let refPath = `${this.resPath}/RefStat`
-    let curvePath = `${this.resPath}/YieldCurve`
+    const refPath = `${this.resPath}/RefStat`
+    const curvePath = `${this.resPath}/YieldCurve`
 
     let role = {}
     /** 星铁主角特殊处理 */
     if (this.isSr) {
-      let trailblazer = commonTools.trailblazer(name, '参考面板')
+      const trailblazer = commonTools.trailblazer(name, '参考面板')
       if (trailblazer) {
         if (!trailblazer.name) {
           await this.e.reply(trailblazer)
@@ -191,7 +191,7 @@ export default class roleGuide extends moraBase {
     if (!role) return false
     /** 主角特殊处理 */
     if (commonTools.travelerID.includes(Number(role.roleId))) {
-      let traveler = commonTools.traveler(role.alias, name, '进阶参考')
+      const traveler = commonTools.traveler(role.alias, name, '进阶参考')
       if (_.isEqual(role.alias, traveler)) {
         role.name = traveler
       } else {
@@ -213,8 +213,8 @@ export default class roleGuide extends moraBase {
     curve = _.map(curve, v => segment.image(`file://${curvePath}/${v}`))
     let msg = [...ref, 'arti', ...curve]
 
-    let notes = this.advancedInfo(role.name)
-    let idx = _.findIndex(msg, i => _.isEqual(i, 'arti'))
+    const notes = this.advancedInfo(role.name)
+    const idx = _.findIndex(msg, i => _.isEqual(i, 'arti'))
     msg[idx] = notes.arti ? `圣遗物思路推荐：\n${notes.arti}` : ''
     if (!_.isEmpty(notes?.brief)) msg.push(`【蓝佬小课堂】：\n${notes.brief}`)
     msg[0] = _.compact([msg[0], notes.url])
@@ -231,13 +231,13 @@ export default class roleGuide extends moraBase {
       zzz: '/ZenlessZoneZero'
     }
     if (!fs.existsSync(path)) return []
-    let _sources = fs.readdirSync(path)
+    const _sources = fs.readdirSync(path)
     let dir = []
     _.each(_sources, author => {
-      let _author = path.includes('add_ons') ? `${path}/${author}${gameDir[game]}` : `${path}/${author}`
+      const _author = path.includes('add_ons') ? `${path}/${author}${gameDir[game]}` : `${path}/${author}`
       let _roles = fs.existsSync(_author) ? fs.readdirSync(_author) : []
       _roles = _.filter(_roles, r => _.includes(r, name))
-      let au_path = _.isEmpty(_roles) ? false : `${_author}/${_roles[0]}`
+      const au_path = _.isEmpty(_roles) ? false : `${_author}/${_roles[0]}`
       dir.push(au_path)
     })
 
@@ -253,28 +253,24 @@ export default class roleGuide extends moraBase {
       defpath = `${_path}/data/strategy/`
     }
 
-    let olds = _.map(this.uploader.olds, (v) => v.source)
-    let news = _.map(this.uploader.news, (v) => v.source)
+    const olds = _.map(this.uploader.olds, 'source')
+    const news = _.map(this.uploader.news, 'source')
     let dir = _.take(fs.readdirSync(defpath), 4)
 
-    let _dir = []
+    const _dir = []
     // news
-    _.each(news, (n) => {
+    _.each(news, n => {
       let npath = `${this.path}/${n}/${name}.jpg`
-      _.each(res, (r) => {
-        if (_.includes(r, n)) {
-          npath = r
-        }
+      _.each(res, r => {
+        if (_.includes(r, n)) npath = r
       })
       _dir.push(npath)
     })
     // olds
     _.each(olds, (o, idx) => {
       let _def = `${defpath}${idx + 1}/${name}.jpg`
-      _.each(add, (a) => {
-        if (_.includes(a, o)) {
-          _def = a
-        }
+      _.each(add, a => {
+        if (_.includes(a, o)) _def = a
       })
       _dir.push(_def)
     })
@@ -285,9 +281,9 @@ export default class roleGuide extends moraBase {
   }
 
   advancedInfo (name) {
-    let artiRef = moracfg.getfileYaml(`${this.resPath}/RefStat/`, 'RefNotes')
-    let arti = artiRef[name] || {}
-    let notes = { url: artiRef.url, arti: false }
+    const artiRef = moracfg.getfileYaml(`${this.resPath}/RefStat/`, 'RefNotes')
+    const arti = artiRef[name] || {}
+    const notes = { url: artiRef.url, arti: false }
     if (!_.isEmpty(arti)) {
       notes.arti = `主词条：${arti.mainProp}\n副词条：${arti.viceProp}`
       notes.brief = arti.brief
@@ -297,8 +293,8 @@ export default class roleGuide extends moraBase {
 
   /**
    * 下载攻略图
-   * @param {String} name 角色名
-   * @param {Object} author 作者
+   * @param {string} name 角色名
+   * @param {object} author 作者
    */
   async getImg (name, author, sfPath, filter = '') {
     let msyRes = []
@@ -313,17 +309,17 @@ export default class roleGuide extends moraBase {
       return false
     }
 
-    let posts = _.flatten(_.map(msyRes, item => item.data.posts))
+    const posts = _.flatten(_.map(msyRes, item => item.data.posts))
     let url
-    let _post = []
-    for (let val of posts) {
+    const _post = []
+    for (const val of posts) {
       /** 攻略图个别来源特殊处理 */
       if (author.collection_id.includes(341523)) {
         if (val.post.structured_content.includes(name + '】')) {
-          let content = val.post.structured_content.replace(/\\\/\{\}/g, '')
+          const content = val.post.structured_content.replace(/\\\/\{\}/g, '')
           // 常驻角色特殊处理
-          let pattern = new RegExp(name + '】.*?image\\\\?":\\\\?"(.*?)\\\\?"')
-          let imgId = pattern.exec(content)[1]
+          const pattern = new RegExp(name + '】.*?image\\\\?":\\\\?"(.*?)\\\\?"')
+          const imgId = pattern.exec(content)[1]
           url = _.find(val.image_list, v => v.image_id === imgId).url
           break
         }
